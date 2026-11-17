@@ -4,6 +4,7 @@ import Booking from '../../src/components/sections/Booking.astro';
 import Contact from '../../src/components/sections/Contact.astro';
 import Hero from '../../src/components/sections/Hero.astro';
 import Location from '../../src/components/sections/Location.astro';
+import PublicationStatus from '../../src/components/states/PublicationStatus.astro';
 import { parseContent } from '../../src/lib/content/load';
 import data from '../../src/data/ametista.json';
 
@@ -78,6 +79,15 @@ describe('Hero', () => {
     const html = await container.renderToString(Hero, { props: { content } });
     expect(html).toContain('href="#reservas"');
     expect(html).not.toContain('href="#apresentacao"');
+  });
+});
+
+describe('Estado público do conteúdo', () => {
+  it('explica que os dados essenciais ainda estão em atualização', async () => {
+    const html = await container.renderToString(PublicationStatus);
+    expect(html).toContain('Estamos preparando a página completa.');
+    expect(html).toContain('Fotos oficiais');
+    expect(html).toContain('links para reserva');
   });
 });
 

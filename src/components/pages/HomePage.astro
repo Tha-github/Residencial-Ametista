@@ -14,6 +14,7 @@ import Highlights from '../sections/Highlights.astro';
 import Location from '../sections/Location.astro';
 import PracticalInfo from '../sections/PracticalInfo.astro';
 import PendingNotice from '../states/PendingNotice.astro';
+import PublicationStatus from '../states/PublicationStatus.astro';
 import { listPending, pendingFor } from '../../lib/content/pending';
 import { hasBookingLinks, navItems, sectionStates } from '../../lib/content/sections';
 import { showDevNotices } from '../../lib/env';
@@ -57,9 +58,17 @@ const components = {
   description={seoDescription}
   structuredData={structuredData}
 >
-  <SiteHeader slot="header" name={content.name} overlay nav={nav} bookingCta={hasBooking} />
+  <SiteHeader
+    slot="header"
+    name={content.name}
+    overlay={Boolean(content.media.hero)}
+    nav={nav}
+    bookingCta={hasBooking}
+  />
 
   <Hero content={content} />
+
+  {!hasBooking && <PublicationStatus />}
 
   {states.map((s) => {
     const Component = components[s.id];

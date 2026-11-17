@@ -4,10 +4,12 @@ Data: 17/11/2026
 
 ## 1. Como a página funciona
 
-Cada seção só aparece quando os dados dela foram fornecidos e confirmados. Quem decide
-isso é o mapa de seções (`src/lib/content/sections.ts`). Header, rodapé, menu e CTAs
-seguem o mesmo mapa, então nunca existe um botão ou link para uma seção que não está
-na página.
+Cada seção de imóvel só aparece quando os dados dela foram fornecidos e confirmados.
+Quem decide isso é o mapa de seções (`src/lib/content/sections.ts`). Header, rodapé,
+menu e CTAs seguem o mesmo mapa, então nunca existe um botão ou link para uma seção
+que não está na página. Enquanto os links de reserva estiverem ausentes, a página
+pública exibe um aviso de conteúdo em atualização; o hero sem foto usa cabeçalho sólido
+e altura reduzida para não sugerir uma área de mídia quebrada.
 
 | #   | Seção                                       | Aparece quando houver                                                                         | Hoje                              |
 | --- | ------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------- |
