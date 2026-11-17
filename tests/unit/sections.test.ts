@@ -17,14 +17,14 @@ const ready = (input: object) =>
   Object.fromEntries(sectionStates(parseContent(input, 't')).map((s) => [s.id, s.ready]));
 
 describe('estrutura de seções', () => {
-  it('conteúdo atual: só os diferenciais confirmados são publicados', () => {
+  it('publica seções preenchidas com conteúdo e mantém reservas e contato sem destino', () => {
     expect(ready(data)).toEqual({
-      apresentacao: false,
-      galeria: false,
+      apresentacao: true,
+      galeria: true,
       diferenciais: true,
-      comodidades: false,
-      informacoes: false,
-      localizacao: false,
+      comodidades: true,
+      informacoes: true,
+      localizacao: true,
       reservas: false,
       contato: false,
     });

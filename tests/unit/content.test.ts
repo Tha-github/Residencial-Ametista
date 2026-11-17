@@ -13,15 +13,16 @@ describe('conteúdo do residencial', () => {
     expect(() => parseContent(data, 'ametista.json')).not.toThrow();
   });
 
-  it('o arquivo versionado não contém dados não confirmados', () => {
+  it('o arquivo versionado contém os dados informados na prévia e mantém canais ausentes vazios', () => {
     const c = parseContent(data, 'ametista.json');
-    expect(c.description).toEqual([]);
-    expect(c.amenities).toEqual([]);
-    expect(c.facts).toEqual({});
+    expect(c.description[0]).toContain('90 m²');
+    expect(c.amenities).toContain('Vaga privativa gratuita');
+    expect(c.facts).toMatchObject({ areaM2: 90, bedrooms: 2, bathrooms: 2, beds: '4 camas' });
     expect(c.booking).toEqual({});
     expect(c.contact).toEqual({});
-    expect(c.media.gallery).toEqual([]);
-    expect(c.location.streetAddress).toBeUndefined();
+    expect(c.media.gallery).toHaveLength(9);
+    expect(c.location.streetAddress).toBe('Rua Dante de Patta, 283');
+    expect(c.location.mapsUrl).toBe('https://maps.app.goo.gl/qvsUVxg31GUaZbr36');
   });
 
   it('aplica padrões vazios aos campos opcionais', () => {

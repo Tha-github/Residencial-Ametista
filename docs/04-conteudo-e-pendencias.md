@@ -7,43 +7,42 @@ Data: 17/11/2026
 Cada seção de imóvel só aparece quando os dados dela foram fornecidos e confirmados.
 Quem decide isso é o mapa de seções (`src/lib/content/sections.ts`). Header, rodapé,
 menu e CTAs seguem o mesmo mapa, então nunca existe um botão ou link para uma seção
-que não está na página. Enquanto os links de reserva estiverem ausentes, a página
-pública exibe um aviso de conteúdo em atualização; o hero sem foto usa cabeçalho sólido
-e altura reduzida para não sugerir uma área de mídia quebrada.
+que não está na página. O conteúdo e as fotos publicados agora vêm da prévia indicada
+em 17/11/2026. As fotos mantêm a marca-d'água original. Sem contato de reserva
+confirmado, a página não exibe CTA sem destino. Booking.com, Airbnb e Decolar foram
+omitidos a pedido do cliente.
 
-| #   | Seção                                       | Aparece quando houver                                                                         | Hoje                              |
-| --- | ------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------- |
-| 1   | Header + menu curto                         | ao menos uma seção navegável / links de reserva                                               | só o nome (sem menu)              |
-| 2   | Hero                                        | sempre. Foto e CTAs dependem de dados                                                         | **publicado** (sem foto, sem CTA) |
-| 3   | Apresentação                                | descrição                                                                                     | aguardando                        |
-| 4   | Galeria                                     | fotos reais                                                                                   | aguardando                        |
-| 5   | Diferenciais                                | diferenciais confirmados                                                                      | **publicado**                     |
-| 6   | Espaço e comodidades                        | capacidade, quartos, camas, banheiros, área ou comodidades (cada item é exibido isoladamente) | aguardando                        |
-| 7   | Informações práticas                        | check-in, check-out ou regras                                                                 | aguardando                        |
-| 8   | Localização                                 | link do Google Maps validado                                                                  | aguardando                        |
-| 9   | Reservas                                    | ao menos um link de plataforma                                                                | aguardando                        |
-| 10  | Contato                                     | WhatsApp, Instagram ou e-mail                                                                 | aguardando                        |
-| 11  | Rodapé                                      | sempre. As colunas Navegação, Reservar e Contato dependem de dados                            | **publicado** (nome e local)      |
-| —   | Barra fixa "Ver opções de reserva" (mobile) | links de reserva                                                                              | oculta                            |
+| #   | Seção                                       | Aparece quando houver                                                                         | Hoje                                             |
+| --- | ------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| 1   | Header + menu curto                         | ao menos uma seção navegável / links de reserva                                               | **publicado** (apresentação, fotos, localização) |
+| 2   | Hero                                        | sempre. Foto e CTAs dependem de dados                                                         | **publicado** (foto do terraço)                  |
+| 3   | Apresentação                                | descrição                                                                                     | **publicado**                                    |
+| 4   | Galeria                                     | fotos reais                                                                                   | **publicado** (9 fotos com marca-d'água)         |
+| 5   | Diferenciais                                | diferenciais informados na prévia                                                             | **publicado**                                    |
+| 6   | Espaço e comodidades                        | capacidade, quartos, camas, banheiros, área ou comodidades (cada item é exibido isoladamente) | **publicado** (dados da prévia)                  |
+| 7   | Informações práticas                        | check-in, check-out ou regras                                                                 | **parcial** (check-in; faltam check-out/regras)  |
+| 8   | Localização                                 | link do Google Maps validado                                                                  | **publicado** (link enviado pelo cliente)        |
+| 9   | Reservas                                    | ao menos um link de plataforma                                                                | aguardando                                       |
+| 10  | Contato                                     | WhatsApp, Instagram ou e-mail                                                                 | aguardando                                       |
+| 11  | Rodapé                                      | sempre. As colunas Navegação, Reservar e Contato dependem de dados                            | **publicado** (nome e local)                     |
+| —   | Barra fixa "Ver opções de reserva" (mobile) | links de reserva                                                                              | oculta                                           |
 
-**Reservas:** cada plataforma tem um botão próprio ("Reservar no Booking.com" etc.), que
-abre em nova aba. A seção diz claramente que **datas, valores, pagamento e confirmação
-acontecem na plataforma escolhida** e que o site não processa reservas. Não há
-calendário, preço, disponibilidade nem formulário. Isso é verificado por teste
-automatizado (`tests/unit/render.test.ts`).
+**Reservas:** links do Booking.com, Airbnb e Decolar foram omitidos a pedido do cliente.
+Não há contato WhatsApp ou outro destino de reserva confirmado, portanto não existe CTA
+de reserva. O site não tem calendário, preço, disponibilidade nem formulário.
 
-## 2. Textos publicados que precisam de aprovação do cliente
+## 2. Origem do conteúdo publicado
 
-Foram escritos pela equipe **somente a partir dos fatos confirmados no briefing**
-(Praia dos Ingleses, proximidade do mar, Florianópolis/SC), sem distâncias, números
-ou adjetivos que não possamos comprovar.
+O cliente indicou como fonte `https://restinga-previas.pages.dev/residencial-ametista/`.
+Foram usados os dados necessários às seções implementadas; números e características
+da prévia ainda precisam de conferência do cliente antes do aceite final.
 
-| Onde                           | Texto                                                                                                                              |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Hero (frase)                   | "Hospedagem na Praia dos Ingleses, perto do mar, no norte de Florianópolis."                                                       |
-| Diferenciais (título da seção) | "O mar por perto"                                                                                                                  |
-| Diferencial 1                  | **Perto do mar**: "A Praia dos Ingleses fica a uma curta caminhada do residencial."                                                |
-| Diferencial 2                  | **No norte da Ilha**: "Ingleses fica no norte de Florianópolis, em Santa Catarina, com outras praias da região a pouca distância." |
+| Onde          | Texto                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------- |
+| Hero (frase)  | "Apartamento com terraço gourmet a 250 m da Praia dos Ingleses, em Florianópolis."                |
+| Apresentação  | Apartamento de 90 m², 2 quartos, 2 banheiros, cozinha completa e terraço gourmet; 250 m da praia. |
+| Diferencial 1 | **Praia a cerca de 250 m**; aproximadamente quatro minutos a pé, conforme a prévia.               |
+| Diferencial 2 | **Terraço gourmet privativo**, com mesa, guarda-sol e churrasqueira.                              |
 
 Textos de interface (títulos de seção, botões, avisos) são do sistema e não descrevem o
 imóvel. Ex.: "Escolha onde reservar", "Abrir no Google Maps", "Informações práticas".
@@ -52,45 +51,39 @@ imóvel. Ex.: "Escolha onde reservar", "Abrir no Google Maps", "Informações pr
 
 ### Essenciais (sem eles o site não cumpre o objetivo de levar à reserva)
 
-1. **URLs dos anúncios** no Booking.com, Airbnb e Decolar. O link exato de cada anúncio,
-   não a página inicial.
-2. **Fotos originais** em alta resolução (≥ 2400px), **sem marca d'água** e com
-   autorização de uso. As fotos da prévia têm a marca "aluganaluga" e não podem ser
-   publicadas. O briefing fotográfico está em `docs/03-direcao-visual.md` §9.
-3. **Link do Google Maps** do imóvel: link "Compartilhar" do pin na entrada do prédio.
-4. **Descrição do residencial**: 1 a 3 parágrafos curtos, ou aprovação de um texto que
-   redigiremos a partir dos dados confirmados.
+1. **Contato/canal de reserva direto**: WhatsApp/telefone, Instagram ou e-mail. Links de
+   Booking.com, Airbnb e Decolar foram dispensados pelo cliente.
+2. **Fotos originais** sem marca-d'água e autorização de uso para substituir as fotos
+   da prévia atualmente publicadas com a marca intacta.
+3. **Descrição do residencial**: revisar ou aprovar o texto derivado da prévia.
 
 ### Dados do imóvel (cada item confirmado aparece isoladamente)
 
-5. Capacidade máxima de hóspedes.
-6. Número de quartos e de banheiros.
-7. Composição das camas (ex.: "1 casal + 2 solteiro").
-8. Área (m²), se desejar exibir.
-9. Comodidades, item a item. A prévia lista vaga privativa, ar-condicionado, Wi-Fi,
-   streaming, elevador, máquina de lavar, churrasqueira, kit praia, enxoval,
-   cadeirão/berço. **Confirmar quais são verdadeiras hoje.**
-10. **O terraço/pátio externo:** este imóvel tem? Pode ser destacado como diferencial?
-    (O roteiro prevê "amplo terraço e pátio externo, quando aplicável".)
+4. Capacidade máxima de hóspedes (não determinada pelo número de camas).
+5. Número de quartos e banheiros informados na prévia (2 e 2): confirmar.
+6. Composição das 4 camas.
+7. Área informada (90 m²): confirmar se deseja exibir.
+8. Confirmar as comodidades listadas a partir da prévia.
+9. Confirmar se o terraço gourmet e churrasqueira podem ser divulgados.
 
 ### Informações práticas
 
-11. Horário de check-in. A prévia diz 14h às 23h30: confirmar.
-12. **Horário de check-out** (não informado).
-13. Regras da casa (silêncio, fumo, festas, visitantes etc.).
-14. Política de pets. A prévia diz "aceitos mediante pedido": confirmar.
+10. Horário de check-in (14h às 23h30 conforme prévia): confirmar.
+11. **Horário de check-out** (não informado).
+12. Regras da casa (silêncio, fumo, festas, visitantes etc.).
+13. Política de pets (a prévia diz aceitos mediante pedido): confirmar.
 
 ### Contato
 
-15. WhatsApp (número para link `wa.me`), Instagram e/ou e-mail, ou confirmação de
+14. WhatsApp (número para link `wa.me`), Instagram e/ou e-mail, ou confirmação de
     que não haverá canal de contato no site.
 
 ### Decisões
 
-16. **Endereço completo** (Rua Dante de Patta, 283): pode ser exibido publicamente?
-17. **Avaliações do Booking** (nota 9,4): deseja exibir? Exige autorização e
+15. Endereço completo consta na prévia e foi publicado: confirmar se deve permanecer público.
+16. **Avaliações do Booking** (nota 9,4): deseja exibir? Exige autorização e
     atualização periódica, e não entra nos dados estruturados.
-18. **Aprovação dos textos da seção 2.**
+17. **Revisão e aprovação dos dados/textos extraídos da prévia.**
 
 ## 4. Onde cada dado entra
 

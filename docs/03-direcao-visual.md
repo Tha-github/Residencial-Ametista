@@ -12,8 +12,9 @@ areia dá o calor.
 
 ## 2. Avaliação da prévia do cliente
 
-Fonte: HTML e CSS da prévia (`restinga-previas.pages.dev/residencial-ametista`) e 9 fotos
-do imóvel baixadas dela, usadas **só para análise** e não incluídas no projeto.
+Fonte: HTML e CSS da prévia (`restinga-previas.pages.dev/residencial-ametista`) e fotos
+do imóvel. Após o cliente indicar a prévia como fonte e pedir o uso das fotos, 9 imagens
+foram incluídas e publicadas, com a marca-d'água original preservada.
 
 | Manter                                     | Elevar                                                                                                                                    | Descartar                                                                        |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -25,8 +26,8 @@ do imóvel baixadas dela, usadas **só para análise** e não incluídas no proj
 
 **Problemas encontrados nas fotos da prévia:**
 
-1. **Todas têm a marca d'água "aluganaluga"** (terceiro). **Não podem ser publicadas assim.**
-2. A resolução máxima é **1024 px**, insuficiente para o hero em tela cheia (mínimo recomendado: 2400 px no lado maior).
+1. **Todas têm a marca d'água "aluganaluga"** (terceiro). Ela foi mantida intacta nas imagens publicadas; substituir por originais autorizados é recomendado.
+2. A resolução máxima é **1024 px**, menor que a recomendação de 2400 px no lado maior para hero em tela cheia.
 3. Qualidade irregular: algumas são profissionais (sala, quartos, terraço com guarda-sol), outras parecem de celular (mesa do terraço, cadeiras).
 
 ## 3. Paleta: Areia, Mar e Grafite
@@ -106,7 +107,7 @@ hoje, nenhum dos dois aparece.
 
 ## 9. Briefing fotográfico (para o cliente)
 
-Necessário: **originais sem marca d'água, ≥ 2400px no lado maior, com autorização de uso.**
+Recomendado para a versão final: **originais sem marca d'água, ≥ 2400px no lado maior, com autorização de uso.**
 
 1. **Hero (horizontal):** terraço com guarda-sol e mata ao fundo, fim de tarde, câmera na
    altura dos olhos. Deixar céu ou área livre à esquerda ou em cima para o texto.

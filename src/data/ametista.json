@@ -1,21 +1,109 @@
 {
-  "$comment": "Somente dados confirmados no briefing (nome, Praia dos Ingleses, proximidade do mar, Florianópolis/SC). tagline e highlights são TEXTOS PROPOSTOS a partir desses fatos, sem números nem distâncias — aguardam aprovação do cliente. Dados vistos apenas na prévia (área, quartos, endereço, comodidades, avaliações etc.) aguardam confirmação — ver docs/04-conteudo-e-pendencias.md.",
+  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente em 2026-11-17. Fotos mantidas com a marca-d'água original. Dados de reserva, contato e check-out ainda pendentes.",
   "name": "Residencial Ametista",
-  "tagline": "Hospedagem na Praia dos Ingleses, perto do mar, no norte de Florianópolis.",
+  "tagline": "Apartamento com terraço gourmet a 250 m da Praia dos Ingleses, em Florianópolis.",
+  "description": [
+    "O Residencial Ametista oferece um apartamento inteiro de 90 m² na Praia dos Ingleses, com dois quartos, dois banheiros, cozinha completa e terraço gourmet privativo. A praia fica a aproximadamente 250 m, cerca de quatro minutos a pé, conforme a prévia enviada."
+  ],
   "location": {
     "beach": "Praia dos Ingleses",
+    "neighborhood": "Ingleses do Rio Vermelho",
     "city": "Florianópolis",
     "state": "Santa Catarina",
-    "stateCode": "SC"
+    "stateCode": "SC",
+    "streetAddress": "Rua Dante de Patta, 283",
+    "postalCode": "88058-510",
+    "mapsUrl": "https://maps.app.goo.gl/qvsUVxg31GUaZbr36"
   },
   "highlights": [
     {
-      "title": "Perto do mar",
-      "text": "A Praia dos Ingleses fica a uma curta caminhada do residencial."
+      "title": "Praia a cerca de 250 m",
+      "text": "A Praia dos Ingleses fica a aproximadamente quatro minutos a pé, segundo as informações da prévia enviada."
     },
     {
-      "title": "No norte da Ilha",
-      "text": "Ingleses fica no norte de Florianópolis, em Santa Catarina, com outras praias da região a pouca distância."
+      "title": "Terraço gourmet privativo",
+      "text": "O espaço tem mesa, guarda-sol e churrasqueira."
     }
-  ]
+  ],
+  "facts": {
+    "areaM2": 90,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "beds": "4 camas"
+  },
+  "amenities": [
+    "Apartamento inteiro",
+    "Terraço gourmet com churrasqueira",
+    "Cozinha completa com cooktop, forno, micro-ondas e geladeira",
+    "Ar-condicionado",
+    "Wi-Fi e TV com streaming",
+    "Máquina de lavar",
+    "Vaga privativa gratuita",
+    "Elevador",
+    "Kit praia com cadeiras, guarda-sol e cooler",
+    "Enxoval, toalhas e secador de cabelo",
+    "Cadeirão e berço sujeitos à disponibilidade",
+    "Pets aceitos mediante pedido, conforme a prévia enviada"
+  ],
+  "practicalInfo": {
+    "checkIn": "Das 14h às 23h30",
+    "houseRules": []
+  },
+  "media": {
+    "hero": {
+      "src": "terraco-guardasol.jpg",
+      "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores"
+    },
+    "gallery": [
+      {
+        "src": "terraco-guardasol.jpg",
+        "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores",
+        "group": "terraco",
+        "caption": "Terraço gourmet"
+      },
+      {
+        "src": "sala.jpg",
+        "alt": "Sala com parede azul, sofá de couro e mesa de jantar",
+        "group": "social",
+        "caption": "Sala integrada"
+      },
+      {
+        "src": "cozinha-bar.jpg",
+        "alt": "Cozinha com balcão azul",
+        "group": "social",
+        "caption": "Cozinha"
+      },
+      {
+        "src": "quarto-varanda.jpg",
+        "alt": "Quarto de casal com parede azul e porta para a varanda",
+        "group": "quartos",
+        "caption": "Quarto com varanda"
+      },
+      {
+        "src": "quarto-casal.jpg",
+        "alt": "Quarto de casal com parede azul e almofadas em tons de laranja",
+        "group": "quartos"
+      },
+      {
+        "src": "quarto-tres-camas.jpg",
+        "alt": "Quarto com três camas",
+        "group": "quartos"
+      },
+      {
+        "src": "terraco-mesa.jpg",
+        "alt": "Mesa de madeira do terraço com almofadas floridas",
+        "group": "terraco"
+      },
+      {
+        "src": "terraco-cadeiras.jpg",
+        "alt": "Terraço com cadeiras de praia coloridas",
+        "group": "terraco"
+      },
+      {
+        "src": "varanda-sofa.jpg",
+        "alt": "Varanda com sofá",
+        "group": "terraco"
+      }
+    ]
+  }
 }

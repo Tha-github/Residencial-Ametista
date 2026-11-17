@@ -65,14 +65,14 @@ describe('Reservas', () => {
 });
 
 describe('Hero', () => {
-  it('com o conteúdo atual: sem CTA (não há links nem descrição)', async () => {
+  it('com o conteúdo atual: link para apresentação, sem CTA para reserva ainda sem destino', async () => {
     const html = await container.renderToString(Hero, {
       props: { content: parseContent(data, 'ametista.json') },
     });
     expect(html).toContain('Ametista');
     expect(html).toContain('Praia dos Ingleses');
     expect(html).not.toContain('href="#reservas"');
-    expect(html).not.toContain('href="#apresentacao"');
+    expect(html).toContain('href="#apresentacao"');
   });
 
   it('com links de reserva: CTA leva à seção de reservas', async () => {
@@ -83,11 +83,10 @@ describe('Hero', () => {
 });
 
 describe('Estado público do conteúdo', () => {
-  it('explica que os dados essenciais ainda estão em atualização', async () => {
+  it('explica que os canais oficiais de reserva ainda estão pendentes', async () => {
     const html = await container.renderToString(PublicationStatus);
-    expect(html).toContain('Estamos preparando a página completa.');
-    expect(html).toContain('Fotos oficiais');
-    expect(html).toContain('links para reserva');
+    expect(html).toContain('Consulte as opções de reserva.');
+    expect(html).toContain('canal de contato publicado para consultar datas e valores');
   });
 });
 

@@ -1,44 +1,44 @@
 # Avaliação final e publicação no GitHub Pages
 
-Data: 17/11/2026. Revisão do código, da configuração do repositório e da execução do GitHub Actions. O Pages tentou construir o commit inicial com Jekyll; o job `Build with Jekyll` falhou e o deploy foi ignorado. O problema foi a fonte de publicação automática de branch, incompatível com a saída Astro. Este projeto agora usa build estático Astro e workflow GitHub Actions.
+Data: 17/11/2026. Revisão do código, da configuração do repositório e das execuções do GitHub Actions. O Pages tentou construir o commit inicial com Jekyll; esse fluxo legado falhou. O site Astro agora é compilado e publicado pelo workflow GitHub Actions.
 
 ## Resumo executivo
 
-O build estático local para Pages passou e gerou a home, 404, sitemap e robots em `dist/`. O modo Pages usa apenas conteúdo versionado e omite rotas de login, painel, APIs e mídia dinâmica. Assim, o site público pode ser hospedado no GitHub Pages; o painel Cloudflare existente no código **não é executado no Pages**. A publicação ainda requer selecionar **GitHub Actions** como fonte em Settings → Pages e aguardar o novo workflow após o push.
+O build estático para Pages gera home, 404, sitemap, robots e imagens otimizadas em `dist/`. O workflow já publicou o site na URL pública. A página usa dados e nove fotos da prévia indicada pelo cliente; as marcas-d'água das fotos permanecem intactas. O painel Cloudflare existente no código **não é executado no Pages**.
 
-O aceite de negócio continua pendente: faltam fotos autorizadas, links de reserva e Maps, dados de contato e aprovação dos textos. A página publicada não terá CTA de reserva até existirem links reais. O arquivo `CLAUDE.md` está vazio; portanto, não há critérios formais adicionais de aceite disponíveis para conferir.
+O aceite de negócio continua pendente: faltam originais das fotos sem marca-d'água, confirmação dos dados extraídos da prévia, horário de check-out/regras, capacidade e canal direto de contato/reserva. Booking.com, Airbnb e Decolar foram omitidos a pedido do cliente. O link do Maps fornecido respondeu HTTP 200. O arquivo `CLAUDE.md` está vazio; portanto, não há critérios formais adicionais de aceite disponíveis para conferir.
 
 ## Checklist independente
 
 | #   | Critério                                    | Status                  | Evidência e pendência                                                                                                                                                                                                                                              |
 | --- | ------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | Qualidade visual comparada à prévia         | **PENDENTE**            | Não foi possível abrir a prévia nem obter screenshot comparativo nesta revisão. Faltam as fotografias originais.                                                                                                                                                   |
-| 2   | Proposta e facilidade para reservar         | **PENDENTE**            | A página explica que reserva e pagamento acontecem na plataforma externa, mas o JSON não tem URLs de Booking, Airbnb ou Decolar; portanto não há CTA.                                                                                                              |
-| 3   | Conteúdo fiel, sem invenções                | **PENDENTE**            | Campos não confirmados são omitidos. Tagline/diferenciais ainda aguardam aprovação, além da descrição e fotos.                                                                                                                                                     |
+| 1   | Qualidade visual comparada à prévia         | **PENDENTE**            | Prévia e fotos foram inspecionadas. Nove fotos do imóvel estão no site com as marcas-d'água preservadas; originais em resolução maior são recomendados.                                                                                                            |
+| 2   | Proposta e facilidade para reservar         | **PENDENTE**            | Não há canal direto de contato/reserva fornecido. Links Booking, Airbnb e Decolar foram dispensados pelo cliente; não há CTA sem destino.                                                                                                                          |
+| 3   | Conteúdo fiel, sem invenções                | **PENDENTE**            | Conteúdo preenchido a partir da prévia indicada pelo cliente; falta a confirmação final dos dados e textos nela publicados.                                                                                                                                        |
 | 4   | Responsividade/mobile                       | **APROVADO localmente** | E2E reportou 20 casos `ok` em cada viewport 320, 414, 768 e 1366 px. Sem aparelhos físicos.                                                                                                                                                                        |
-| 5   | Booking, Airbnb, Decolar e Google Maps      | **PENDENTE**            | Allowlist HTTPS existe, mas o cliente ainda não forneceu URLs reais para testar.                                                                                                                                                                                   |
+| 5   | Booking, Airbnb, Decolar e Google Maps      | **PENDENTE**            | Maps fornecido pelo cliente respondeu HTTP 200 e redirecionou para o pin do imóvel. Links Booking/Airbnb/Decolar foram omitidos a pedido do cliente.                                                                                                               |
 | 6   | Painel e limites de edição                  | **PENDENTE**            | O build Pages exclui `/admin`, `/api/admin/*` e `/media/*`; GitHub Pages não executa o backend D1/R2/Access. Nenhum login ou CRUD está disponível no site publicado.                                                                                               |
 | 7   | Segurança                                   | **PENDENTE**            | O artefato Pages é estático e não contém painel/API. Auditorias npm retornaram zero vulnerabilidades. Headers de resposta não são configuráveis pelo arquivo `_headers` neste provedor; políticas e HTTPS devem ser revisadas nas configurações do GitHub/domínio. |
-| 8   | SEO e indexação                             | **PENDENTE**            | Build gera canonical, OG, robots, sitemap e JSON-LD para o caminho de projeto `/Residencial-Ametista/`. Falta confirmar Pages ativo, revisar URL pública e cadastrar sitemap no Search Console.                                                                    |
-| 9   | Performance e Core Web Vitals               | **PENDENTE**            | Build suporta imagens/fontes locais otimizadas, mas ainda não há fotos reais nem medições em produção, Lighthouse ou LCP/INP/CLS de campo.                                                                                                                         |
+| 8   | SEO e indexação                             | **PENDENTE**            | Build gera canonical, OG, robots, sitemap e JSON-LD para `/Residencial-Ametista/`; site Pages está publicado. Falta cadastrar sitemap no Search Console.                                                                                                           |
+| 9   | Performance e Core Web Vitals               | **PENDENTE**            | As 9 fotos são otimizadas pelo build (88 variantes geradas/reutilizadas); faltam medições Lighthouse ou LCP/INP/CLS de campo.                                                                                                                                      |
 | 10  | Acessibilidade/compatibilidade/estabilidade | **PENDENTE**            | Galeria e CSS têm suporte a teclado, foco e reduced motion; faltam leitor de tela, revisão manual e confirmação de execução E2E encerrada com sucesso.                                                                                                             |
-| 11  | Build, lint, typecheck e testes             | **PENDENTE**            | Build Pages local passou. `npm run validate` cobre typecheck, lint, Prettier, testes unitários e build. E2E teve 80 casos individuais `ok`, mas o runner não encerrou normalmente.                                                                                 |
-| 12  | Documentação/manutenção/deploy              | **PENDENTE**            | Este documento explica o fluxo Pages e operação; `CLAUDE.md` está vazio e o cliente ainda precisa configurar Pages e aprovar o conteúdo.                                                                                                                           |
+| 11  | Build, lint, typecheck e testes             | **APROVADO localmente** | `npm run validate`: typecheck, Prettier, 83 testes unitários e build passaram; ESLint sem erros, com 1 aviso preexistente em `scripts/generate-test-images.mjs`. E2E anterior teve 80 casos `ok`, mas o runner não encerrou normalmente.                           |
+| 12  | Documentação/manutenção/deploy              | **PENDENTE**            | Este documento explica o fluxo Pages e operação; `CLAUDE.md` está vazio e ainda faltam dados/confirmacões comerciais.                                                                                                                                              |
 
 ## Informações necessárias do cliente
 
-1. URLs exatas dos anúncios Booking.com, Airbnb e Decolar e link compartilhado do pin do Google Maps.
-2. Fotos originais em alta resolução, autorização de uso e escolha da imagem principal. Não usar fotos com marca d'água da prévia.
-3. Aprovação/revisão da tagline e dos diferenciais propostos e uma descrição curta aprovada.
-4. Dados a publicar: capacidade, quartos/banheiros, camas, área, comodidades, horários, regras e política de pets.
-5. Decisão sobre endereço público e canais de contato (WhatsApp, Instagram, e-mail).
-6. Confirmação de quem tem permissão de administrador no repositório para definir a fonte Pages como GitHub Actions; domínio próprio, se desejado.
+1. Link direto de WhatsApp/telefone, Instagram ou e-mail para contato/reserva. Links de anúncios Booking.com, Airbnb e Decolar foram dispensados pelo cliente.
+2. Fotos originais em alta resolução para substituir as fotos atuais da prévia (1024 px e com marca-d'água). A marca foi mantida intacta nas imagens publicadas.
+3. Revisão da tagline, descrição e diferenciais derivados da prévia indicada pelo cliente.
+4. Dados ainda ausentes ou a confirmar: capacidade, composição das quatro camas, check-out, regras e política de pets; confirmar área, quartos/banheiros e comodidades da prévia.
+5. Confirmar se o endereço completo deve permanecer público. Link do Google Maps foi fornecido e testado.
+6. Autorização para exibir nota/avaliações do Booking (opcional; não incluídas).
 
 ## Publicar no GitHub Pages
 
-1. No repositório `Tha-github/Residencial-Ametista`, abrir **Settings → Pages → Build and deployment → Source** e selecionar **GitHub Actions**. O job antigo falhou porque o Pages tentou usar Jekyll na branch; o workflow novo compila Astro e publica `dist/` como artefato. A configuração da fonte de publicação é feita nas Settings do repositório.
+1. No repositório `Tha-github/Residencial-Ametista`, abrir **Settings → Pages → Build and deployment → Source** e manter **GitHub Actions** selecionado. O job legado de Jekyll falhou porque tentou construir a branch; o workflow atual compila Astro e publica `dist/` como artefato.
 2. Enviar alterações para `main`. O workflow `.github/workflows/deploy.yml` instala dependências, roda `npm run validate`, faz build estático e implanta via `actions/deploy-pages`.
-3. A URL esperada do projeto é `https://tha-github.github.io/Residencial-Ametista/`. Confirmar em Settings → Pages e na aba Actions que os jobs `build` e `deploy` concluíram com sucesso.
+3. A URL pública do projeto é `https://tha-github.github.io/Residencial-Ametista/`. A Action já publicou os commits anteriores; confirmar que o deploy do conteúdo atualizado também conclui `build` e `deploy` com sucesso.
 4. Se usar domínio próprio, configurar DNS e Pages Settings e atualizar `PUBLIC_SITE_URL`/`site` e `base` do Astro para o hostname confirmado (base vazia em domínio customizado). Ainda não há domínio próprio configurado.
 
 Build local equivalente (PowerShell):
@@ -72,9 +72,9 @@ Não há banco nem storage persistente no site GitHub Pages. O conteúdo e códi
 - Site Pages estático: alterações publicam em novo build; não existe editor administrativo no site.
 - GitHub Pages não executa SSR, middleware, endpoints Astro nem os bindings de Cloudflare. O arquivo `public/_headers` não configura headers neste hosting; revisar o que pode ser definido pelo provedor e usar domínio próprio se forem necessários controles adicionais.
 - A URL de projeto inclui o caminho `/Residencial-Ametista/`; robots.txt e sitemap são gerados sob esse caminho. Um domínio próprio permite configurar URL canônica de raiz.
-- Não há dados/fotos suficientes para concluir a apresentação comercial; não se deve inventar links ou comodidades.
+- O conteúdo e as fotos atuais vêm da prévia indicada pelo cliente e aguardam conferência final; os originais das fotos ainda são recomendados devido à baixa resolução e às marcas-d'água.
 - **Não foi implementado Channel Manager, motor/calendário de reservas, tarifas dinâmicas ou sincronização de reservas/disponibilidade.** O site apenas encaminhará para anúncios externos quando os links forem fornecidos.
 
 ## Condição de aceite
 
-A correção do build Jekyll foi preparada no repositório, mas a publicação só estará confirmada depois de escolher GitHub Actions em Settings → Pages e o workflow verde. Aceite comercial permanece pendente dos materiais/aprovações listados acima. Não há critérios em `CLAUDE.md` porque o arquivo está vazio.
+A publicação do site estático no GitHub Pages foi confirmada para os commits anteriores. Este conteúdo atualizado precisa concluir o workflow disparado pelo push. O aceite comercial permanece pendente das confirmações listadas acima. Não há critérios em `CLAUDE.md` porque o arquivo está vazio.
