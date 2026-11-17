@@ -1,0 +1,30 @@
+---
+/** Apresentação: somente a descrição fornecida/aprovada pelo cliente. */
+import type { PropertyContent } from '../../data/property.schema';
+import Section from '../layout/Section.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { content } = Astro.props;
+const [first, ...rest] = content.description;
+---
+
+<Section id="apresentacao" eyebrow="O residencial" title={`Conheça o ${content.name}`}>
+  <div class="about prose reveal">
+    <p class="about__opening">{first}</p>
+    {rest.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .about__opening {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    color: var(--color-heading);
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+/**
+ * Localização. Sem mapa incorporado (iframe pesado e com rastreamento):
+ * link validado para o Google Maps, aberto em nova aba.
+ */
+import type { PropertyContent } from '../../data/property.schema';
+import { formatAddress, formatPlace } from '../../lib/content/format';
+import Section from '../layout/Section.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { content } = Astro.props;
+const { location } = content;
+const address = formatAddress(location);
+const place = formatPlace(location);
+---
+
+<Section id="localizacao" eyebrow="Localização" title="Onde fica">
+  <div class="location reveal">
+    <address class="location__card">
+      <Icon name="map-pin" size={28} class="location__icon" />
+      <p class="location__place">{place}</p>
+      {address && <p class="location__address">{address}</p>}
+      <p class="location__region">{location.state}</p>
+    </address>
+    {location.mapsUrl && (
+      <div class="location__actions">
+        <Button href={location.mapsUrl} external size="lg" variant="secondary">
+          Abrir no Google Maps
+        </Button>
+        <p class="location__hint">Rotas e mapa completo no Google Maps.</p>
+      </div>
+    )}
+  </div>
+</Section>
+
+<style>
+  .location {
+    display: grid;
+    gap: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .location {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+    }
+  }
+  .location__card {
+    display: grid;
+    gap: var(--space-2);
+    font-style: normal;
+  }
+  .location__card :global(.location__icon) {
+    color: var(--color-eyebrow);
+    margin-bottom: var(--space-2);
+  }
+  .location__place {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: var(--leading-snug);
+    color: var(--color-heading);
+  }
+  .location__address,
+  .location__region {
+    color: var(--color-text-muted);
+  }
+  .location__actions {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+  .location__hint {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+</style>

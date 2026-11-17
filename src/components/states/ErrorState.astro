@@ -1,0 +1,47 @@
+---
+/** Mensagem de erro amigável, sem detalhes técnicos ou dados sensíveis. */
+interface Props {
+  title: string;
+  message: string;
+  action?: { href: string; label: string };
+}
+
+const { title, message, action } = Astro.props;
+---
+
+<div class="error container" role="alert">
+  <h1>{title}</h1>
+  <p>{message}</p>
+  {action && (
+    <a class="error__action" href={action.href}>
+      {action.label}
+    </a>
+  )}
+</div>
+
+<style>
+  .error {
+    padding-block: var(--space-9);
+    text-align: center;
+    display: grid;
+    gap: var(--space-4);
+    justify-items: center;
+  }
+  h1 {
+    font-size: var(--text-3xl);
+  }
+  p {
+    max-width: var(--width-prose);
+    color: var(--color-text-muted);
+  }
+  .error__action {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-min);
+    padding-inline: var(--space-5);
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    text-decoration: none;
+  }
+</style>

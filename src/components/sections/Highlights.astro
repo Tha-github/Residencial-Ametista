@@ -1,0 +1,52 @@
+---
+/** Diferenciais confirmados. Título/texto de cada item vêm do conteúdo. */
+import type { PropertyContent } from '../../data/property.schema';
+import Section from '../layout/Section.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { content } = Astro.props;
+---
+
+<Section id="diferenciais" eyebrow="Diferenciais" title="O mar por perto">
+  <ul class="highlights" role="list">
+    {content.highlights.map((item) => (
+      <li class="highlight reveal">
+        <Icon name="waves" size={28} class="highlight__icon" />
+        <h3>{item.title}</h3>
+        {item.text && <p>{item.text}</p>}
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  .highlights {
+    display: grid;
+    gap: var(--space-6) var(--grid-gap);
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 768px) {
+    .highlights {
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    }
+  }
+  .highlight {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding-top: var(--space-5);
+    border-top: var(--border-width) solid var(--color-border);
+  }
+  .highlight :global(.highlight__icon) {
+    color: var(--color-eyebrow);
+  }
+  .highlight p {
+    color: var(--color-text-muted);
+    max-width: 42ch;
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import { isProduction } from '../lib/env';
+
+interface Props {
+  title: string;
+  description?: string;
+  structuredData?: Record<string, unknown>;
+  /** Força noindex (ex.: páginas de erro, painel). */
+  noindex?: boolean;
+}
+
+const { title, description, structuredData, noindex = false } = Astro.props;
+
+// Fora de produção nada é indexável — evita que prévias concorram com o site real.
+const robots = noindex || !isProduction ? 'noindex, nofollow' : 'index, follow';
+const canonical =
+  isProduction && Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : undefined;
+const shareImage =
+  isProduction && Astro.site ? new URL('/social-card.png', Astro.site).toString() : undefined;
+const jsonLd = structuredData ? JSON.stringify(structuredData).replace(/</g, '\\u003c') : undefined;
+const indexable = isProduction && !noindex;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <meta name="robots" content={robots} />
+    {indexable && canonical && <link rel="canonical" href={canonical} />}
+    {indexable && description && <meta property="og:title" content={title} />}
+    {indexable && description && <meta property="og:description" content={description} />}
+    {indexable && canonical && <meta property="og:url" content={canonical} />}
+    {indexable && description && <meta property="og:site_name" content="Residencial Ametista" />}
+    {indexable && description && <meta property="og:type" content="website" />}
+    {indexable && description && <meta property="og:locale" content="pt_BR" />}
+    {indexable && shareImage && description && <meta property="og:image" content={shareImage} />}
+    {indexable && shareImage && description && (
+      <meta
+        property="og:image:alt"
+        content="Residencial Ametista na Praia dos Ingleses, Florianópolis"
+      />
+    )}
+    {indexable && shareImage && description && <meta property="og:image:width" content="1200" />}
+    {indexable && shareImage && description && <meta property="og:image:height" content="630" />}
+    {indexable && description && <meta name="twitter:card" content="summary_large_image" />}
+    {indexable && description && <meta name="twitter:title" content={title} />}
+    {indexable && description && <meta name="twitter:description" content={description} />}
+    {indexable && shareImage && description && <meta name="twitter:image" content={shareImage} />}
+    {/* eslint-disable-next-line astro/no-set-html-directive -- JSON.stringify output has every < escaped as a Unicode escape, so content cannot close the script element. */}
+    {indexable && jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+    <meta name="theme-color" content="#0b3346" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <!-- Pré-carrega só o essencial à 1ª dobra: título (serifa 400) e texto (sans 400). -->
+    <Font cssVariable="--font-newsreader" preload={[{ weight: 400, style: 'normal' }]} />
+    <Font cssVariable="--font-figtree" preload={[{ weight: 400, style: 'normal' }]} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">
+      Pular para o conteúdo
+    </a>
+    <slot name="header" />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <slot name="footer" />
+  </body>
+</html>

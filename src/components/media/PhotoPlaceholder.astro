@@ -1,0 +1,66 @@
+---
+/**
+ * Espaço reservado para FOTO REAL PENDENTE — somente fora de produção.
+ * Em produção não renderiza nada: o site nunca publica imagem genérica
+ * como se fosse do imóvel. Visual propositalmente "técnico" (listras,
+ * rótulo), para que jamais seja confundido com uma foto.
+ */
+import { showDevNotices } from '../../lib/env';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  /** O que deve entrar aqui, ex.: "Hero — terraço ou fachada". */
+  hint: string;
+  aspect?: string;
+  class?: string;
+  fill?: boolean;
+}
+
+const { hint, aspect = '3 / 2', class: className, fill = false } = Astro.props;
+---
+
+{showDevNotices && (
+  <div
+    class:list={['placeholder', { 'placeholder--fill': fill }, className]}
+    style={fill ? undefined : `aspect-ratio: ${aspect}`}
+    role="img"
+    aria-label={`Placeholder de desenvolvimento: ${hint}`}
+    data-placeholder
+  >
+    <span class="placeholder__label">
+      <Icon name="image" size={22} />
+      <strong>PLACEHOLDER · foto real pendente</strong>
+      <span>{hint}</span>
+    </span>
+  </div>
+)}
+
+<style>
+  .placeholder {
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    padding: var(--space-4);
+    background:
+      repeating-linear-gradient(-45deg, transparent 0 14px, rgb(75 47 115 / 0.08) 14px 28px),
+      var(--color-placeholder-bg);
+    border: 2px dashed var(--color-placeholder-text);
+    color: var(--color-placeholder-text);
+    text-align: center;
+    font-size: var(--text-xs);
+  }
+  .placeholder--fill {
+    position: absolute;
+    inset: 0;
+    block-size: 100%;
+  }
+  .placeholder__label {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    background: rgb(255 255 255 / 0.85);
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.04em;
+  }
+</style>

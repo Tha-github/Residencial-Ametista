@@ -1,0 +1,549 @@
+---
+/**
+ * Galeria: grade editorial + modo ampliado (lightbox) acessível.
+ *
+ * - Ordem narrativa (fachada → social → quartos → terraço → detalhes) via
+ *   `group`; sem grupos, mantém a ordem enviada.
+ * - Até GRID_VISIBLE fotos na grade; todas navegáveis no modo ampliado.
+ * - Sem JavaScript: cada miniatura é um link para a imagem ampliada.
+ * - Com JavaScript: <dialog> nativo (foco preso, Esc, fundo inerte),
+ *   setas/Home/End, swipe, clique fora para fechar, foco devolvido ao gatilho.
+ * - Legenda só se fornecida — nenhum cômodo é rotulado por inferência.
+ * - Sem fotos: placeholders fora de produção; nada em produção.
+ */
+import { getImage } from 'astro:assets';
+import { GRID_VISIBLE, orderGallery, type GalleryPhoto } from '../../lib/media/gallery';
+import { resolvePhoto } from '../../lib/media/photos';
+import { responsiveWidths } from '../../styles/breakpoints';
+import Icon from '../ui/Icon.astro';
+import Photo from './Photo.astro';
+import PhotoPlaceholder from './PhotoPlaceholder.astro';
+
+interface Props {
+  photos: GalleryPhoto[];
+  /** Quantos placeholders mostrar em desenvolvimento quando não há fotos. */
+  placeholderCount?: number;
+}
+
+const { photos, placeholderCount = 5 } = Astro.props;
+const hints = ['Fachada / localização', 'Área social', 'Quarto', 'Terraço', 'Detalhe'];
+
+const ordered = orderGallery(photos);
+const total = ordered.length;
+
+// Versões ampliadas (WebP responsivo) geradas no build para o modo ampliado.
+const items = await Promise.all(
+  ordered.map(async (photo, index) => {
+    const remote = typeof photo.src === 'string' && photo.src.startsWith('/media/');
+    const image = typeof photo.src === 'string' && !remote ? resolvePhoto(photo.src) : photo.src;
+    const width = typeof image === 'string' ? 1600 : image.width;
+    const height = typeof image === 'string' ? 1200 : image.height;
+    const large =
+      typeof image === 'string'
+        ? { src: image, srcSet: { attribute: `${image} 1600w` } }
+        : await getImage({
+            src: image,
+            widths: responsiveWidths(width).filter((w) => w >= 768),
+            format: 'webp',
+            quality: 82,
+          });
+    const label = `Ampliar foto ${index + 1} de ${total}${photo.alt ? `: ${photo.alt}` : ''}`;
+    return { photo, index, image, width, height, large, label };
+  }),
+);
+const visible = items.slice(0, GRID_VISIBLE);
+const extra = items.slice(GRID_VISIBLE);
+---
+
+{total === 0 ? (
+  <ul class="gallery__grid" role="list" data-count={placeholderCount}>
+    {Array.from({ length: placeholderCount }, (_, i) => (
+      <li class="gallery__item">
+        <PhotoPlaceholder hint={hints[i % hints.length]} aspect={i === 0 ? '3 / 2' : '4 / 3'} />
+      </li>
+    ))}
+  </ul>
+) : (
+  <div class="gallery" data-gallery>
+    <ul class="gallery__grid" role="list" data-count={visible.length}>
+      {visible.map(({ photo, index, image, width, height, large, label }) => (
+        <li class="gallery__item">
+          <a
+            class="gallery__link"
+            href={large.src}
+            data-gallery-item={index}
+            data-srcset={large.srcSet.attribute}
+            data-alt={photo.alt}
+            data-caption={photo.caption}
+            data-width={width}
+            data-height={height}
+            aria-label={label}
+          >
+            <Photo
+              src={image}
+              alt=""
+              focus={photo.focus}
+              aspect={index === 0 ? '3 / 2' : '4 / 3'}
+              sizes={
+                index === 0 ? '(min-width: 1024px) 66vw, 100vw' : '(min-width: 1024px) 33vw, 50vw'
+              }
+            />
+            <span class="gallery__zoom" aria-hidden="true">
+              <Icon name="expand" size={18} />
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {/* Demais fotos: fora da grade, mas presentes para o modo ampliado e sem JS. */}
+    {extra.length > 0 && (
+      <ul class="gallery__extra" role="list" hidden>
+        {extra.map(({ photo, index, width, height, large, label }) => (
+          <li>
+            <a
+              href={large.src}
+              data-gallery-item={index}
+              data-srcset={large.srcSet.attribute}
+              data-alt={photo.alt}
+              data-caption={photo.caption}
+              data-width={width}
+              data-height={height}
+              aria-label={label}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {total > visible.length && (
+      <a class="btn btn--secondary gallery__all" href={items[0].large.src} data-gallery-open="0">
+        Ver todas as {total} fotos
+        <Icon name="expand" size={18} />
+      </a>
+    )}
+
+    <dialog class="lightbox" aria-label="Fotos do residencial em tamanho ampliado" data-lightbox>
+      <div class="lightbox__bar">
+        <p class="lightbox__counter" aria-live="polite" data-lightbox-counter />
+        <button type="button" class="lightbox__btn" data-lightbox-close aria-label="Fechar">
+          <Icon name="close" size={24} />
+        </button>
+      </div>
+      <figure class="lightbox__figure">
+        <span class="lightbox__spinner" aria-hidden="true" />
+        <img class="lightbox__img" alt="" data-lightbox-img decoding="async" />
+        <figcaption class="lightbox__caption" data-lightbox-caption hidden />
+      </figure>
+      {total > 1 && (
+        <>
+          <button
+            type="button"
+            class="lightbox__btn lightbox__nav lightbox__nav--prev"
+            data-lightbox-prev
+            aria-label="Foto anterior"
+          >
+            <Icon name="chevron-left" size={28} />
+          </button>
+          <button
+            type="button"
+            class="lightbox__btn lightbox__nav lightbox__nav--next"
+            data-lightbox-next
+            aria-label="Próxima foto"
+          >
+            <Icon name="chevron-right" size={28} />
+          </button>
+        </>
+      )}
+    </dialog>
+  </div>
+)}
+
+<script>
+  type Item = HTMLAnchorElement;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
+    const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox]');
+    const img = root.querySelector<HTMLImageElement>('[data-lightbox-img]');
+    const counter = root.querySelector<HTMLElement>('[data-lightbox-counter]');
+    const caption = root.querySelector<HTMLElement>('[data-lightbox-caption]');
+    if (!dialog || !img || !counter || !caption || typeof dialog.showModal !== 'function') continue;
+
+    const items = [...root.querySelectorAll<Item>('[data-gallery-item]')].sort(
+      (a, b) => Number(a.dataset.galleryItem) - Number(b.dataset.galleryItem),
+    );
+    let current = 0;
+    let trigger: HTMLElement | null = null;
+
+    const preload = (i: number) => {
+      const item = items[(i + items.length) % items.length];
+      const pre = new Image();
+      pre.srcset = item.dataset.srcset ?? '';
+      pre.sizes = '100vw';
+      pre.src = item.href;
+    };
+
+    const show = (i: number) => {
+      current = (i + items.length) % items.length;
+      const item = items[current];
+      dialog.dataset.loading = '';
+      img.removeAttribute('srcset');
+      img.width = Number(item.dataset.width);
+      img.height = Number(item.dataset.height);
+      img.alt = item.dataset.alt ?? '';
+      img.sizes = '100vw';
+      img.srcset = item.dataset.srcset ?? '';
+      img.src = item.href;
+      const text = item.dataset.caption;
+      caption.textContent = text ?? '';
+      caption.hidden = !text;
+      counter.textContent = `Foto ${current + 1} de ${items.length}`;
+      if (items.length > 1) {
+        preload(current + 1);
+        preload(current - 1);
+      }
+    };
+
+    img.addEventListener('load', () => delete dialog.dataset.loading);
+    img.addEventListener('error', () => delete dialog.dataset.loading);
+
+    const open = (i: number, from: HTMLElement) => {
+      trigger = from;
+      show(i);
+      dialog.showModal();
+    };
+
+    root.addEventListener('click', (event) => {
+      const target = (event.target as HTMLElement).closest<HTMLElement>(
+        '[data-gallery-item], [data-gallery-open]',
+      );
+      if (!target || dialog.contains(target)) return;
+      // Ctrl/Cmd/Shift/clique do meio: comportamento normal do link.
+      const e = event as MouseEvent;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      event.preventDefault();
+      open(Number(target.dataset.galleryItem ?? target.dataset.galleryOpen ?? 0), target);
+    });
+
+    root.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => show(current - 1));
+    root.querySelector('[data-lightbox-next]')?.addEventListener('click', () => show(current + 1));
+    root.querySelector('[data-lightbox-close]')?.addEventListener('click', () => dialog.close());
+
+    dialog.addEventListener('keydown', (event) => {
+      if (items.length < 2) return;
+      const actions: Record<string, () => void> = {
+        ArrowRight: () => show(current + 1),
+        ArrowLeft: () => show(current - 1),
+        Home: () => show(0),
+        End: () => show(items.length - 1),
+      };
+      const action = actions[event.key];
+      if (action) {
+        event.preventDefault();
+        action();
+      }
+    });
+
+    // Clique no fundo (fora da imagem e dos controles) fecha.
+    dialog.addEventListener('click', (event) => {
+      const t = event.target as HTMLElement;
+      if (t === dialog || t.classList.contains('lightbox__figure')) dialog.close();
+    });
+
+    // Gesto de arrastar lateralmente no toque.
+    let startX = 0;
+    let startY = 0;
+    dialog.addEventListener('pointerdown', (e) => {
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+    dialog.addEventListener('pointerup', (e) => {
+      if (e.pointerType === 'mouse' || items.length < 2) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - startY)) {
+        show(current + (dx < 0 ? 1 : -1));
+      }
+    });
+
+    // Ao fechar, o foco volta para a miniatura da foto atual (se visível)
+    // ou para o elemento que abriu o modo ampliado.
+    dialog.addEventListener('close', () => {
+      const visibleItem = items[current];
+      const back = visibleItem.closest('[hidden]') ? trigger : visibleItem;
+      back?.focus();
+    });
+  }
+</script>
+
+<style>
+  /* ---------- Grade ---------- */
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+  .gallery__item {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .gallery__item:first-child {
+    grid-column: 1 / -1;
+  }
+  /* Quantidade par → sobra 1 na última linha de 2 colunas: ocupa a linha toda */
+  .gallery__item:last-child:nth-child(even) {
+    grid-column: 1 / -1;
+  }
+  .gallery__item:last-child:nth-child(even) :global(.photo) {
+    aspect-ratio: 3 / 2 !important;
+  }
+
+  @media (min-width: 768px) {
+    .gallery__grid {
+      gap: var(--space-3);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gallery__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+    /* Destaque 2×2; a altura vem da grade, não da proporção */
+    .gallery__item:first-child {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    .gallery__item:first-child :global(.photo),
+    .gallery__item:first-child :global([data-placeholder]) {
+      block-size: 100%;
+      aspect-ratio: auto !important;
+    }
+    .gallery__item:last-child:nth-child(even) {
+      grid-column: auto;
+    }
+    .gallery__item:last-child:nth-child(even) :global(.photo) {
+      aspect-ratio: 4 / 3 !important;
+    }
+    /* Ajustes para não deixar buracos na última linha (linhas de 3 após as 3 primeiras) */
+    [data-count='1'] .gallery__item:first-child {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+    [data-count='1'] .gallery__item:first-child :global(.photo) {
+      aspect-ratio: 21 / 9 !important;
+    }
+    [data-count='2'] .gallery__item:nth-child(2) {
+      grid-row: span 2;
+    }
+    [data-count='2'] .gallery__item:nth-child(2) :global(.photo) {
+      block-size: 100%;
+      aspect-ratio: auto !important;
+    }
+    [data-count='4'] .gallery__item:nth-child(4) {
+      grid-column: 1 / -1;
+    }
+    [data-count='4'] .gallery__item:nth-child(4) :global(.photo) {
+      aspect-ratio: 21 / 9 !important;
+    }
+    [data-count='5'] .gallery__item:nth-child(5) {
+      grid-column: span 2;
+    }
+    [data-count='5'] .gallery__item:nth-child(5) :global(.photo) {
+      aspect-ratio: auto !important;
+      block-size: 100%;
+    }
+  }
+
+  .gallery__link {
+    display: block;
+    block-size: 100%;
+    color: inherit;
+  }
+  /* <picture> é inline por padrão e não tem altura: sem isto a foto não
+     consegue preencher células que esticam (destaque 2×2, última linha). */
+  .gallery__link :global(picture) {
+    display: block;
+    block-size: 100%;
+  }
+  .gallery__link :global(.photo) {
+    block-size: 100%;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+  .gallery__link:hover :global(.photo) {
+    transform: scale(1.03);
+  }
+  .gallery__link:focus-visible {
+    outline-offset: -3px;
+  }
+  .gallery__zoom {
+    position: absolute;
+    inset-block-end: var(--space-3);
+    inset-inline-end: var(--space-3);
+    display: grid;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: 50%;
+    background: rgb(8 38 54 / 0.6);
+    color: var(--white);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+  .gallery__link:hover .gallery__zoom,
+  .gallery__link:focus-visible .gallery__zoom {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .gallery__zoom {
+      opacity: 1;
+    }
+  }
+
+  .gallery__all {
+    margin-top: var(--space-5);
+  }
+
+  /* ---------- Modo ampliado ---------- */
+  .lightbox {
+    inline-size: 100vw;
+    max-inline-size: 100vw;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    /* Opaco: contador e legenda nunca ficam sobre o conteúdo da página */
+    background: #05141d;
+    color: var(--white);
+    overscroll-behavior: contain;
+  }
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .lightbox::backdrop {
+    background: rgb(5 20 29 / 0.6);
+  }
+  :global(html:has(.lightbox[open])) {
+    overflow: hidden;
+  }
+
+  .lightbox__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-3) var(--space-2) var(--gutter);
+  }
+  .lightbox__counter {
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--sea-200);
+  }
+
+  .lightbox__figure {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    justify-items: center;
+    align-items: center;
+    gap: var(--space-3);
+    min-block-size: 0;
+    padding: 0 var(--space-2) var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .lightbox__figure {
+      padding: 0 calc(var(--space-9) + var(--space-2)) var(--space-5);
+    }
+  }
+  .lightbox__img {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    inline-size: auto;
+    block-size: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+  .lightbox__figure {
+    position: relative;
+  }
+  .lightbox[data-loading] .lightbox__img {
+    opacity: 0.35;
+  }
+  /* Indicador de carregamento: aparece só se a foto demorar (> 250ms) */
+  .lightbox__spinner {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: 40px;
+    block-size: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid rgb(255 255 255 / 0.2);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .lightbox[data-loading] .lightbox__spinner {
+    opacity: 1;
+    transition: opacity var(--duration-fast) 250ms;
+    animation: lightbox-spin 0.9s linear infinite;
+  }
+  @keyframes lightbox-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+  .lightbox__caption {
+    max-inline-size: var(--width-prose);
+    font-size: var(--text-sm);
+    text-align: center;
+    color: var(--sand-100);
+  }
+
+  .lightbox__btn {
+    display: grid;
+    place-items: center;
+    inline-size: 48px;
+    block-size: 48px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--white);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .lightbox__btn:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+  .lightbox__btn:focus-visible {
+    outline-color: var(--white);
+  }
+  .lightbox__nav {
+    position: absolute;
+    inset-block-start: 50%;
+    translate: 0 -50%;
+    background: rgb(5 20 29 / 0.55);
+  }
+  .lightbox__nav--prev {
+    inset-inline-start: var(--space-2);
+  }
+  .lightbox__nav--next {
+    inset-inline-end: var(--space-2);
+  }
+  @media (min-width: 768px) {
+    .lightbox__nav--prev {
+      inset-inline-start: var(--space-5);
+    }
+    .lightbox__nav--next {
+      inset-inline-end: var(--space-5);
+    }
+  }
+</style>

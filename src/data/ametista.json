@@ -1,0 +1,21 @@
+{
+  "$comment": "Somente dados confirmados no briefing (nome, Praia dos Ingleses, proximidade do mar, Florianópolis/SC). tagline e highlights são TEXTOS PROPOSTOS a partir desses fatos, sem números nem distâncias — aguardam aprovação do cliente. Dados vistos apenas na prévia (área, quartos, endereço, comodidades, avaliações etc.) aguardam confirmação — ver docs/04-conteudo-e-pendencias.md.",
+  "name": "Residencial Ametista",
+  "tagline": "Hospedagem na Praia dos Ingleses, perto do mar, no norte de Florianópolis.",
+  "location": {
+    "beach": "Praia dos Ingleses",
+    "city": "Florianópolis",
+    "state": "Santa Catarina",
+    "stateCode": "SC"
+  },
+  "highlights": [
+    {
+      "title": "Perto do mar",
+      "text": "A Praia dos Ingleses fica a uma curta caminhada do residencial."
+    },
+    {
+      "title": "No norte da Ilha",
+      "text": "Ingleses fica no norte de Florianópolis, em Santa Catarina, com outras praias da região a pouca distância."
+    }
+  ]
+}

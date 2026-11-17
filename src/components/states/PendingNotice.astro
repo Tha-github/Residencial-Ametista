@@ -1,0 +1,62 @@
+---
+/**
+ * Estado vazio de DESENVOLVIMENTO: indica o que falta para uma seção existir.
+ * Nunca é renderizado em produção — lá, seção sem dados simplesmente não aparece.
+ */
+import type { PendingItem } from '../../lib/content/pending';
+import { showDevNotices } from '../../lib/env';
+
+interface Props {
+  title: string;
+  items: PendingItem[];
+}
+
+const { title, items } = Astro.props;
+---
+
+{showDevNotices && items.length > 0 && (
+  <aside class="pending" aria-label={`Pendência: ${title}`} data-dev-only>
+    <p class="pending__title">
+      <strong>Aguardando dados — {title}</strong>
+      <span class="pending__tag">visível só fora de produção</span>
+    </p>
+    <ul>
+      {items.map((item) => (
+        <li>
+          {item.label} <code>{item.field}</code>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .pending {
+    margin-block: var(--space-4);
+    padding: var(--space-4);
+    border: 2px dashed var(--color-notice-text);
+    border-radius: var(--radius-md);
+    background: var(--color-notice-bg);
+    color: var(--color-notice-text);
+    font-size: var(--text-sm);
+  }
+  .pending__title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+    margin-bottom: var(--space-2);
+  }
+  .pending__tag {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+  ul {
+    padding-inline-start: var(--space-5);
+  }
+  code {
+    font-size: var(--text-xs);
+    opacity: 0.8;
+  }
+</style>

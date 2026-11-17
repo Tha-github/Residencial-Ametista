@@ -1,0 +1,291 @@
+---
+/**
+ * Guia de estilo — SOMENTE DESENVOLVIMENTO.
+ * Rota injetada em astro.config.mjs apenas quando PUBLIC_DEPLOY_ENV ≠ production.
+ * Os textos aqui são amostras tipográficas, não conteúdo do imóvel.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import Icon from '../components/ui/Icon.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import GalleryGrid from '../components/media/GalleryGrid.astro';
+import PhotoPlaceholder from '../components/media/PhotoPlaceholder.astro';
+import LoadingState from '../components/states/LoadingState.astro';
+import PendingNotice from '../components/states/PendingNotice.astro';
+
+const swatches = [
+  ['Areia 50 · fundo', '--sand-50', '#faf7f2'],
+  ['Areia 100 · superfície', '--sand-100', '#f2ebe0'],
+  ['Areia 200 · divisória', '--sand-200', '#e4d8c6'],
+  ['Mar 950 · títulos', '--sea-950', '#082636'],
+  ['Mar 900 · superfície invertida', '--sea-900', '#0b3346'],
+  ['Mar 700 · ação / link', '--sea-700', '#0f4f6d'],
+  ['Mar 100 · tinta clara', '--sea-100', '#dbe9ef'],
+  ['Terracota 600 · sobretítulo', '--terra-600', '#a24f28'],
+  ['Terracota 500 · foco', '--terra-500', '#c0673a'],
+  ['Grafite 900 · texto', '--graphite-900', '#1e2326'],
+  ['Grafite 600 · texto secundário', '--graphite-600', '#50575c'],
+  ['Grafite 400 · borda de controle', '--graphite-400', '#858c91'],
+];
+
+const scale = [
+  ['--text-5xl', 'Display / hero'],
+  ['--text-4xl', 'H1'],
+  ['--text-3xl', 'H2'],
+  ['--text-2xl', 'Destaque'],
+  ['--text-xl', 'H3'],
+  ['--text-lg', 'Lead'],
+  ['--text-base', 'Texto'],
+  ['--text-sm', 'Interface'],
+  ['--text-xs', 'Sobretítulo / legenda'],
+];
+
+const iconNames = [
+  'arrow-right',
+  'arrow-up-right',
+  'arrow-down',
+  'map-pin',
+  'chevron-left',
+  'chevron-right',
+  'close',
+  'expand',
+  'image',
+  'waves',
+  'message',
+  'mail',
+  'camera',
+] as const;
+---
+
+<BaseLayout title="Guia de estilo · desenvolvimento" noindex>
+  <SiteHeader slot="header" name="Residencial Ametista" />
+
+  <div class="container sg">
+    <p class="sg-banner">
+      Página interna de desenvolvimento — não existe no build de produção. Textos são amostras.
+    </p>
+
+    <section class="sg-block" aria-labelledby="sg-cores">
+      <h2 id="sg-cores">Paleta — Areia, Mar e Grafite</h2>
+      <ul class="swatches" role="list">
+        {swatches.map(([label, token, hex]) => (
+          <li class="swatch">
+            <span class="swatch__chip" style={`background: var(${token})`} />
+            <span class="swatch__label">{label}</span>
+            <code>
+              {token} · {hex}
+            </code>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="sg-block" aria-labelledby="sg-tipo">
+      <h2 id="sg-tipo">Tipografia — Newsreader + Figtree</h2>
+      <div class="type-scale">
+        {scale.map(([token, label]) => (
+          <div class="type-row">
+            <code>
+              {token} · {label}
+            </code>
+            <p
+              style={`font-size: var(${token}); font-family: ${
+                token.includes('xl') ? 'var(--font-display)' : 'var(--font-sans)'
+              }`}
+            >
+              Brisa do mar ao entardecer
+            </p>
+          </div>
+        ))}
+      </div>
+      <div class="prose sg-prose">
+        <p class="eyebrow">Sobretítulo</p>
+        <h3>
+          Título editorial com <em>ênfase em itálico</em>
+        </h3>
+        <p class="lead">Parágrafo de abertura (lead), mais largo e em tom secundário.</p>
+        <p>
+          Texto corrido em Figtree 400, medida máxima de 62 caracteres por linha para leitura
+          confortável. Exemplo de <a href="#sg-tipo">link no texto</a> com sublinhado fino que
+          engrossa no hover. <strong>Negrito em 600.</strong>
+        </p>
+      </div>
+    </section>
+
+    <section class="sg-block" aria-labelledby="sg-botoes">
+      <h2 id="sg-botoes">Botões e links</h2>
+      <div class="row">
+        <Button icon="arrow-right">Primário</Button>
+        <Button variant="secondary">Secundário</Button>
+        <Button variant="ghost">Discreto</Button>
+        <Button href="https://example.com" external variant="secondary">
+          Link externo
+        </Button>
+        <Button disabled>Desabilitado</Button>
+        <Button size="lg" icon="arrow-right">
+          Grande
+        </Button>
+      </div>
+      <div class="row row--dark section--inverse">
+        <Button variant="inverse" icon="arrow-right">
+          Sobre escuro
+        </Button>
+        <Button variant="inverse-outline">Contorno claro</Button>
+        <a class="link" href="#sg-botoes">
+          Link sobre escuro
+        </a>
+      </div>
+      <p class="sg-note">
+        Use Tab para ver o foco: anel terracota de 3px sobre fundos claros; branco nos botões sobre
+        foto ou fundo escuro (contraste ≥ 3:1 verificado em tests/unit/contrast.test.ts).
+      </p>
+    </section>
+
+    <section class="sg-block" aria-labelledby="sg-secao">
+      <h2 id="sg-secao" class="sr-only">
+        Cabeçalho de seção
+      </h2>
+      <SectionHeading id="sg-heading-demo" eyebrow="Sobretítulo" title="Cabeçalho de seção">
+        Lead opcional do cabeçalho de seção.
+      </SectionHeading>
+    </section>
+
+    <section class="sg-block" aria-labelledby="sg-cards">
+      <h2 id="sg-cards">Cards</h2>
+      <ul class="cards" role="list">
+        <Card as="li" title="Card simples">
+          <p>Corpo do card sem moldura, alinhado à grade.</p>
+        </Card>
+        <Card as="li" title="Card elevado" variant="raised">
+          <PhotoPlaceholder slot="media" hint="Mídia do card" aspect="4 / 3" />
+          <p>Superfície branca com sombra suave.</p>
+        </Card>
+        <Card as="li" title="Card contornado" variant="outline">
+          <p>Divisória areia, para listas de informação.</p>
+        </Card>
+      </ul>
+    </section>
+
+    <section class="sg-block" aria-labelledby="sg-galeria">
+      <h2 id="sg-galeria">Galeria (base)</h2>
+      <GalleryGrid photos={[]} />
+    </section>
+
+    <section class="sg-block" aria-labelledby="sg-icones">
+      <h2 id="sg-icones">Ícones</h2>
+      <ul class="icons" role="list">
+        {iconNames.map((name) => (
+          <li>
+            <Icon name={name} size={24} />
+            <code>{name}</code>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="sg-block" aria-labelledby="sg-estados">
+      <h2 id="sg-estados">Estados</h2>
+      <PendingNotice
+        title="Exemplo"
+        items={[{ section: 'x', field: 'campo.exemplo', label: 'Dado aguardando o cliente' }]}
+      />
+      <LoadingState label="Carregando exemplo" />
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .sg {
+    padding-block: var(--space-7) var(--space-9);
+  }
+  .sg-banner {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-placeholder-bg);
+    color: var(--color-placeholder-text);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+  }
+  .sg-block {
+    padding-block: var(--space-8);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+  .sg-block > h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-6);
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--space-4);
+    padding: 0;
+  }
+  .swatch {
+    display: grid;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+  }
+  .swatch__chip {
+    block-size: 4.5rem;
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid var(--color-border);
+  }
+  code {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .type-scale {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .type-row {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .type-row p {
+    line-height: var(--leading-snug);
+    color: var(--color-heading);
+  }
+  .sg-prose {
+    margin-top: var(--space-7);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .row--dark {
+    margin-top: var(--space-4);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+  .sg-note {
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--grid-gap);
+    padding: 0;
+  }
+  .icons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+  .icons li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-heading);
+  }
+</style>

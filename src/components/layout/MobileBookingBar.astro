@@ -1,0 +1,42 @@
+---
+/**
+ * Barra fixa de reserva no mobile (< 768px). Só é renderizada quando há
+ * links de plataforma; leva à seção de reservas, não a um checkout.
+ */
+import Icon from '../ui/Icon.astro';
+---
+
+<div class="booking-bar">
+  <a class="btn btn--lg booking-bar__cta" href="#reservas">
+    Ver opções de reserva
+    <Icon name="arrow-right" size={18} />
+  </a>
+</div>
+
+<style>
+  .booking-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: var(--z-header);
+    padding: var(--space-3) var(--gutter) calc(var(--space-3) + env(safe-area-inset-bottom));
+    background: rgb(250 247 242 / 0.94);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-top: var(--border-width) solid var(--color-border);
+  }
+  .booking-bar__cta {
+    inline-size: 100%;
+  }
+  /* Reserva espaço para a barra não cobrir o fim da página */
+  :global(body:has(.booking-bar)) {
+    padding-bottom: 5.5rem;
+  }
+  @media (min-width: 768px) {
+    .booking-bar {
+      display: none;
+    }
+    :global(body:has(.booking-bar)) {
+      padding-bottom: 0;
+    }
+  }
+</style>

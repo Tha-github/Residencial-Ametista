@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MobileBookingBar from '../components/layout/MobileBookingBar.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import About from '../components/sections/About.astro';
+import Amenities from '../components/sections/Amenities.astro';
+import Booking from '../components/sections/Booking.astro';
+import Contact from '../components/sections/Contact.astro';
+import Gallery from '../components/sections/Gallery.astro';
+import Hero from '../components/sections/Hero.astro';
+import Highlights from '../components/sections/Highlights.astro';
+import Location from '../components/sections/Location.astro';
+import PracticalInfo from '../components/sections/PracticalInfo.astro';
+import PendingNotice from '../components/states/PendingNotice.astro';
+import { fileSource, loadContent } from '../lib/content/load';
+import { listPending, pendingFor } from '../lib/content/pending';
+import { hasBookingLinks, navItems, sectionStates } from '../lib/content/sections';
+import { showDevNotices } from '../lib/env';
+import { adminEnv, PROPERTY_ID } from '../lib/admin/runtime';
+
+export const prerender = false;
+const database = adminEnv(Astro.locals).CONTENT_DB;
+const stored = database
+  ? await database
+      .prepare('SELECT content_json FROM property_content WHERE property_id = ?')
+      .bind(PROPERTY_ID)
+      .first<{ content_json: string }>()
+  : null;
+const content = await loadContent(
+  stored
+    ? { name: 'Cloudflare D1', read: async () => JSON.parse(stored.content_json) }
+    : fileSource,
+);
+const states = sectionStates(content);
+const nav = navItems(states);
+const pending = listPending(content);
+const hasBooking = hasBookingLinks(content);
+const seoDescription = `Conheça o ${content.name} na ${content.location.beach ?? 'Praia dos Ingleses'}, em ${content.location.city}, ${content.location.state}. Consulte informações sobre a hospedagem perto do mar.`;
+const structuredData = Astro.site
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'VacationRental',
+      name: content.name,
+      description: seoDescription,
+      url: new URL('/', Astro.site).toString(),
+    }
+  : undefined;
+
+// Ordem narrativa: conhecer → ver → por que → o que tem → como funciona →
+// onde fica → reservar → falar. Cada seção só é renderizada se `ready`.
+const components = {
+  apresentacao: About,
+  galeria: Gallery,
+  diferenciais: Highlights,
+  comodidades: Amenities,
+  informacoes: PracticalInfo,
+  localizacao: Location,
+  reservas: Booking,
+  contato: Contact,
+} as const;
+---
+
+<BaseLayout
+  title={`${content.name} | Hospedagem na ${content.location.beach ?? 'Praia dos Ingleses'}, ${content.location.city}`}
+  description={seoDescription}
+  structuredData={structuredData}
+>
+  <SiteHeader slot="header" name={content.name} overlay nav={nav} bookingCta={hasBooking} />
+
+  <Hero content={content} />
+
+  {states.map((s) => {
+    const Component = components[s.id];
+    if (s.ready) return <Component content={content} />;
+    // Seção sem dados: aviso só fora de produção; em produção, nada.
+    return (
+      showDevNotices && (
+        <div class="container pending" id={s.id}>
+          <PendingNotice title={s.title} items={pendingFor(pending, s.id)} />
+        </div>
+      )
+    );
+  })}
+
+  <SiteFooter slot="footer" content={content} nav={nav} />
+  {hasBooking && <MobileBookingBar slot="footer" />}
+</BaseLayout>
+
+<style>
+  .pending {
+    padding-block: var(--space-3);
+  }
+</style>

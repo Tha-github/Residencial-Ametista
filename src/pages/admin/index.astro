@@ -1,0 +1,397 @@
+---
+import { verifyAccess } from '../../lib/admin/access';
+import { adminEnv } from '../../lib/admin/runtime';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = false;
+const actor = await verifyAccess(Astro.request, adminEnv(Astro.locals));
+if (!actor) Astro.response.status = 401;
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<BaseLayout title="Painel administrativo · Residencial Ametista" noindex>
+  <div class="admin container" id="painel">
+    <header class="admin__header">
+      <div>
+        <p class="eyebrow">Residencial Ametista</p>
+        <h1>Conteúdo do site</h1>
+        <p>{actor ? 'Sessão autenticada' : 'Sessão não autenticada'}</p>
+      </div>
+      <a class="btn btn--secondary" href="/cdn-cgi/access/logout">
+        Sair
+      </a>
+    </header>
+    <p class="notice" role="status" aria-live="polite" data-status>
+      Carregando conteúdo…
+    </p>
+    <form data-form hidden>
+      <fieldset>
+        <legend>Apresentação</legend>
+        <label>
+          Nome <input name="name" maxlength="80" required />
+        </label>
+        <label>
+          Frase principal <input name="tagline" maxlength="160" />
+        </label>
+        <label>
+          Textos de apresentação{' '}
+          <textarea name="description" rows="5" placeholder="Um parágrafo por linha"></textarea>
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Imagem principal</legend>
+        <div data-hero></div>
+      </fieldset>
+      <fieldset>
+        <legend>Galeria de fotos</legend>
+        <div data-gallery></div>
+        <button class="btn btn--secondary" type="button" data-add-photo>
+          Adicionar foto
+        </button>
+      </fieldset>
+      <fieldset>
+        <legend>Diferenciais</legend>
+        <div data-highlights></div>
+      </fieldset>
+      <fieldset>
+        <legend>Informações práticas confirmadas</legend>
+        <label>
+          Check-in <input name="checkIn" maxlength="80" />
+        </label>
+        <label>
+          Check-out <input name="checkOut" maxlength="80" />
+        </label>
+        <label>
+          Regras da casa{' '}
+          <textarea name="houseRules" rows="4" placeholder="Uma regra por linha"></textarea>
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Localização e links</legend>
+        <label>
+          Google Maps <input name="mapsUrl" type="url" inputmode="url" />
+        </label>
+        <label>
+          Booking.com <input name="booking" type="url" inputmode="url" />
+        </label>
+        <label>
+          Airbnb <input name="airbnb" type="url" inputmode="url" />
+        </label>
+        <label>
+          Decolar <input name="decolar" type="url" inputmode="url" />
+        </label>
+        <label>
+          WhatsApp <input name="whatsapp" type="url" inputmode="url" />
+        </label>
+        <label>
+          Instagram <input name="instagram" type="url" inputmode="url" />
+        </label>
+        <label>
+          E-mail <input name="email" type="email" />
+        </label>
+      </fieldset>
+      <div class="admin__actions">
+        <button class="btn btn--primary" type="submit">
+          Salvar alterações
+        </button>
+        <button class="btn btn--secondary" type="reset">
+          Descartar alterações
+        </button>
+      </div>
+    </form>
+  </div>
+  <script>
+    type Photo = { src: string; alt: string; focus?: string; group?: string; caption?: string };
+    type Content = {
+      name: string;
+      tagline?: string;
+      description: string[];
+      location: Record<string, string | undefined>;
+      highlights: { title: string; text?: string }[];
+      practicalInfo: { checkIn?: string; checkOut?: string; houseRules: string[] };
+      booking: Record<string, string | undefined>;
+      contact: Record<string, string | undefined>;
+      media: { hero?: Photo; gallery: Photo[] };
+    };
+    const form = document.querySelector<HTMLFormElement>('[data-form]')!;
+    const status = document.querySelector<HTMLElement>('[data-status]')!;
+    let content: Content;
+    let dirty = false;
+    const val = (name: string) =>
+      (form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement).value.trim();
+    const set = (name: string, value?: string) => {
+      (form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement).value = value ?? '';
+    };
+    const list = (value: string) =>
+      value
+        .split('\n')
+        .map((s) => s.trim())
+        .filter(Boolean);
+    const groupOptions = ['fachada', 'social', 'quartos', 'terraco', 'detalhes'];
+    function photoCard(photo: Photo, hero = false) {
+      const card = document.createElement('article');
+      card.className = 'photo-card';
+      card.innerHTML = `<label>Arquivo da imagem <input type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label><label>Texto alternativo <input data-alt maxlength="250"></label>${hero ? '' : `<label>Grupo narrativo <select data-group><option value="">Sem grupo definido</option>${groupOptions.map((g) => `<option value="${g}">${g}</option>`).join('')}</select></label><label>Legenda confirmada (opcional) <input data-caption maxlength="140"></label>`}<label>Enquadramento X% Y% <input data-focus placeholder="50% 50%" pattern="(100|\\d{1,2})% (100|\\d{1,2})%"></label><p data-preview></p>${hero ? '' : '<button type="button" class="btn btn--secondary" data-remove>Remover foto</button>'}`;
+      (card.querySelector('[data-alt]') as HTMLInputElement).value = photo.alt ?? '';
+      const group = card.querySelector('[data-group]') as HTMLSelectElement | null;
+      if (group) group.value = photo.group ?? '';
+      (card.querySelector('[data-caption]') as HTMLInputElement | null)?.setAttribute(
+        'value',
+        photo.caption ?? '',
+      );
+      (card.querySelector('[data-focus]') as HTMLInputElement).value = photo.focus ?? '50% 50%';
+      const preview = card.querySelector('[data-preview]')!;
+      preview.textContent = photo.src ? `Imagem atual: ${photo.src}` : 'Nenhuma imagem selecionada';
+      card.dataset.src = photo.src ?? '';
+      card.querySelector('[data-remove]')?.addEventListener('click', () => {
+        card.remove();
+        dirty = true;
+      });
+      card
+        .querySelector<HTMLInputElement>('input[type=file]')!
+        .addEventListener('change', async (event) => {
+          const file = (event.currentTarget as HTMLInputElement).files?.[0];
+          if (!file) return;
+          const data = new FormData();
+          data.set('file', file);
+          status.textContent = 'Enviando e validando imagem…';
+          try {
+            const response = await fetch('/api/admin/upload', { method: 'POST', body: data });
+            const result = (await response.json()) as { error?: string; src: string };
+            if (!response.ok) throw new Error(result.error);
+            card.dataset.src = result.src;
+            preview.textContent = `Imagem enviada: ${result.src}`;
+            dirty = true;
+            status.textContent = 'Imagem pronta para salvar junto com as alterações.';
+          } catch (error) {
+            status.textContent = error instanceof Error ? error.message : 'Falha ao enviar imagem.';
+          }
+        });
+      return card;
+    }
+    function render(data: Content) {
+      content = data;
+      set('name', data.name);
+      set('tagline', data.tagline);
+      set('description', data.description.join('\n'));
+      set('checkIn', data.practicalInfo.checkIn);
+      set('checkOut', data.practicalInfo.checkOut);
+      set('houseRules', data.practicalInfo.houseRules.join('\n'));
+      set('mapsUrl', data.location.mapsUrl);
+      for (const key of ['booking', 'airbnb', 'decolar']) set(key, data.booking[key]);
+      for (const key of ['whatsapp', 'instagram', 'email']) set(key, data.contact[key]);
+      const hero = document.querySelector('[data-hero]')!;
+      hero.replaceChildren(photoCard(data.media.hero ?? { src: '', alt: '' }, true));
+      const gallery = document.querySelector('[data-gallery]')!;
+      gallery.replaceChildren(...data.media.gallery.map((photo) => photoCard(photo)));
+      const highlights = document.querySelector('[data-highlights]')!;
+      highlights.replaceChildren(
+        ...data.highlights.map((item) => {
+          const box = document.createElement('div');
+          box.className = 'highlight-card';
+          box.innerHTML =
+            '<label>Título <input data-title maxlength="80"></label><label>Texto <textarea data-text maxlength="300" rows="2"></textarea></label>';
+          (box.querySelector('[data-title]') as HTMLInputElement).value = item.title;
+          (box.querySelector('[data-text]') as HTMLTextAreaElement).value = item.text ?? '';
+          return box;
+        }),
+      );
+      form.hidden = false;
+      dirty = false;
+      status.textContent = 'Conteúdo carregado. Altere somente os campos predefinidos.';
+    }
+    async function read() {
+      const response = await fetch('/api/admin/content', {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+      });
+      const result = (await response.json()) as { error?: string; content: Content };
+      if (response.status === 401)
+        throw new Error('Sessão expirada. Entre novamente pelo Cloudflare Access.');
+      if (!response.ok) throw new Error(result.error ?? 'Falha ao carregar conteúdo.');
+      render(result.content);
+    }
+    form.addEventListener('input', () => {
+      dirty = true;
+    });
+    form.addEventListener('reset', (event) => {
+      event.preventDefault();
+      if (dirty && !confirm('Descartar as alterações não salvas?')) return;
+      void read();
+    });
+    document.querySelector('[data-add-photo]')!.addEventListener('click', () => {
+      document.querySelector('[data-gallery]')!.appendChild(photoCard({ src: '', alt: '' }));
+      dirty = true;
+    });
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!confirm('Salvar as alterações deste residencial?')) return;
+      const heroCard = document.querySelector('[data-hero] .photo-card')!;
+      const photoData = (card: Element, isHero = false): Photo => {
+        const result: Photo = {
+          src: (card as HTMLElement).dataset.src ?? '',
+          alt: (card.querySelector('[data-alt]') as HTMLInputElement).value.trim(),
+        };
+        const focus = (card.querySelector('[data-focus]') as HTMLInputElement).value.trim();
+        if (focus) result.focus = focus;
+        const group = (card.querySelector('[data-group]') as HTMLSelectElement | null)?.value;
+        if (group) result.group = group;
+        const caption = (
+          card.querySelector('[data-caption]') as HTMLInputElement | null
+        )?.value.trim();
+        if (caption) result.caption = caption;
+        if (isHero) {
+          delete result.group;
+          delete result.caption;
+        }
+        return result;
+      };
+      const next = structuredClone(content);
+      next.name = val('name');
+      next.tagline = val('tagline') || undefined;
+      next.description = list(val('description'));
+      next.media.hero = (heroCard as HTMLElement).dataset.src
+        ? photoData(heroCard, true)
+        : undefined;
+      next.media.gallery = [...document.querySelectorAll('[data-gallery] .photo-card')]
+        .map((card) => photoData(card))
+        .filter((photo) => photo.src);
+      next.highlights = [...document.querySelectorAll('.highlight-card')].map((box) => ({
+        title: box.querySelector<HTMLInputElement>('[data-title]')!.value.trim(),
+        text: box.querySelector<HTMLTextAreaElement>('[data-text]')!.value.trim() || undefined,
+      }));
+      next.practicalInfo = {
+        checkIn: val('checkIn') || undefined,
+        checkOut: val('checkOut') || undefined,
+        houseRules: list(val('houseRules')),
+      };
+      next.location.mapsUrl = val('mapsUrl') || undefined;
+      next.booking = Object.fromEntries(
+        ['booking', 'airbnb', 'decolar'].map((key) => [key, val(key)]).filter(([, value]) => value),
+      );
+      next.contact = Object.fromEntries(
+        ['whatsapp', 'instagram', 'email']
+          .map((key) => [key, val(key)])
+          .filter(([, value]) => value),
+      );
+      status.textContent = 'Salvando…';
+      try {
+        const response = await fetch('/api/admin/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(next),
+        });
+        const result = (await response.json()) as {
+          error?: string;
+          savedAt?: string;
+          fields?: { path: string; message: string }[];
+        };
+        if (response.status === 401)
+          throw new Error('Sessão expirada. Entre novamente pelo Cloudflare Access.');
+        if (!response.ok)
+          throw new Error(
+            [result.error, ...(result.fields ?? []).map((f) => `${f.path}: ${f.message}`)].join(
+              ' ',
+            ),
+          );
+        render(next);
+        status.textContent = `Alterações salvas em ${new Date(result.savedAt!).toLocaleString('pt-BR')}.`;
+      } catch (error) {
+        status.textContent = error instanceof Error ? error.message : 'Erro ao salvar.';
+      }
+    });
+    window.addEventListener('beforeunload', (event) => {
+      if (dirty) event.preventDefault();
+    });
+    void read().catch((error) => {
+      status.textContent = error instanceof Error ? error.message : 'Falha ao carregar conteúdo.';
+    });
+  </script>
+  <style>
+    .admin {
+      max-width: 900px;
+      padding-block: var(--space-8);
+      color: var(--color-text);
+    }
+    .admin__header,
+    .admin__actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    h1 {
+      font:
+        500 clamp(2rem, 5vw, 3.5rem)/1.05 var(--font-newsreader),
+        Georgia,
+        serif;
+      margin: 0.25em 0;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-eyebrow);
+    }
+    .notice {
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      margin-block: 1.5rem;
+    }
+    fieldset {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-block: 1rem;
+      display: grid;
+      gap: 1rem;
+    }
+    legend {
+      font-weight: 600;
+      padding-inline: 0.4rem;
+    }
+    label {
+      display: grid;
+      gap: 0.4rem;
+      font-size: 0.95rem;
+    }
+    input,
+    textarea,
+    select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--color-border-strong);
+      border-radius: 8px;
+      padding: 0.65rem;
+      font: inherit;
+      color: inherit;
+      background: white;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .photo-card,
+    .highlight-card {
+      display: grid;
+      gap: 0.8rem;
+      padding: 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      margin-block: 0.75rem;
+      min-width: 0;
+    }
+    .admin__actions {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 520px) {
+      .admin__header {
+        align-items: flex-start;
+      }
+      .admin__header .btn {
+        min-width: 44px;
+      }
+    }
+  </style>
+</BaseLayout>

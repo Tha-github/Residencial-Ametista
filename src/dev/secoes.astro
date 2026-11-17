@@ -1,0 +1,99 @@
+---
+/**
+ * Amostra de layout de TODAS as seções — SOMENTE DESENVOLVIMENTO.
+ * Rota injetada em astro.config.mjs apenas fora de produção. Todos os
+ * valores abaixo são fictícios e marcados [AMOSTRA]: servem para revisar
+ * layout e responsividade, nunca como conteúdo do imóvel.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MobileBookingBar from '../components/layout/MobileBookingBar.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import SiteHeader from '../components/layout/SiteHeader.astro';
+import About from '../components/sections/About.astro';
+import Amenities from '../components/sections/Amenities.astro';
+import Booking from '../components/sections/Booking.astro';
+import Contact from '../components/sections/Contact.astro';
+import Gallery from '../components/sections/Gallery.astro';
+import Hero from '../components/sections/Hero.astro';
+import Highlights from '../components/sections/Highlights.astro';
+import Location from '../components/sections/Location.astro';
+import PracticalInfo from '../components/sections/PracticalInfo.astro';
+import { parseContent } from '../lib/content/load';
+import { navItems, sectionStates } from '../lib/content/sections';
+import type { GalleryPhoto } from '../lib/media/gallery';
+import real from '../data/ametista.json';
+import heroImage from './fixtures/teste-hero.jpg';
+import t01 from './fixtures/teste-01.jpg';
+import t02 from './fixtures/teste-02.jpg';
+import t03 from './fixtures/teste-03.jpg';
+import t04 from './fixtures/teste-04.jpg';
+import t05 from './fixtures/teste-05.jpg';
+import t06 from './fixtures/teste-06.jpg';
+import t07 from './fixtures/teste-07.jpg';
+import t08 from './fixtures/teste-08.jpg';
+
+// Imagens SINTÉTICAS de teste (scripts/generate-test-images.mjs). Grupos em
+// ordem embaralhada de propósito, para verificar a ordenação narrativa.
+// `?fotos=N` (1–8) testa a grade com outras quantidades.
+const allPhotos: GalleryPhoto[] = [
+  { src: t04, alt: '[AMOSTRA] teste 4', group: 'terraco', focus: '30% 60%' },
+  { src: t02, alt: '[AMOSTRA] teste 2', group: 'social', focus: '50% 30%' },
+  { src: t01, alt: '[AMOSTRA] teste 1', group: 'fachada', caption: '[AMOSTRA] Legenda opcional' },
+  { src: t05, alt: '[AMOSTRA] teste 5', group: 'quartos', focus: '50% 70%' },
+  { src: t03, alt: '[AMOSTRA] teste 3', group: 'social' },
+  { src: t06, alt: '[AMOSTRA] teste 6', group: 'detalhes' },
+  { src: t07, alt: '[AMOSTRA] teste 7' },
+  { src: t08, alt: '[AMOSTRA] teste 8' },
+];
+const requested = Number(Astro.url.searchParams.get('fotos'));
+const photos =
+  requested >= 1 && requested <= allPhotos.length ? allPhotos.slice(0, requested) : allPhotos;
+
+const content = parseContent(
+  {
+    ...real,
+    media: {
+      hero: { src: 'fixture', alt: '[AMOSTRA] imagem de teste do hero', focus: '62% 40%' },
+    },
+    description: [
+      '[AMOSTRA] Parágrafo de abertura da apresentação, em destaque, com duas ou três linhas.',
+      '[AMOSTRA] Segundo parágrafo em texto corrido, para revisar medida de linha e ritmo vertical.',
+    ],
+    location: { ...real.location, mapsUrl: 'https://maps.app.goo.gl/AMOSTRA' },
+    facts: { maxGuests: 9, bedrooms: 9, beds: '[AMOSTRA] composição das camas', bathrooms: 9 },
+    amenities: ['[AMOSTRA] Item 1', '[AMOSTRA] Item 2', '[AMOSTRA] Item 3', '[AMOSTRA] Item 4'],
+    practicalInfo: {
+      checkIn: '[AMOSTRA] 00h',
+      checkOut: '[AMOSTRA] 00h',
+      houseRules: ['[AMOSTRA] Regra 1', '[AMOSTRA] Regra 2'],
+    },
+    booking: {
+      booking: 'https://www.booking.com/AMOSTRA',
+      airbnb: 'https://www.airbnb.com.br/AMOSTRA',
+      decolar: 'https://www.decolar.com/AMOSTRA',
+    },
+    contact: {
+      whatsapp: 'https://wa.me/0000000000',
+      instagram: 'https://www.instagram.com/amostra',
+      email: 'amostra@example.com',
+    },
+  },
+  'amostra',
+);
+const nav = navItems(sectionStates(content));
+---
+
+<BaseLayout title="[AMOSTRA] Seções · desenvolvimento" noindex>
+  <SiteHeader slot="header" name={content.name} overlay nav={nav} bookingCta />
+  <Hero content={content} heroImage={heroImage} />
+  <About content={content} />
+  <Gallery content={content} photos={photos} />
+  <Highlights content={content} />
+  <Amenities content={content} />
+  <PracticalInfo content={content} />
+  <Location content={content} />
+  <Booking content={content} />
+  <Contact content={content} />
+  <SiteFooter slot="footer" content={content} nav={nav} />
+  <MobileBookingBar slot="footer" />
+</BaseLayout>

@@ -1,0 +1,61 @@
+---
+/**
+ * Botão / link com aparência de botão.
+ * - Com `href` vira <a>; sem `href`, <button>.
+ * - `external`: abre em nova aba com rel seguro e avisa leitores de tela.
+ */
+import Icon, { type IconName } from './Icon.astro';
+
+type Variant = 'primary' | 'secondary' | 'inverse' | 'inverse-outline' | 'ghost';
+
+interface Props {
+  href?: string;
+  variant?: Variant;
+  size?: 'md' | 'lg';
+  external?: boolean;
+  icon?: IconName;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  external = false,
+  icon = external ? 'arrow-up-right' : undefined,
+  type = 'button',
+  disabled = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'btn',
+  variant !== 'primary' && `btn--${variant}`,
+  size === 'lg' && 'btn--lg',
+  className,
+];
+---
+
+{href ? (
+  <a
+    class:list={classes}
+    href={disabled ? undefined : href}
+    aria-disabled={disabled ? 'true' : undefined}
+    target={external ? '_blank' : undefined}
+    rel={external ? 'noopener noreferrer' : undefined}
+    {...rest}
+  >
+    <slot />
+    {icon && <Icon name={icon} size={18} />}
+    {external && <span class="sr-only">(abre em nova aba)</span>}
+  </a>
+) : (
+  <button class:list={classes} type={type} disabled={disabled} {...rest}>
+    <slot />
+    {icon && <Icon name={icon} size={18} />}
+  </button>
+)}

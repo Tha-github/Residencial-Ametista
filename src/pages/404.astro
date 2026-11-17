@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ErrorState from '../components/states/ErrorState.astro';
+---
+
+<BaseLayout title="Página não encontrada · Residencial Ametista" noindex>
+  <ErrorState
+    title="Página não encontrada"
+    message="O endereço acessado não existe ou foi alterado."
+    action={{ href: '/', label: 'Voltar para o início' }}
+  />
+</BaseLayout>

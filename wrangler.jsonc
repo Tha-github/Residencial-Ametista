@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-11-10",
+  "compatibility_flags": ["global_fetch_strictly_public"],
+  "name": "residencial-ametista",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+  },
+  "d1_databases": [
+    {
+      "binding": "CONTENT_DB",
+      "database_name": "residencial-ametista-content",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PROPERTY_MEDIA",
+      "bucket_name": "residencial-ametista-media",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+}

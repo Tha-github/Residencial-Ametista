@@ -1,0 +1,86 @@
+---
+/**
+ * Reservas: um link externo por plataforma (somente URLs fornecidos).
+ * Deixa explícito que datas, valores, pagamento e confirmação ficam na
+ * plataforma escolhida. Nada de disponibilidade, preço ou calendário aqui.
+ */
+import type { PropertyContent } from '../../data/property.schema';
+import { bookingLinks } from '../../lib/content/format';
+import Section from '../layout/Section.astro';
+import Button from '../ui/Button.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { content } = Astro.props;
+const links = bookingLinks(content);
+---
+
+<Section
+  id="reservas"
+  eyebrow="Reservas"
+  title="Escolha onde reservar"
+  surface="inverse"
+  lead={`O ${content.name} está anunciado ${
+    links.length === 1 ? 'na plataforma abaixo' : 'nas plataformas abaixo'
+  }. Consulte datas, valores e condições e conclua a reserva no site de sua preferência.`}
+>
+  <ul class="platforms" role="list">
+    {links.map((link) => (
+      <li class="platform reveal">
+        <p class="platform__name">{link.name}</p>
+        <Button href={link.url} external variant="inverse" data-platform={link.key}>
+          Reservar no {link.name}
+        </Button>
+      </li>
+    ))}
+  </ul>
+  <p class="booking__note">
+    A reserva, o pagamento e a confirmação acontecem na plataforma escolhida, de acordo com as
+    regras dela. Este site não processa reservas nem pagamentos.
+  </p>
+</Section>
+
+<style>
+  .platforms {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+  /* Mobile: nome e botão na mesma linha (quebra se faltar espaço) */
+  .platform {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border: var(--border-width) solid rgb(219 233 239 / 0.22);
+    border-radius: var(--radius-lg);
+  }
+  /* Desktop: cards lado a lado, nome em cima e botão embaixo, alinhados à esquerda */
+  @media (min-width: 768px) {
+    .platforms {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+    .platform {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-5);
+      padding: var(--space-6);
+    }
+  }
+  .platform__name {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    color: var(--color-heading);
+  }
+  .booking__note {
+    margin-top: var(--space-6);
+    max-width: var(--width-prose);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+</style>

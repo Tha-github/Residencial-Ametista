@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ErrorState from '../components/states/ErrorState.astro';
+
+// Astro injeta o erro original em `Astro.props.error`. Ele é registrado no
+// servidor (observability do Worker) e NUNCA exibido ao visitante.
+const { error } = Astro.props as { error?: unknown };
+if (error) console.error('[500] Falha interna ao renderizar a página.');
+---
+
+<BaseLayout title="Erro temporário · Residencial Ametista" noindex>
+  <ErrorState
+    title="Algo deu errado"
+    message="Não foi possível carregar a página agora. Tente novamente em instantes."
+    action={{ href: '/', label: 'Tentar novamente' }}
+  />
+</BaseLayout>

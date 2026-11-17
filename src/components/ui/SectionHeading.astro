@@ -1,0 +1,41 @@
+---
+/**
+ * Cabeçalho de seção: sobretítulo (opcional) + título + linha fina (opcional).
+ * O texto vem sempre do conteúdo; o componente não define cópia própria.
+ */
+interface Props {
+  id: string;
+  title: string;
+  eyebrow?: string;
+  level?: 2 | 3;
+  align?: 'start' | 'center';
+  hideTitle?: boolean;
+}
+
+const { id, title, eyebrow, level = 2, align = 'start', hideTitle = false } = Astro.props;
+const Heading = `h${level}` as const;
+---
+
+<header class:list={['section-heading', `section-heading--${align}`]}>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <Heading id={id} class:list={{ 'sr-only': hideTitle }}>
+    {title}
+  </Heading>
+  {Astro.slots.has('default') && (
+    <div class="lead">
+      <slot />
+    </div>
+  )}
+</header>
+
+<style>
+  .section-heading {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+  }
+  .section-heading--center {
+    justify-items: center;
+    text-align: center;
+  }
+</style>

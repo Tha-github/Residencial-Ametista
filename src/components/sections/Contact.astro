@@ -1,0 +1,109 @@
+---
+/** Contato e Instagram — somente canais fornecidos pelo cliente. */
+import type { PropertyContent } from '../../data/property.schema';
+import { instagramHandle } from '../../lib/content/format';
+import Section from '../layout/Section.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { content } = Astro.props;
+const { instagram, whatsapp, email } = content.contact;
+---
+
+<Section
+  id="contato"
+  eyebrow="Contato"
+  title="Ficou com alguma dúvida?"
+  lead="Fale com o residencial antes de reservar."
+>
+  <ul class="channels" role="list">
+    {whatsapp && (
+      <li>
+        <a class="channel" href={whatsapp} target="_blank" rel="noopener noreferrer">
+          <Icon name="message" size={22} />
+          <span>
+            <span class="channel__label">WhatsApp</span>
+            <span class="channel__value">Enviar mensagem</span>
+          </span>
+          <span class="sr-only">(abre em nova aba)</span>
+        </a>
+      </li>
+    )}
+    {instagram && (
+      <li>
+        <a class="channel" href={instagram} target="_blank" rel="noopener noreferrer">
+          <Icon name="camera" size={22} />
+          <span>
+            <span class="channel__label">Instagram</span>
+            <span class="channel__value">{instagramHandle(instagram)}</span>
+          </span>
+          <span class="sr-only">(abre em nova aba)</span>
+        </a>
+      </li>
+    )}
+    {email && (
+      <li>
+        <a class="channel" href={`mailto:${email}`}>
+          <Icon name="mail" size={22} />
+          <span>
+            <span class="channel__label">E-mail</span>
+            <span class="channel__value">{email}</span>
+          </span>
+        </a>
+      </li>
+    )}
+  </ul>
+</Section>
+
+<style>
+  .channels {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 768px) {
+    .channels {
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    }
+  }
+  .channel {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-block-size: var(--tap-min);
+    padding: var(--space-5);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    color: var(--color-heading);
+    text-decoration: none;
+    transition:
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+  .channel:hover {
+    border-color: var(--color-accent);
+    background: var(--color-surface);
+  }
+  .channel :global(svg) {
+    flex: none;
+    color: var(--color-eyebrow);
+  }
+  .channel > span:not(.sr-only) {
+    display: grid;
+    min-inline-size: 0;
+  }
+  .channel__label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-strong);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .channel__value {
+    overflow-wrap: anywhere;
+  }
+</style>

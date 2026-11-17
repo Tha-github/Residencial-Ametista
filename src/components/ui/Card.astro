@@ -1,0 +1,67 @@
+---
+/**
+ * Card editorial: mídia opcional no topo (slot "media"), título e corpo.
+ * `as="li"` para uso dentro de listas.
+ */
+interface Props {
+  title?: string;
+  headingLevel?: 3 | 4;
+  variant?: 'plain' | 'raised' | 'outline';
+  as?: 'article' | 'li' | 'div';
+}
+
+const { title, headingLevel = 3, variant = 'plain', as = 'article' } = Astro.props;
+const Tag = as;
+const Heading = `h${headingLevel}` as const;
+---
+
+<Tag class:list={['card', `card--${variant}`]}>
+  {Astro.slots.has('media') && (
+    <div class="card__media">
+      <slot name="media" />
+    </div>
+  )}
+  <div class="card__body">
+    {title && <Heading class="card__title">{title}</Heading>}
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: var(--color-text);
+    list-style: none;
+  }
+  .card--raised {
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-md);
+  }
+  .card--outline {
+    border: var(--border-width) solid var(--color-border);
+  }
+  .card__media {
+    overflow: hidden;
+  }
+  .card__media :global(img) {
+    inline-size: 100%;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+  .card:hover .card__media :global(img) {
+    transform: scale(1.03);
+  }
+  .card__body {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+  }
+  .card--plain .card__body {
+    padding-inline: 0;
+  }
+  .card__title {
+    font-size: var(--text-xl);
+  }
+</style>

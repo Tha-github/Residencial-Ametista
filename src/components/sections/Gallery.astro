@@ -1,0 +1,19 @@
+---
+/** Galeria de fotos reais, com modo ampliado acessível (GalleryGrid). */
+import type { PropertyContent } from '../../data/property.schema';
+import type { GalleryPhoto } from '../../lib/media/gallery';
+import Section from '../layout/Section.astro';
+import GalleryGrid from '../media/GalleryGrid.astro';
+
+interface Props {
+  content: PropertyContent;
+  /** Fotos já resolvidas (usado só pelas amostras de desenvolvimento). */
+  photos?: GalleryPhoto[];
+}
+
+const { content, photos = content.media.gallery } = Astro.props;
+---
+
+<Section id="galeria" eyebrow="Galeria" title="Por dentro do residencial" surface="sand">
+  <GalleryGrid photos={photos} />
+</Section>

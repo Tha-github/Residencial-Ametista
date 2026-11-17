@@ -1,0 +1,233 @@
+---
+/**
+ * Hero fotográfico. Texto curto: localização confirmada, nome e (se houver)
+ * frase do conteúdo. CTA de reserva leva à seção de plataformas externas.
+ *
+ * Sem foto real:
+ *  - fora de produção → placeholder identificado;
+ *  - em produção → hero tipográfico sobre "mar profundo" (nunca foto genérica).
+ */
+import type { ImageMetadata } from 'astro';
+import type { PropertyContent } from '../../data/property.schema';
+import { formatPlace } from '../../lib/content/format';
+import { hasBookingLinks } from '../../lib/content/sections';
+import Photo from '../media/Photo.astro';
+import PhotoPlaceholder from '../media/PhotoPlaceholder.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  content: PropertyContent;
+  /** Imagem já importada (usada só pelas amostras de desenvolvimento). */
+  heroImage?: ImageMetadata;
+}
+
+const { content, heroImage } = Astro.props;
+const { location, media, description } = content;
+
+const hero = media.hero;
+// CTAs só existem quando o destino existe (em qualquer ambiente):
+// nunca um botão que leva a uma seção ausente.
+const showBookingCta = hasBookingLinks(content);
+const showAboutCta = description.length > 0;
+
+const place = formatPlace(location);
+
+// Apresentação: a última palavra do nome em itálico (ex.: "Residencial *Ametista*").
+const words = content.name.trim().split(/\s+/);
+const nameLead = words.slice(0, -1).join(' ');
+const nameLast = words.at(-1);
+---
+
+<section
+  class:list={['hero', { 'hero--photo': hero, 'hero--plain': !hero }]}
+  aria-labelledby="hero-title"
+>
+  <div class="hero__media">
+    {hero ? (
+      <Photo
+        src={heroImage ?? hero.src}
+        alt={hero.alt}
+        focus={hero.focus}
+        sizes="100vw"
+        priority
+        class="hero__img"
+      />
+    ) : (
+      <PhotoPlaceholder hint="Hero — foto horizontal de alto impacto (terraço ou fachada)" fill />
+    )}
+    <div class="hero__scrim" aria-hidden="true"></div>
+  </div>
+
+  <div class="container hero__content">
+    <p class="hero__place">
+      <Icon name="map-pin" size={16} />
+      <span>{place}</span>
+    </p>
+    <h1 id="hero-title" class="hero__title">
+      {nameLead && <>{nameLead} </>}
+      <em>{nameLast}</em>
+    </h1>
+    {content.tagline && <p class="hero__tagline">{content.tagline}</p>}
+
+    {(showBookingCta || showAboutCta) && (
+      <div class="hero__actions">
+        {showBookingCta && (
+          <Button href="#reservas" variant="inverse" size="lg" icon="arrow-right">
+            Ver opções de reserva
+          </Button>
+        )}
+        {showAboutCta && (
+          <Button href="#apresentacao" variant="inverse-outline" size="lg">
+            Conhecer o residencial
+          </Button>
+        )}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-block-size: min(92svh, 860px);
+    padding-block: calc(var(--space-9) + var(--space-6)) var(--space-8);
+    color: var(--color-on-photo);
+    isolation: isolate;
+    overflow: hidden;
+  }
+  @media (min-width: 1024px) {
+    .hero {
+      min-block-size: min(100svh, 980px);
+      padding-block-end: var(--space-9);
+    }
+  }
+
+  .hero--plain {
+    background:
+      radial-gradient(120% 80% at 85% 0%, var(--sea-700) 0%, transparent 60%), var(--sea-950);
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero__media :global(.hero__img) {
+    position: absolute;
+    inset: 0;
+    block-size: 100%;
+  }
+  /*
+   * Véu de legibilidade. Garante contraste do texto branco mesmo sobre áreas
+   * claras ou carregadas da foto (pior caso calculado: ≥ 75% de cobertura na
+   * zona do texto → contraste ≥ 4,5:1 sobre pixel branco).
+   * Mobile: texto ocupa a largura toda, do meio para baixo → véu vertical.
+   * Desktop: texto na coluna esquerda → véu lateral + vertical; o lado
+   * direito da foto fica limpo.
+   */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgb(8 38 54 / 0.5) 0%,
+      rgb(8 38 54 / 0.2) 14%,
+      rgb(8 38 54 / 0.72) 34%,
+      rgb(8 38 54 / 0.86) 100%
+    );
+  }
+  @media (min-width: 768px) {
+    .hero__scrim {
+      background:
+        linear-gradient(
+          90deg,
+          rgb(8 38 54 / 0.78) 0%,
+          rgb(8 38 54 / 0.6) 38%,
+          rgb(8 38 54 / 0) 68%
+        ),
+        var(--scrim);
+    }
+  }
+  .hero--plain .hero__scrim {
+    background: linear-gradient(180deg, rgb(8 38 54 / 0.35), rgb(8 38 54 / 0.75));
+  }
+
+  .hero__content {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  .hero__place {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-strong);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+
+  .hero__title {
+    max-inline-size: 14ch;
+    font-size: var(--text-5xl);
+    font-weight: var(--font-weight-regular);
+    line-height: 0.98;
+    color: var(--color-on-photo);
+  }
+  /* Sombra só sobre foto (ajuda a legibilidade); no fundo liso criaria halo */
+  .hero--photo .hero__title {
+    text-shadow: 0 2px 30px rgb(8 38 54 / 0.35);
+  }
+
+  .hero__tagline {
+    max-inline-size: 40ch;
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  @media (max-width: 479px) {
+    .hero__actions {
+      inline-size: 100%;
+    }
+    .hero__actions :global(.btn) {
+      flex: 1 1 100%;
+    }
+  }
+
+  /*
+   * Entrada discreta dos elementos SECUNDÁRIOS (desligada com reduced-motion).
+   * O título (elemento LCP) nunca começa invisível: se a animação atrasar ou
+   * for pausada, o nome do residencial continua legível desde o 1º quadro.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__content > :not(.hero__title) {
+      animation: hero-in var(--duration-slow) var(--ease-out) both;
+    }
+    .hero__tagline {
+      animation-delay: 120ms;
+    }
+    .hero__actions {
+      animation-delay: 220ms;
+    }
+  }
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

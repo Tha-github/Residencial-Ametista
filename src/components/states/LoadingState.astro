@@ -1,0 +1,33 @@
+---
+/**
+ * Estado de carregamento acessível (usado por ilhas interativas, ex.: painel).
+ * `aria-busy` + texto para leitores de tela; skeleton respeita reduced-motion.
+ */
+interface Props {
+  label?: string;
+  lines?: number;
+}
+
+const { label = 'Carregando…', lines = 3 } = Astro.props;
+---
+
+<div class="loading" role="status" aria-busy="true" aria-live="polite">
+  <span class="sr-only">{label}</span>
+  {Array.from({ length: lines }, (_, i) => (
+    <div
+      class="skeleton loading__line"
+      style={`inline-size: ${100 - i * 15}%`}
+      aria-hidden="true"
+    />
+  ))}
+</div>
+
+<style>
+  .loading {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .loading__line {
+    block-size: 1em;
+  }
+</style>

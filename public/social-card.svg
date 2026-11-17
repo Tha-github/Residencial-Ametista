@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#082636" />
+      <stop offset="1" stop-color="#0f4f6d" />
+    </linearGradient>
+    <linearGradient id="sand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f2ebe0" stop-opacity=".96" />
+      <stop offset="1" stop-color="#f2ebe0" stop-opacity=".72" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#sea)" />
+  <circle cx="1010" cy="150" r="210" fill="#e3a27c" opacity=".22" />
+  <path d="M0 465c155-62 262-46 389-2s238 38 363-14 277-56 448 8v173H0z" fill="#1a6488" opacity=".7" />
+  <path d="M0 510c160-30 272-10 395 29s255 20 374-20 269-32 431 18v93H0z" fill="#bcd5e1" opacity=".22" />
+  <path d="M102 102h86" stroke="#e3a27c" stroke-width="5" />
+  <text x="102" y="164" fill="#e3a27c" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="6">PRAIA DOS INGLESES</text>
+  <text x="96" y="292" fill="url(#sand)" font-family="Georgia,serif" font-size="77" font-weight="400">Residencial</text>
+  <text x="96" y="383" fill="#fff" font-family="Georgia,serif" font-size="92" font-style="italic">Ametista</text>
+  <text x="102" y="447" fill="#dbe9ef" font-family="Arial,sans-serif" font-size="25" letter-spacing="1">Florianópolis · Santa Catarina</text>
+</svg>

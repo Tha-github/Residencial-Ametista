@@ -1,0 +1,40 @@
+---
+/**
+ * Casca de seção da página pública: âncora, landmark rotulado, cabeçalho
+ * e superfície (clara, areia ou invertida). Quem decide SE a seção existe
+ * é src/lib/content/sections.ts — este componente só a apresenta.
+ */
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  eyebrow?: string;
+  lead?: string;
+  surface?: 'default' | 'sand' | 'inverse';
+  align?: 'start' | 'center';
+}
+
+const { id, title, eyebrow, lead, surface = 'default', align = 'start' } = Astro.props;
+const headingId = `${id}-titulo`;
+---
+
+<section
+  id={id}
+  aria-labelledby={headingId}
+  class:list={[
+    'section',
+    { 'section--surface': surface === 'sand', 'section--inverse': surface === 'inverse' },
+  ]}
+>
+  <div class="container">
+    {lead ? (
+      <SectionHeading id={headingId} title={title} eyebrow={eyebrow} align={align}>
+        {lead}
+      </SectionHeading>
+    ) : (
+      <SectionHeading id={headingId} title={title} eyebrow={eyebrow} align={align} />
+    )}
+    <slot />
+  </div>
+</section>

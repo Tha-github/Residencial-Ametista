@@ -1,0 +1,143 @@
+---
+/**
+ * Cabeçalho fixo. `overlay`: transparente sobre o hero e sólido após rolar
+ * (sem JS, permanece legível: o hero tem véu escuro no topo).
+ * Navegação curta por âncoras — somente seções publicadas (sections.ts).
+ * No mobile, o menu de âncoras some e fica apenas o CTA de reserva.
+ */
+interface Props {
+  name: string;
+  overlay?: boolean;
+  nav?: { href: string; label: string }[];
+  /** Exibe o CTA "Reservar" (somente se houver links de plataforma). */
+  bookingCta?: boolean;
+}
+
+const { name, overlay = false, nav = [], bookingCta = false } = Astro.props;
+---
+
+<header class="site-header" data-overlay={overlay ? '' : undefined} data-site-header>
+  <div class="container site-header__inner">
+    <a class="site-header__brand" href="/">
+      {name}
+    </a>
+    {(nav.length > 0 || bookingCta) && (
+      <nav class="site-header__nav" aria-label="Seções do site">
+        {nav.length > 0 && (
+          <ul class="site-header__links" role="list">
+            {nav.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        )}
+        {bookingCta && (
+          <a class="btn site-header__cta" href="#reservas">
+            Reservar
+          </a>
+        )}
+      </nav>
+    )}
+  </div>
+</header>
+{overlay && <div class="site-header__sentinel" data-header-sentinel aria-hidden="true"></div>}
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-site-header][data-overlay]');
+  const sentinel = document.querySelector('[data-header-sentinel]');
+  if (header && sentinel && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      header.toggleAttribute('data-scrolled', !entry.isIntersecting);
+    }).observe(sentinel);
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: rgb(250 247 242 / 0.92);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: var(--border-width) solid var(--color-border);
+    color: var(--color-heading);
+    transition:
+      background-color var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out);
+  }
+  .site-header[data-overlay] {
+    position: fixed;
+    inset-inline: 0;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+    color: var(--color-on-photo);
+  }
+  .site-header[data-overlay][data-scrolled] {
+    background: rgb(250 247 242 / 0.94);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom-color: var(--color-border);
+    color: var(--color-heading);
+  }
+  .site-header__sentinel {
+    position: absolute;
+    top: 0;
+    block-size: 80px;
+    inline-size: 1px;
+    pointer-events: none;
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: 4.25rem;
+  }
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-min);
+    font-family: var(--font-display);
+    /* Até ~400px o nome divide espaço com o botão "Reservar": reduz e não quebra */
+    font-size: clamp(1.125rem, 0.7rem + 2vw, var(--text-xl));
+    font-weight: var(--font-weight-display);
+    letter-spacing: var(--tracking-display);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .site-header__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+  .site-header__links {
+    display: none;
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 768px) {
+    .site-header__links {
+      display: flex;
+    }
+  }
+  .site-header__links a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-min);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-strong);
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) no-repeat left 75% / 0 1px;
+    transition: background-size var(--duration-base) var(--ease-out);
+  }
+  .site-header__links a:hover {
+    background-size: 100% 1px;
+  }
+  .site-header__cta {
+    min-block-size: 40px;
+    padding-block: var(--space-2);
+  }
+</style>
