@@ -19,7 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate": "npm run typecheck \u0026\u0026 npm run lint \u0026\u0026 npm run format:check \u0026\u0026 npm run test \u0026\u0026 npm run build",
-    "deploy": "npm run validate \u0026\u0026 wrangler deploy",
+    "deploy:cloudflare": "npm run validate \u0026\u0026 wrangler deploy",
     "generate-types": "wrangler types",
     "test:e2e": "playwright test"
   },

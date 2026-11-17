@@ -12,6 +12,7 @@ const { PUBLIC_SITE_URL, PUBLIC_DEPLOY_ENV } = loadEnv(
   '',
 );
 const isProduction = (process.env.PUBLIC_DEPLOY_ENV ?? PUBLIC_DEPLOY_ENV) === 'production';
+const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 if (isProduction && !PUBLIC_SITE_URL) {
   throw new Error(
     'PUBLIC_SITE_URL é obrigatório em produção para canonical, sitemap, robots.txt e metadados sociais.',
@@ -50,6 +51,8 @@ const devOnlyRoutes = () => ({
 // https://astro.build/config
 export default defineConfig({
   site: PUBLIC_SITE_URL || 'http://localhost:4321',
+  base: isGitHubPages ? '/Residencial-Ametista' : undefined,
+  srcDir: isGitHubPages ? './src-pages/' : './src/',
   trailingSlash: 'ignore',
 
   integrations: [devOnlyRoutes()],
@@ -80,11 +83,13 @@ export default defineConfig({
     },
   ],
 
-  adapter: cloudflare({
-    // Imagens locais são otimizadas no build (AVIF/WebP via sharp);
-    // em runtime não há transformação, apenas entrega do arquivo gerado.
-    imageService: { build: 'compile', runtime: 'passthrough' },
-  }),
+  adapter: isGitHubPages
+    ? undefined
+    : cloudflare({
+        // Imagens locais são otimizadas no build (AVIF/WebP via sharp);
+        // em runtime não há transformação, apenas entrega do arquivo gerado.
+        imageService: { build: 'compile', runtime: 'passthrough' },
+      }),
 
   image: {
     responsiveStyles: true,

@@ -10,12 +10,13 @@ export const GET: APIRoute = ({ site }) => {
     });
   }
 
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
   const body = [
     'User-agent: *',
     'Allow: /',
-    'Disallow: /admin',
-    'Disallow: /api/',
-    `Sitemap: ${new URL('/sitemap.xml', site).toString()}`,
+    `Disallow: ${basePath}/admin`,
+    `Disallow: ${basePath}/api/`,
+    `Sitemap: ${new URL(`${basePath}/sitemap.xml`, site).toString()}`,
     '',
   ].join('\n');
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

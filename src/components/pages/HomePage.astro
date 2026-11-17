@@ -1,0 +1,84 @@
+---
+import type { PropertyContent } from '../../data/property.schema';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MobileBookingBar from '../layout/MobileBookingBar.astro';
+import SiteFooter from '../layout/SiteFooter.astro';
+import SiteHeader from '../layout/SiteHeader.astro';
+import About from '../sections/About.astro';
+import Amenities from '../sections/Amenities.astro';
+import Booking from '../sections/Booking.astro';
+import Contact from '../sections/Contact.astro';
+import Gallery from '../sections/Gallery.astro';
+import Hero from '../sections/Hero.astro';
+import Highlights from '../sections/Highlights.astro';
+import Location from '../sections/Location.astro';
+import PracticalInfo from '../sections/PracticalInfo.astro';
+import PendingNotice from '../states/PendingNotice.astro';
+import { listPending, pendingFor } from '../../lib/content/pending';
+import { hasBookingLinks, navItems, sectionStates } from '../../lib/content/sections';
+import { showDevNotices } from '../../lib/env';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { content } = Astro.props;
+const states = sectionStates(content);
+const nav = navItems(states);
+const pending = listPending(content);
+const hasBooking = hasBookingLinks(content);
+const seoDescription = `Conheça o ${content.name} na ${content.location.beach ?? 'Praia dos Ingleses'}, em ${content.location.city}, ${content.location.state}. Consulte informações sobre a hospedagem perto do mar.`;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteUrl = Astro.site ? new URL(`${basePath}/`, Astro.site).toString() : undefined;
+const structuredData = siteUrl
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'VacationRental',
+      name: content.name,
+      description: seoDescription,
+      url: siteUrl,
+    }
+  : undefined;
+
+const components = {
+  apresentacao: About,
+  galeria: Gallery,
+  diferenciais: Highlights,
+  comodidades: Amenities,
+  informacoes: PracticalInfo,
+  localizacao: Location,
+  reservas: Booking,
+  contato: Contact,
+} as const;
+---
+
+<BaseLayout
+  title={`${content.name} | Hospedagem na ${content.location.beach ?? 'Praia dos Ingleses'}, ${content.location.city}`}
+  description={seoDescription}
+  structuredData={structuredData}
+>
+  <SiteHeader slot="header" name={content.name} overlay nav={nav} bookingCta={hasBooking} />
+
+  <Hero content={content} />
+
+  {states.map((s) => {
+    const Component = components[s.id];
+    if (s.ready) return <Component content={content} />;
+    return (
+      showDevNotices && (
+        <div class="container pending" id={s.id}>
+          <PendingNotice title={s.title} items={pendingFor(pending, s.id)} />
+        </div>
+      )
+    );
+  })}
+
+  <SiteFooter slot="footer" content={content} nav={nav} />
+  {hasBooking && <MobileBookingBar slot="footer" />}
+</BaseLayout>
+
+<style>
+  .pending {
+    padding-block: var(--space-3);
+  }
+</style>

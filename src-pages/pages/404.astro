@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../src/layouts/BaseLayout.astro';
+import ErrorState from '../../src/components/states/ErrorState.astro';
+
+const homeHref = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout title="Página não encontrada · Residencial Ametista" noindex>
+  <ErrorState
+    title="Página não encontrada"
+    message="O endereço acessado não existe ou foi alterado."
+    action={{ href: homeHref, label: 'Voltar para o início' }}
+  />
+</BaseLayout>

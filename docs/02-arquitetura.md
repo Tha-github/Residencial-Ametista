@@ -63,3 +63,9 @@ tests/unit/        urls.test.ts · content.test.ts
 - Hospedagem Cloudflare ainda **não confirmada** pelo contratante. A escolha foi
   inferida da prévia.
 - O projeto ainda **não é um repositório Git** (aguardando autorização para `git init`).
+
+## Atualização: hospedagem GitHub Pages (17/11/2026)
+
+A decisão de hospedagem da tabela acima foi substituída pelo pedido do cliente. O site público usa build estático dedicado (`src-pages/`) publicado por `.github/workflows/deploy.yml` no GitHub Pages. A URL de projeto usa o `base` `/Residencial-Ametista`. O build estático não inclui SSR, middleware, APIs administrativas ou acesso a D1/R2. O código de painel Cloudflare permanece separado e não está disponível no site Pages. O workflow antigo de Pages tentou Jekyll e falhou; Settings → Pages deve usar a fonte **GitHub Actions**.
+
+O repositório Git foi inicializado e a branch `main` foi enviada ao GitHub em 17/11/2026. `CLAUDE.md` segue vazio, portanto não há critérios adicionais de aceite nesse arquivo.

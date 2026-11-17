@@ -1,104 +1,80 @@
-# Avaliação final e pacote de entrega
+# Avaliação final e publicação no GitHub Pages
 
-Data da revisão: 17/11/2026. Avaliação do código e build local, com critérios do `CLAUDE.md`, documentação e conteúdo disponíveis no workspace. Nenhum deploy, acesso do cliente, conta Cloudflare, hostname final ou sessão Access foi fornecido. Portanto, esta avaliação não aprova a publicação operacional.
+Data: 17/11/2026. Revisão do código, da configuração do repositório e da execução do GitHub Actions. O Pages tentou construir o commit inicial com Jekyll; o job `Build with Jekyll` falhou e o deploy foi ignorado. O problema foi a fonte de publicação automática de branch, incompatível com a saída Astro. Este projeto agora usa build estático Astro e workflow GitHub Actions.
 
 ## Resumo executivo
 
-O site tem uma base técnica consistente: páginas e conteúdo definidos por schema, rotas de demonstração fora do build de produção, SEO técnico, imagens otimizadas no pipeline, navegação acessível e painel com validação/autorização server-side planejadas para Cloudflare. Build de produção com hostname de exemplo passou; testes unitários passaram (82/82), lint passou com um aviso e auditorias npm retornaram zero vulnerabilidades para o lockfile atual.
+O build estático local para Pages passou e gerou a home, 404, sitemap e robots em `dist/`. O modo Pages usa apenas conteúdo versionado e omite rotas de login, painel, APIs e mídia dinâmica. Assim, o site público pode ser hospedado no GitHub Pages; o painel Cloudflare existente no código **não é executado no Pages**. A publicação ainda requer selecionar **GitHub Actions** como fonte em Settings → Pages e aguardar o novo workflow após o push.
 
-A entrega **permanece pendente de aceite final**. A página ainda não tem fotos reais autorizadas, anúncios/URLs de reserva, link do Maps, conteúdo descritivo confirmado nem dados de contato. Os textos do hero e diferenciais estão identificados como propostos, aguardando aprovação. A configuração de Cloudflare Access, D1/R2 e domínio real não foi provisionada; logo, não foi possível provar login ou edição real no painel. Não há medições de campo de Core Web Vitals. O E2E reportou 80 casos aprovados, mas o Playwright não encerrou normalmente depois do último caso.
+O aceite de negócio continua pendente: faltam fotos autorizadas, links de reserva e Maps, dados de contato e aprovação dos textos. A página publicada não terá CTA de reserva até existirem links reais. O arquivo `CLAUDE.md` está vazio; portanto, não há critérios formais adicionais de aceite disponíveis para conferir.
 
 ## Checklist independente
 
-| #   | Critério                                             | Status                                   | Evidência e limite                                                                                                                                                                                                                                                                                                                                                   |
-| --- | ---------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Qualidade visual e percepção premium frente à prévia | **PENDENTE**                             | Tokens, direção visual e componentes estão documentados em `docs/03-direcao-visual.md`; a amostra E2E cobre layout, mas não há screenshot da prévia e a ferramenta não conseguiu abrir o URL de referência nesta auditoria. O site final também aguarda fotos originais. Comparação visual independente exige preview acessível e material aprovado.                 |
-| 2   | Clareza da proposta e facilidade para reservar       | **PENDENTE**                             | `Booking.astro` explica que reserva, pagamento e confirmação ocorrem na OTA e não cria motor/calendário. Porém, `src/data/ametista.json` não contém URLs de reserva; nenhum CTA de plataforma aparece enquanto o cliente não os fornecer.                                                                                                                            |
-| 3   | Fidelidade e ausência de conteúdo inventado          | **PENDENTE**                             | Schema e renderização omitem seções sem dados. `docs/04-conteudo-e-pendencias.md` marca tagline/diferenciais como propostos e aguarda aprovação; não há fotos ou comodidades confirmadas. Não publicar os textos propostos até aprovação.                                                                                                                            |
-| 4   | Responsividade/mobile                                | **APROVADO (local)**                     | Playwright reportou 20 casos `ok` em cada perfil 320, 414, 768 e 1366 px: sem overflow horizontal/erros de console, alvos de toque, hero e layout estável. Limite: ambientes locais e Edge; sem aparelhos físicos.                                                                                                                                                   |
-| 5   | Booking.com, Airbnb, Decolar e Google Maps           | **PENDENTE**                             | URLs usam HTTPS e allowlist por finalidade no schema; não existem URLs reais no conteúdo. Não há destino real para validar ou confirmar com as plataformas.                                                                                                                                                                                                          |
-| 6   | Painel e limites de edição                           | **PENDENTE**                             | API, UI, schema, D1/R2, JWT Access, limitação de tentativas e escopo fixo estão no código/documentados. `wrangler.jsonc` ainda contém ID D1 placeholder; Access, secrets e buckets da conta não foram ligados. Fluxos reais de login, gravação e upload não foram exercitados.                                                                                       |
-| 7   | Segurança de frontend/backend, auth, uploads e dados | **PENDENTE**                             | Revisão estática e `docs/07-auditoria-de-seguranca.md` cobrem validação, CSRF, Access JWT, limites e storage. `npm audit` e `npm audit --omit=dev`: zero vulnerabilidades no lockfile auditado. Falta validar configuração, política Access, TLS, logs e R2 na conta implantada; scanner do histórico Git não foi possível porque o workspace não é repositório Git. |
-| 8   | SEO, indexacao, metadados, sitemap, robots e schema  | **PENDENTE**                             | Build de producao de teste passou com origem .example; codigo gera canonical, Open Graph, robots, sitemap de uma rota e JSON-LD VacationRental sem preco, reviews ou endereco inventados. Falta configurar dominio definitivo, verificar respostas implantadas e enviar sitemap ao Search Console.                                                                   |
-| 9   | Performance, Core Web Vitals e imagens               | **PENDENTE**                             | Pipeline suporta AVIF/WebP/JPEG responsivos; bundle cliente medido em 5.656 bytes sem compressão no build anterior e hero tem prioridade alta; amostra mediu CLS abaixo de 0,1. Não há LCP/INP/CLS real, Lighthouse/PageSpeed ou medição no hosting; não há imagens definitivas.                                                                                     |
-| 10  | Acessibilidade, compatibilidade e estabilidade       | **PENDENTE**                             | Galeria tem teclado, foco, descrição, reduced motion e alternativa sem JS; verificações automáticas estão nos E2E. Não foi feita sessão manual com leitor de tela, auditoria WCAG formal nem matriz de browsers; runner E2E não encerrou normalmente.                                                                                                                |
-| 11  | Build, lint, typecheck, testes e console             | **PENDENTE**                             | npm run validate passou: typecheck 0 erros, lint 0 erros/1 aviso em scripts/generate-test-images.mjs, Prettier, 82 testes unitarios e build de producao. E2E: 80 casos individuais ok, sem sumario/codigo de saida de sucesso; a suite precisa encerrar normalmente para fechar este criterio.                                                                       |
-| 12  | Documentação e manutenção/deploy                     | **APROVADO (documentação no workspace)** | README contém stack, comandos, variáveis e deploy; docs 04–08 cobrem conteúdo, painel, SEO, segurança e testes; este documento adiciona checklist, operação e recuperação. O deploy ainda depende de dados/conta do cliente.                                                                                                                                         |
+| #   | Critério                                    | Status                  | Evidência e pendência                                                                                                                                                                                                                                              |
+| --- | ------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Qualidade visual comparada à prévia         | **PENDENTE**            | Não foi possível abrir a prévia nem obter screenshot comparativo nesta revisão. Faltam as fotografias originais.                                                                                                                                                   |
+| 2   | Proposta e facilidade para reservar         | **PENDENTE**            | A página explica que reserva e pagamento acontecem na plataforma externa, mas o JSON não tem URLs de Booking, Airbnb ou Decolar; portanto não há CTA.                                                                                                              |
+| 3   | Conteúdo fiel, sem invenções                | **PENDENTE**            | Campos não confirmados são omitidos. Tagline/diferenciais ainda aguardam aprovação, além da descrição e fotos.                                                                                                                                                     |
+| 4   | Responsividade/mobile                       | **APROVADO localmente** | E2E reportou 20 casos `ok` em cada viewport 320, 414, 768 e 1366 px. Sem aparelhos físicos.                                                                                                                                                                        |
+| 5   | Booking, Airbnb, Decolar e Google Maps      | **PENDENTE**            | Allowlist HTTPS existe, mas o cliente ainda não forneceu URLs reais para testar.                                                                                                                                                                                   |
+| 6   | Painel e limites de edição                  | **PENDENTE**            | O build Pages exclui `/admin`, `/api/admin/*` e `/media/*`; GitHub Pages não executa o backend D1/R2/Access. Nenhum login ou CRUD está disponível no site publicado.                                                                                               |
+| 7   | Segurança                                   | **PENDENTE**            | O artefato Pages é estático e não contém painel/API. Auditorias npm retornaram zero vulnerabilidades. Headers de resposta não são configuráveis pelo arquivo `_headers` neste provedor; políticas e HTTPS devem ser revisadas nas configurações do GitHub/domínio. |
+| 8   | SEO e indexação                             | **PENDENTE**            | Build gera canonical, OG, robots, sitemap e JSON-LD para o caminho de projeto `/Residencial-Ametista/`. Falta confirmar Pages ativo, revisar URL pública e cadastrar sitemap no Search Console.                                                                    |
+| 9   | Performance e Core Web Vitals               | **PENDENTE**            | Build suporta imagens/fontes locais otimizadas, mas ainda não há fotos reais nem medições em produção, Lighthouse ou LCP/INP/CLS de campo.                                                                                                                         |
+| 10  | Acessibilidade/compatibilidade/estabilidade | **PENDENTE**            | Galeria e CSS têm suporte a teclado, foco e reduced motion; faltam leitor de tela, revisão manual e confirmação de execução E2E encerrada com sucesso.                                                                                                             |
+| 11  | Build, lint, typecheck e testes             | **PENDENTE**            | Build Pages local passou. `npm run validate` cobre typecheck, lint, Prettier, testes unitários e build. E2E teve 80 casos individuais `ok`, mas o runner não encerrou normalmente.                                                                                 |
+| 12  | Documentação/manutenção/deploy              | **PENDENTE**            | Este documento explica o fluxo Pages e operação; `CLAUDE.md` está vazio e o cliente ainda precisa configurar Pages e aprovar o conteúdo.                                                                                                                           |
 
 ## Informações necessárias do cliente
 
-1. Domínio final e acesso à zona/conta Cloudflare que publicará o Worker.
-2. URLs exatas dos anúncios do Booking.com, Airbnb e Decolar e link compartilhado do pin Google Maps.
-3. Fotos originais em alta resolução, autorização de uso e escolha da imagem principal; a prévia tem marca d'água e não deve ser reutilizada.
-4. Aprovação ou revisão da tagline e dos dois diferenciais propostos.
-5. Descrição curta aprovada do residencial.
-6. Confirmação dos dados desejados: capacidade, quartos/banheiros, camas, área, comodidades, check-in/out, regras e política de pets.
-7. Decisão sobre endereço completo público e canais de contato: WhatsApp, Instagram e/ou e-mail.
-8. E-mail único que será autorizado no Cloudflare Access e pessoa administradora da conta para recuperação.
+1. URLs exatas dos anúncios Booking.com, Airbnb e Decolar e link compartilhado do pin do Google Maps.
+2. Fotos originais em alta resolução, autorização de uso e escolha da imagem principal. Não usar fotos com marca d'água da prévia.
+3. Aprovação/revisão da tagline e dos diferenciais propostos e uma descrição curta aprovada.
+4. Dados a publicar: capacidade, quartos/banheiros, camas, área, comodidades, horários, regras e política de pets.
+5. Decisão sobre endereço público e canais de contato (WhatsApp, Instagram, e-mail).
+6. Confirmação de quem tem permissão de administrador no repositório para definir a fonte Pages como GitHub Actions; domínio próprio, se desejado.
 
-## Publicação e deploy
+## Publicar no GitHub Pages
 
-Pré-requisitos: domínio HTTPS sob a conta Cloudflare, D1 exclusivo criado e migrations aplicadas, R2 exclusivo criado sem endpoint público, ID D1 real no `wrangler.jsonc`, Access Self-hosted protegendo `/admin*` e `/api/admin/*`, secrets configurados e política Allow para o e-mail autorizado.
+1. No repositório `Tha-github/Residencial-Ametista`, abrir **Settings → Pages → Build and deployment → Source** e selecionar **GitHub Actions**. O job antigo falhou porque o Pages tentou usar Jekyll na branch; o workflow novo compila Astro e publica `dist/` como artefato. A configuração da fonte de publicação é feita nas Settings do repositório.
+2. Enviar alterações para `main`. O workflow `.github/workflows/deploy.yml` instala dependências, roda `npm run validate`, faz build estático e implanta via `actions/deploy-pages`.
+3. A URL esperada do projeto é `https://tha-github.github.io/Residencial-Ametista/`. Confirmar em Settings → Pages e na aba Actions que os jobs `build` e `deploy` concluíram com sucesso.
+4. Se usar domínio próprio, configurar DNS e Pages Settings e atualizar `PUBLIC_SITE_URL`/`site` e `base` do Astro para o hostname confirmado (base vazia em domínio customizado). Ainda não há domínio próprio configurado.
 
-PowerShell (Windows), após preencher o domínio real:
+Build local equivalente (PowerShell):
 
 ```powershell
-npm ci
+$env:GITHUB_PAGES = 'true'
 $env:PUBLIC_DEPLOY_ENV = 'production'
-$env:PUBLIC_SITE_URL = 'https://<dominio-confirmado>'
+$env:PUBLIC_SITE_URL = 'https://tha-github.github.io'
+npm ci
 npm run validate
-npm run deploy
 ```
 
-`npm run deploy` executa `validate` e então `wrangler deploy`. Para uma primeira publicação, autentique antes com `npx wrangler login`. Em Workers Builds, configurar `npm run build` como build command, `npx wrangler deploy` como deploy command e as duas variáveis `PUBLIC_*` no ambiente de build. Adicionar o hostname em Worker → Settings → Domains & Routes. Não publicar com `REPLACE_WITH_D1_DATABASE_ID` nem com `.example`.
+O caminho do projeto (`/Residencial-Ametista`) está definido no `astro.config.mjs`. Não usar `npm run deploy` para Pages; a publicação é feita pela Action.
 
-Depois do deploy: testar HTTPS/TLS, headers em SSR e assets, `/robots.txt`, `/sitemap.xml`, canonical, CTAs e destinos reais, `/admin` sem sessão (deve exigir Access), conta autorizada e conta não autorizada, salvar conteúdo, upload e renderização pública. Medir Lighthouse em mobile e desktop. Não anunciar o painel antes desses testes.
+## Painel, acesso e edição
 
-## Criar e recuperar acesso ao painel
+GitHub Pages serve somente arquivos estáticos. Não há login, criar/recuperar usuário, API, upload ou persistência D1/R2 no site Pages. O painel Cloudflare do código está excluído deste build e não deve ser anunciado como ativo. Para disponibilizar painel real seria necessário hospedar o backend em um runtime seguro separado e integrar sua API; isso não foi ativado.
 
-Não há senha padrão, usuário hardcoded nem criação local de conta. Um administrador da conta Cloudflare cria a aplicação Access, seleciona OTP/IdP, adiciona uma política **Allow** com o e-mail do proprietário e configura o mesmo e-mail em `ADMIN_ALLOWED_EMAIL`. O Worker também valida assinatura, emissor, AUD e validade do JWT. Sem D1, Access ou secrets, o backend falha fechado.
+Editar conteúdo confirmado em `src/data/ametista.json` e adicionar fotos autorizadas à pasta `src/assets/photos/`. Revisar o resultado localmente com build Pages, então fazer commit e push para `main`; a Action publica a nova versão. Não incluir segredos nem dados pessoais no JSON ou no repositório público.
 
-Para recuperar acesso, um administrador da conta Cloudflare corrige a política/e-mail permitido e revoga as sessões Access necessárias. Confirmar login e logout em staging. Não contornar Access nem editar o banco para liberar login.
+## Variáveis de build
 
-## Editar textos e imagens
-
-Depois de provisionar Access/D1/R2, o proprietário entra em `/admin`. O painel permite editar campos predefinidos, links allowlisted e textos alternativos; imagens JPEG, PNG, WebP e AVIF são validadas no servidor (até 12 MB, dimensões até 40 MP). As mudanças ficam no D1 e a mídia no R2; o formulário não permite adicionar páginas, seções, HTML/scripts, preços nem reservas.
-
-Antes de provisionar painel, conteúdo versionado pode ser atualizado em `src/data/ametista.json`; incluir apenas fatos aprovados, validar URLs e executar `npm run validate` antes do deploy. As fotos definitivas devem ser autorizadas pelo cliente. Alterar arquivos locais não atualiza um site publicado até novo build/deploy.
-
-## Variáveis de ambiente
-
-| Nome                    | Tipo              | Necessidade                                                                |
-| ----------------------- | ----------------- | -------------------------------------------------------------------------- |
-| `PUBLIC_DEPLOY_ENV`     | Pública, build    | `production` para build indexável; development/preview permanecem noindex. |
-| `PUBLIC_SITE_URL`       | Pública, build    | Origem HTTPS canônica definitiva, obrigatória no build de produção.        |
-| `CF_ACCESS_TEAM_DOMAIN` | Segredo do Worker | Domínio da equipe Cloudflare Access, sem protocolo.                        |
-| `CF_ACCESS_AUD`         | Segredo do Worker | AUD da aplicação Access que protege este hostname.                         |
-| `ADMIN_ALLOWED_EMAIL`   | Segredo do Worker | E-mail único autorizado, igual ao e-mail permitido na política Access.     |
-
-Nomes, mas nunca valores secretos, constam em `.env.example`. D1 e R2 são bindings configurados no Wrangler, não variáveis `PUBLIC_*`.
+O workflow define `GITHUB_PAGES=true`, `PUBLIC_DEPLOY_ENV=production` e `PUBLIC_SITE_URL=https://tha-github.github.io`. São valores públicos, sem segredos. Cloudflare Access (`CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_ALLOWED_EMAIL`) não é usado no build Pages; só seria necessário para um Worker separado, que não está implantado.
 
 ## Backup e recuperação
 
-Não existe rotina de backup automática configurada ou testada nesta conta. O D1 oferece exportação lógica via Wrangler; backups devem ser agendados pelo operador e guardados criptografados fora do workspace, com controle de acesso e retenção definida. Exportar schema e dados:
-
-```powershell
-npx wrangler d1 export residencial-ametista-content --remote --output .\backup-ametista.sql
-```
-
-Recuperação: primeiro exportar o estado atual para preservar evidência; revisar o SQL de backup e então restaurar em D1 isolado de staging com `npx wrangler d1 execute <database> --remote --file .\backup-ametista.sql`. Validar conteúdo e bindings antes de apontar o Worker de produção. Restaurar diretamente sobrescreve tabelas e requer janela/manutenção e autorização operacional.
-
-Para R2, registrar as chaves UUID de mídia do prefixo `residencial-ametista/` e baixar objetos com `npx wrangler r2 object get residencial-ametista-media/residencial-ametista/<uuid>.<ext> --remote --file <destino>`. Reenvio usa `npx wrangler r2 object put ... --remote --file <origem>`. O bucket não tem rotina de cópia/versionamento configurada neste workspace; validar metadata/content-type e testar restauração em bucket isolado.
+Não há banco nem storage persistente no site GitHub Pages. O conteúdo e código publicados ficam no histórico Git; para reverter uma mudança, restaurar os arquivos do commit anterior, validar e enviar novo commit para `main`, que gera outro deploy. Preservar as fotos originais em armazenamento seguro externo além do Git. Não há backup D1/R2 ativo, pois esses serviços não fazem parte do hosting Pages atual.
 
 ## Limitações e escopo excluído
 
-- Sem domínio final, URLs, mídia aprovada ou confirmação do cliente, o site ainda não atende ao objetivo operacional de gerar reservas e o aceite visual/editorial é condicional.
-- Painel não pode ser considerado protegido/funcional em produção até provisionamento e teste com a conta Cloudflare do cliente.
-- Sem deploy público, Lighthouse/Core Web Vitals reais, compressão/cache do provedor e teste com leitor de tela ficam pendentes.
-- A revisão de segredos cobre padrões estáticos e bundle local; histórico Git não está disponível.
-- O upload verifica tipo, assinatura e dimensões, mas não decodifica/re-encoda todos os pixels.
-- **Não foi implementado Channel Manager, motor/calendário de reservas, tarifas dinâmicas nem sincronização de disponibilidade ou reservas entre plataformas.** O site somente direciona o visitante para anúncios externos quando os links forem fornecidos.
+- Site Pages estático: alterações publicam em novo build; não existe editor administrativo no site.
+- GitHub Pages não executa SSR, middleware, endpoints Astro nem os bindings de Cloudflare. O arquivo `public/_headers` não configura headers neste hosting; revisar o que pode ser definido pelo provedor e usar domínio próprio se forem necessários controles adicionais.
+- A URL de projeto inclui o caminho `/Residencial-Ametista/`; robots.txt e sitemap são gerados sob esse caminho. Um domínio próprio permite configurar URL canônica de raiz.
+- Não há dados/fotos suficientes para concluir a apresentação comercial; não se deve inventar links ou comodidades.
+- **Não foi implementado Channel Manager, motor/calendário de reservas, tarifas dinâmicas ou sincronização de reservas/disponibilidade.** O site apenas encaminhará para anúncios externos quando os links forem fornecidos.
 
 ## Condição de aceite
 
-O checklist registra a evidência disponível e as pendências. O aceite final permanece **condicionado à aprovação do cliente** dos conteúdos e fotografias, entrega dos links/domínio e provisionamento/teste da conta Cloudflare. O estado atual do repositório não prova essa aprovação operacional.
+A correção do build Jekyll foi preparada no repositório, mas a publicação só estará confirmada depois de escolher GitHub Actions em Settings → Pages e o workflow verde. Aceite comercial permanece pendente dos materiais/aprovações listados acima. Não há critérios em `CLAUDE.md` porque o arquivo está vazio.

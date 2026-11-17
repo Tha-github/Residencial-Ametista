@@ -31,4 +31,4 @@ O painel depende de conta Cloudflare, hostname na zona e configuração Access. 
 
 ## Estado de ativação
 
-Os handlers, a interface, as migrations e os bindings estão no código, mas ainda precisam dos recursos da conta do contratante: ID real do banco, D1/R2 criados, secrets, hostname e política Access. Até provisionar e validar esses recursos, não trate o painel como acessível em produção. O CLAUDE.md contém o escopo atual; o contrato e a cláusula 3ª não estão no workspace, portanto este documento não presume seu conteúdo.
+Os handlers, a interface, as migrations e os bindings estão no código, mas ainda precisam dos recursos da conta do contratante: ID real do banco, D1/R2 criados, secrets, hostname e política Access. Até provisionar e validar esses recursos, não trate o painel como acessível em produção. `CLAUDE.md` está vazio; o contrato e a cláusula 3ª também não estão no workspace, portanto este documento não presume critérios de aceite ou texto contratual ausentes. O build GitHub Pages não inclui o painel nem os endpoints.
