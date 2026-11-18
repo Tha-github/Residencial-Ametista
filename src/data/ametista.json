@@ -1,9 +1,10 @@
 {
-  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente em 2026-11-17. Fotos mantidas com a marca-d'água original. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato e check-out ainda pendentes.",
+  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente em 2026-11-17. Fotos mantidas com a marca-d'água original. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Galeria completada com as 16 fotos da prévia em 2026-11-18. Contato (WhatsApp vazio na prévia) e check-out ainda pendentes.",
   "name": "Residencial Ametista",
   "tagline": "Apartamento com terraço gourmet a 250 m da Praia dos Ingleses, em Florianópolis.",
   "description": [
-    "O Residencial Ametista oferece um apartamento inteiro de 90 m² na Praia dos Ingleses, com dois quartos, dois banheiros, cozinha completa e terraço gourmet privativo. A praia fica a aproximadamente 250 m, cerca de quatro minutos a pé, conforme a prévia enviada."
+    "O Residencial Ametista oferece um apartamento inteiro de 90 m² na Praia dos Ingleses, com dois quartos, dois banheiros, cozinha completa e terraço gourmet privativo. A praia fica a aproximadamente 250 m, cerca de quatro minutos a pé, conforme a prévia enviada.",
+    "A rua é tranquila, com mercado, farmácia, restaurantes e lojas na região. As praias do Santinho e Brava ficam a poucos quilômetros, e o Aeroporto Internacional Hercílio Luz está a 38 km."
   ],
   "location": {
     "beach": "Praia dos Ingleses",
@@ -23,6 +24,14 @@
     {
       "title": "Terraço gourmet privativo",
       "text": "O espaço tem mesa, guarda-sol e churrasqueira."
+    },
+    {
+      "title": "Vaga privativa gratuita",
+      "text": "Estacione no prédio e vá à praia a pé durante toda a viagem."
+    },
+    {
+      "title": "Pets bem-vindos",
+      "text": "Animais de estimação são aceitos mediante pedido, sem custo adicional."
     }
   ],
   "facts": {
@@ -35,6 +44,7 @@
     "Apartamento inteiro",
     "Terraço gourmet com churrasqueira",
     "Cozinha completa com cooktop, forno, micro-ondas e geladeira",
+    "Cafeteira e torradeira",
     "Ar-condicionado",
     "Wi-Fi e TV com streaming",
     "Máquina de lavar",
@@ -43,7 +53,7 @@
     "Kit praia com cadeiras, guarda-sol e cooler",
     "Enxoval, toalhas e secador de cabelo",
     "Cadeirão e berço sujeitos à disponibilidade",
-    "Pets aceitos mediante pedido, conforme a prévia enviada"
+    "Pets aceitos mediante pedido, sem custo adicional"
   ],
   "practicalInfo": {
     "checkIn": "Das 14h às 23h30",
@@ -78,6 +88,16 @@
         "caption": "Cozinha"
       },
       {
+        "src": "cozinha.jpg",
+        "alt": "Cozinha em L com bancada de granito, cooktop, micro-ondas e geladeira, integrada à sala",
+        "group": "social"
+      },
+      {
+        "src": "cozinha-fogao.jpg",
+        "alt": "Bancada da cozinha com pia, cooktop de cinco bocas, chaleira elétrica e micro-ondas",
+        "group": "social"
+      },
+      {
         "src": "quarto-varanda.jpg",
         "alt": "Quarto de casal com parede azul e porta para a varanda",
         "group": "quartos",
@@ -89,8 +109,23 @@
         "group": "quartos"
       },
       {
+        "src": "quarto-casal-tv.jpg",
+        "alt": "Quarto de casal com armário embutido de madeira e TV sobre aparador",
+        "group": "quartos"
+      },
+      {
         "src": "quarto-tres-camas.jpg",
         "alt": "Quarto com três camas",
+        "group": "quartos"
+      },
+      {
+        "src": "quarto-solteiros.jpg",
+        "alt": "Quarto com três camas de solteiro, parede azul, ar-condicionado e janela para as árvores",
+        "group": "quartos"
+      },
+      {
+        "src": "quarto-azul.jpg",
+        "alt": "Quarto de solteiros com roupa de cama azul-turquesa e prancha decorativa na parede",
         "group": "quartos"
       },
       {
@@ -107,6 +142,18 @@
         "src": "varanda-sofa.jpg",
         "alt": "Varanda com sofá",
         "group": "terraco"
+      },
+      {
+        "src": "banheiro.jpg",
+        "alt": "Banheiro com pastilhas azuis, espelho redondo e box de vidro",
+        "group": "detalhes",
+        "caption": "Banheiro"
+      },
+      {
+        "src": "fachada.jpg",
+        "alt": "Fachada do Condomínio Residencial Ametista, prédio de quatro andares com varandas arredondadas",
+        "group": "fachada",
+        "caption": "Fachada do residencial"
       }
     ]
   }
