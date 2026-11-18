@@ -1,0 +1,125 @@
+---
+/**
+ * Dúvidas frequentes em acordeão nativo (<details>): acessível, funciona
+ * sem JavaScript e abre uma pergunta por vez onde o navegador suporta
+ * `name`. Respostas vêm do conteúdo confirmado.
+ */
+import type { PropertyContent } from '../../data/property.schema';
+import { hasBookingLinks } from '../../lib/content/sections';
+import Section from '../layout/Section.astro';
+import Icon from '../ui/Icon.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { content } = Astro.props;
+const showBooking = hasBookingLinks(content);
+---
+
+<Section id="duvidas" title="Dúvidas frequentes" surface="sand" customHeading>
+  <div class="faq">
+    <div class="faq__intro">
+      <SectionHeading id="duvidas-titulo" eyebrow="Dúvidas frequentes" title="Antes de *reservar*">
+        O essencial para planejar a viagem sem surpresas.
+      </SectionHeading>
+      {showBooking && (
+        <a class="btn btn--lg faq__cta" href="#reservas">
+          Ver opções de reserva
+          <Icon name="arrow-right" size={18} />
+        </a>
+      )}
+    </div>
+
+    <div class="faq__list">
+      {content.faq.map((item, i) => (
+        <details class="qa" name="faq" open={i === 0}>
+          <summary class="qa__q">
+            <span>{item.question}</span>
+            <span class="qa__icon" aria-hidden="true">
+              <Icon name="plus" size={20} />
+            </span>
+          </summary>
+          <p class="qa__a">{item.answer}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .faq {
+    display: grid;
+    gap: var(--space-7);
+  }
+  @media (min-width: 1024px) {
+    .faq {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-9);
+      align-items: start;
+    }
+    .faq__intro {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+  .faq__intro :global(.section-heading) {
+    margin-bottom: var(--space-6);
+  }
+  @media (max-width: 1023px) {
+    .faq__cta {
+      display: none;
+    }
+  }
+
+  .faq__list {
+    border-top: var(--border-width) solid var(--sand-300);
+  }
+  .qa {
+    border-bottom: var(--border-width) solid var(--sand-300);
+  }
+  .qa__q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: 3.75rem;
+    padding-block: var(--space-4);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--color-heading);
+    cursor: pointer;
+    list-style: none;
+  }
+  .qa__q::-webkit-details-marker {
+    display: none;
+  }
+  .qa__q:hover {
+    color: var(--color-accent);
+  }
+  .qa__q:focus-visible {
+    outline-offset: 2px;
+  }
+  .qa__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: 50%;
+    background: var(--color-surface-raised);
+    color: var(--color-accent);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .qa[open] .qa__icon {
+    transform: rotate(45deg);
+  }
+  .qa__a {
+    max-inline-size: var(--width-prose);
+    padding-bottom: var(--space-5);
+    padding-inline-end: var(--space-8);
+    color: var(--color-text-muted);
+  }
+</style>

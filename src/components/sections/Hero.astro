@@ -1,7 +1,8 @@
 ---
 /**
- * Hero fotográfico. Texto curto: localização confirmada, nome e (se houver)
- * frase do conteúdo. CTA de reserva leva à seção de plataformas externas.
+ * Hero fotográfico. Nome, local, frase de experiência, números que decidem
+ * a escolha (praia, área, quartos, banheiros) e dois CTAs: reserva e tour.
+ * A faixa de informações rápidas (QuickFacts) sobrepõe a base do hero.
  *
  * Sem foto real:
  *  - fora de produção → placeholder identificado;
@@ -9,7 +10,6 @@
  */
 import type { ImageMetadata } from 'astro';
 import type { PropertyContent } from '../../data/property.schema';
-import { formatPlace } from '../../lib/content/format';
 import { hasBookingLinks } from '../../lib/content/sections';
 import Photo from '../media/Photo.astro';
 import PhotoPlaceholder from '../media/PhotoPlaceholder.astro';
@@ -20,27 +20,53 @@ interface Props {
   content: PropertyContent;
   /** Imagem já importada (usada só pelas amostras de desenvolvimento). */
   heroImage?: ImageMetadata;
+  /** A faixa de informações rápidas vem logo abaixo (reserva espaço). */
+  withStrip?: boolean;
 }
 
-const { content, heroImage } = Astro.props;
-const { location, media, description } = content;
+const { content, heroImage, withStrip = false } = Astro.props;
+const { location, media, description, facts } = content;
 
 const hero = media.hero;
 // CTAs só existem quando o destino existe (em qualquer ambiente):
 // nunca um botão que leva a uma seção ausente.
 const showBookingCta = hasBookingLinks(content);
-const showAboutCta = description.length > 0;
+const tourTarget =
+  media.gallery.length > 0 ? '#galeria' : description.length > 0 ? '#apresentacao' : undefined;
 
-const place = formatPlace(location);
+const place = [location.beach, location.city].filter(Boolean).join(' · ');
 
 // Apresentação: a última palavra do nome em itálico (ex.: "Residencial *Ametista*").
 const words = content.name.trim().split(/\s+/);
 const nameLead = words.slice(0, -1).join(' ');
 const nameLast = words.at(-1);
+
+const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
+const stats = [
+  location.beachDistanceM !== undefined && {
+    value: `${location.beachDistanceM.toLocaleString('pt-BR')} m`,
+    label: 'da praia',
+  },
+  facts.areaM2 !== undefined && {
+    value: `${facts.areaM2.toLocaleString('pt-BR')} m²`,
+    label: 'privativos',
+  },
+  facts.bedrooms !== undefined && {
+    value: String(facts.bedrooms),
+    label: plural(facts.bedrooms, 'quarto', 'quartos'),
+  },
+  facts.bathrooms !== undefined && {
+    value: String(facts.bathrooms),
+    label: plural(facts.bathrooms, 'banheiro', 'banheiros'),
+  },
+].filter((s): s is { value: string; label: string } => Boolean(s));
 ---
 
 <section
-  class:list={['hero', { 'hero--photo': hero, 'hero--plain': !hero }]}
+  class:list={[
+    'hero',
+    { 'hero--photo': hero, 'hero--plain': !hero, 'hero--with-strip': withStrip },
+  ]}
   aria-labelledby="hero-title"
 >
   <div class="hero__media">
@@ -70,19 +96,35 @@ const nameLast = words.at(-1);
     </h1>
     {content.tagline && <p class="hero__tagline">{content.tagline}</p>}
 
-    {(showBookingCta || showAboutCta) && (
+    {(showBookingCta || tourTarget) && (
       <div class="hero__actions">
         {showBookingCta && (
           <Button href="#reservas" variant="inverse" size="lg" icon="arrow-right">
             Ver opções de reserva
           </Button>
         )}
-        {showAboutCta && (
-          <Button href="#apresentacao" variant="inverse-outline" size="lg">
-            Conhecer o residencial
+        {tourTarget && (
+          <Button href={tourTarget} variant="inverse-outline" size="lg">
+            Conhecer o apartamento
           </Button>
         )}
       </div>
+    )}
+
+    {stats.length > 0 && (
+      <dl class="hero__stats">
+        {stats.map((s) => (
+          <div class="hero__stat">
+            <dt class="sr-only">{s.label}</dt>
+            <dd>
+              <span class="hero__stat-value">{s.value}</span>
+              <span class="hero__stat-label" aria-hidden="true">
+                {s.label}
+              </span>
+            </dd>
+          </div>
+        ))}
+      </dl>
     )}
   </div>
 </section>
@@ -92,16 +134,23 @@ const nameLast = words.at(-1);
     position: relative;
     display: grid;
     align-items: end;
-    min-block-size: min(92svh, 860px);
-    padding-block: calc(var(--space-9) + var(--space-6)) var(--space-8);
+    min-block-size: min(100svh, 820px);
+    padding-block: calc(var(--space-9) + var(--space-2)) var(--space-8);
     color: var(--color-on-photo);
     isolation: isolate;
     overflow: hidden;
   }
+  /* Espaço para a faixa que sobrepõe a base do hero */
+  .hero--with-strip {
+    padding-block-end: calc(var(--space-8) + var(--strip-overlap));
+  }
   @media (min-width: 1024px) {
     .hero {
-      min-block-size: min(100svh, 980px);
+      min-block-size: min(100svh, 940px);
       padding-block-end: var(--space-9);
+    }
+    .hero--with-strip {
+      padding-block-end: calc(var(--space-8) + var(--strip-overlap));
     }
   }
 
@@ -123,21 +172,19 @@ const nameLast = words.at(-1);
   }
   /*
    * Véu de legibilidade. Garante contraste do texto branco mesmo sobre áreas
-   * claras ou carregadas da foto (pior caso calculado: ≥ 75% de cobertura na
-   * zona do texto → contraste ≥ 4,5:1 sobre pixel branco).
-   * Mobile: texto ocupa a largura toda, do meio para baixo → véu vertical.
-   * Desktop: texto na coluna esquerda → véu lateral + vertical; o lado
-   * direito da foto fica limpo.
+   * claras da foto. Mobile: texto ocupa a largura toda, do meio para baixo →
+   * véu vertical. Desktop: texto na coluna esquerda → véu lateral + vertical;
+   * o lado direito da foto (guarda-sol e mata) fica limpo e luminoso.
    */
   .hero__scrim {
     position: absolute;
     inset: 0;
     background: linear-gradient(
       180deg,
-      rgb(8 38 54 / 0.5) 0%,
-      rgb(8 38 54 / 0.2) 14%,
-      rgb(8 38 54 / 0.72) 34%,
-      rgb(8 38 54 / 0.86) 100%
+      rgb(8 38 54 / 0.55) 0%,
+      rgb(8 38 54 / 0.15) 18%,
+      rgb(8 38 54 / 0.62) 42%,
+      rgb(8 38 54 / 0.9) 100%
     );
   }
   @media (min-width: 768px) {
@@ -145,9 +192,10 @@ const nameLast = words.at(-1);
       background:
         linear-gradient(
           90deg,
-          rgb(8 38 54 / 0.78) 0%,
-          rgb(8 38 54 / 0.6) 38%,
-          rgb(8 38 54 / 0) 68%
+          rgb(8 38 54 / 0.82) 0%,
+          rgb(8 38 54 / 0.62) 36%,
+          rgb(8 38 54 / 0.08) 66%,
+          rgb(8 38 54 / 0) 100%
         ),
         var(--scrim);
     }
@@ -173,11 +221,14 @@ const nameLast = words.at(-1);
   }
 
   .hero__title {
-    max-inline-size: 14ch;
+    max-inline-size: 12ch;
     font-size: var(--text-5xl);
     font-weight: var(--font-weight-regular);
-    line-height: 0.98;
+    line-height: 0.96;
     color: var(--color-on-photo);
+  }
+  .hero__title em {
+    color: var(--sand-100);
   }
   /* Sombra só sobre foto (ajuda a legibilidade); no fundo liso criaria halo */
   .hero--photo .hero__title {
@@ -185,16 +236,19 @@ const nameLast = words.at(-1);
   }
 
   .hero__tagline {
-    max-inline-size: 40ch;
-    font-size: var(--text-lg);
+    max-inline-size: 30ch;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-style: italic;
     line-height: var(--leading-snug);
+    color: var(--sand-50);
   }
 
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-    margin-top: var(--space-2);
+    margin-top: var(--space-1);
   }
   @media (max-width: 479px) {
     .hero__actions {
@@ -203,6 +257,41 @@ const nameLast = words.at(-1);
     .hero__actions :global(.btn) {
       flex: 1 1 100%;
     }
+  }
+
+  /* Números que decidem: linha fina separando, numerais em serifa */
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+    gap: var(--space-5);
+    margin-top: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: var(--border-width) solid rgb(255 255 255 / 0.28);
+    inline-size: 100%;
+    max-inline-size: 34rem;
+  }
+  @media (max-width: 379px) {
+    .hero__stats {
+      gap: var(--space-4);
+    }
+  }
+  .hero__stat dd {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+  }
+  .hero__stat-value {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+    white-space: nowrap;
+  }
+  .hero__stat-label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    color: var(--sea-100);
   }
 
   /*
@@ -220,6 +309,12 @@ const nameLast = words.at(-1);
     .hero__actions {
       animation-delay: 220ms;
     }
+    .hero__stats {
+      animation-delay: 320ms;
+    }
+    .hero--photo :global(.hero__img) {
+      animation: hero-zoom 1600ms var(--ease-out) both;
+    }
   }
   @keyframes hero-in {
     from {
@@ -228,6 +323,15 @@ const nameLast = words.at(-1);
     }
     to {
       opacity: 1;
+      transform: none;
+    }
+  }
+  /* Leve recuo da foto ao carregar: sensação de profundidade */
+  @keyframes hero-zoom {
+    from {
+      transform: scale(1.06);
+    }
+    to {
       transform: none;
     }
   }

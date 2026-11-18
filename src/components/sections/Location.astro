@@ -1,11 +1,14 @@
 ---
 /**
- * Localização. Sem mapa incorporado (iframe pesado e com rastreamento):
- * link validado para o Google Maps, aberto em nova aba.
+ * Localização e região. A praia principal (primeiro lugar com foto) ganha
+ * destaque amplo com a distância a pé; os demais pontos vêm em lista com
+ * miniaturas. Endereço + link validado para o Google Maps (sem iframe:
+ * pesado e com rastreamento). Fotos de terceiros sempre com crédito.
  */
 import type { PropertyContent } from '../../data/property.schema';
 import { formatAddress, formatPlace } from '../../lib/content/format';
 import Section from '../layout/Section.astro';
+import Photo from '../media/Photo.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 
@@ -14,67 +17,266 @@ interface Props {
 }
 
 const { content } = Astro.props;
-const { location } = content;
+const { location, region } = content;
 const address = formatAddress(location);
 const place = formatPlace(location);
+
+const mainIndex = region.places.findIndex((p) => p.photo);
+const main = mainIndex >= 0 ? region.places[mainIndex] : undefined;
+const others = region.places.filter((_, i) => i !== mainIndex);
+const credits = region.places.flatMap((p) => (p.photo?.credit ? [p.photo.credit] : []));
+const walk =
+  location.beachWalkMinutes !== undefined
+    ? `${location.beachWalkMinutes} ${location.beachWalkMinutes === 1 ? 'minuto' : 'minutos'} a pé`
+    : undefined;
 ---
 
-<Section id="localizacao" eyebrow="Localização" title="Onde fica">
-  <div class="location reveal">
-    <address class="location__card">
-      <Icon name="map-pin" size={28} class="location__icon" />
-      <p class="location__place">{place}</p>
-      {address && <p class="location__address">{address}</p>}
-      <p class="location__region">{location.state}</p>
-    </address>
-    {location.mapsUrl && (
-      <div class="location__actions">
-        <Button href={location.mapsUrl} external size="lg" variant="secondary">
-          Abrir no Google Maps
-        </Button>
-        <p class="location__hint">Rotas e mapa completo no Google Maps.</p>
+<Section
+  id="localizacao"
+  eyebrow="Localização e região"
+  title="Perto de tudo, *longe do barulho*"
+  lead="Uma rua tranquila a poucos minutos da areia, no norte da Ilha de Santa Catarina. Ao redor, dunas, costões e algumas das praias mais bonitas de Florianópolis."
+>
+  {main?.photo && (
+    <figure class="beach reveal">
+      <div class="beach__photo">
+        <Photo
+          src={main.photo.src}
+          alt={main.photo.alt}
+          focus={main.photo.focus ?? '50% 60%'}
+          sizes="(min-width: 1280px) 1216px, 100vw"
+        />
       </div>
+      <figcaption class="beach__card">
+        <p class="beach__stat numeral">{main.distance}</p>
+        <p class="beach__name">
+          {main.name}
+          {walk && <span> · {walk}</span>}
+        </p>
+        {main.text && <p class="beach__text">{main.text}</p>}
+      </figcaption>
+    </figure>
+  )}
+
+  <div class="region">
+    <address class="address reveal">
+      <span class="address__icon">
+        <Icon name="map-pin" size={24} />
+      </span>
+      <p class="address__label">Endereço</p>
+      {address ? <p class="address__street">{address}</p> : <p class="address__street">{place}</p>}
+      {location.mapsUrl && (
+        <div class="address__actions">
+          <Button href={location.mapsUrl} external size="lg">
+            Abrir no Google Maps
+          </Button>
+          <p class="address__hint">Rotas e mapa completo no Google Maps.</p>
+        </div>
+      )}
+    </address>
+
+    {others.length > 0 && (
+      <ul class="places" role="list" aria-label="Pontos próximos">
+        {others.map((p) => (
+          <li class="place reveal">
+            <div class="place__thumb">
+              {p.photo ? (
+                <Photo
+                  src={p.photo.src}
+                  alt={p.photo.alt}
+                  focus={p.photo.focus}
+                  aspect="1 / 1"
+                  sizes="96px"
+                />
+              ) : (
+                <span class="place__icon">
+                  <Icon name="store" size={26} />
+                </span>
+              )}
+            </div>
+            <div class="place__body">
+              <p class="place__head">
+                <span class="place__name">{p.name}</span>
+                {p.distance && <span class="place__distance">{p.distance}</span>}
+              </p>
+              {p.text && <p class="place__text">{p.text}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
     )}
   </div>
+
+  {credits.length > 0 && <p class="credits">Fotos da região: {credits.join(' · ')}.</p>}
 </Section>
 
 <style>
-  .location {
-    display: grid;
-    gap: var(--space-6);
+  /* ---------- Praia em destaque ---------- */
+  .beach {
+    position: relative;
+    margin: 0 0 var(--space-8);
+  }
+  .beach__photo {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+  .beach__photo :global(.photo) {
+    aspect-ratio: 4 / 3;
   }
   @media (min-width: 768px) {
-    .location {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
+    .beach__photo :global(.photo) {
+      aspect-ratio: 21 / 9;
     }
   }
-  .location__card {
+  .beach__card {
+    position: relative;
     display: grid;
     gap: var(--space-2);
-    font-style: normal;
+    margin: calc(-1 * var(--space-8)) var(--space-4) 0;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-lg);
   }
-  .location__card :global(.location__icon) {
-    color: var(--color-eyebrow);
-    margin-bottom: var(--space-2);
+  @media (min-width: 768px) {
+    .beach__card {
+      position: absolute;
+      inset-inline-start: var(--space-6);
+      inset-block-end: var(--space-6);
+      max-inline-size: 26rem;
+      margin: 0;
+      padding: var(--space-6);
+    }
   }
-  .location__place {
-    font-family: var(--font-display);
-    font-size: var(--text-2xl);
-    line-height: var(--leading-snug);
+  .beach__stat {
+    font-size: clamp(3rem, 2.2rem + 3vw, 4.5rem);
+    color: var(--color-accent);
+  }
+  .beach__name {
+    font-weight: var(--font-weight-strong);
     color: var(--color-heading);
   }
-  .location__address,
-  .location__region {
+  .beach__name span {
+    font-weight: var(--font-weight-regular);
     color: var(--color-text-muted);
   }
-  .location__actions {
+  .beach__text {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  /* ---------- Endereço + pontos próximos ---------- */
+  .region {
+    display: grid;
+    gap: var(--space-7);
+  }
+  @media (min-width: 1024px) {
+    .region {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-9);
+      align-items: start;
+    }
+  }
+  .address {
     display: grid;
     gap: var(--space-2);
     justify-items: start;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    font-style: normal;
   }
-  .location__hint {
+  .address__icon {
+    margin-bottom: var(--space-2);
+    color: var(--color-eyebrow);
+  }
+  .address__label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-strong);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .address__street {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    color: var(--color-heading);
+  }
+  .address__actions {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+    margin-top: var(--space-4);
+  }
+  .address__hint {
     font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .places {
+    display: grid;
+    padding: 0;
+    list-style: none;
+  }
+  .place {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: center;
+    padding-block: var(--space-4);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+  .place:first-child {
+    padding-top: 0;
+  }
+  @media (min-width: 768px) {
+    .place {
+      grid-template-columns: 6rem minmax(0, 1fr);
+      gap: var(--space-5);
+    }
+  }
+  .place__thumb {
+    overflow: hidden;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .place__icon {
+    display: grid;
+    place-items: center;
+    block-size: 100%;
+    color: var(--color-accent);
+  }
+  .place__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+  }
+  .place__name {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--color-heading);
+  }
+  .place__distance {
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-strong);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-eyebrow);
+    white-space: nowrap;
+  }
+  .place__text {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .credits {
+    margin-top: var(--space-7);
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
   }
 </style>

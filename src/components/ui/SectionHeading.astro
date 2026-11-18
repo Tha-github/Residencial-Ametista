@@ -14,12 +14,14 @@ interface Props {
 
 const { id, title, eyebrow, level = 2, align = 'start', hideTitle = false } = Astro.props;
 const Heading = `h${level}` as const;
+// `*trecho*` no título vira ênfase em itálico (texto puro; nunca HTML).
+const parts = title.split(/\*(.+?)\*/);
 ---
 
 <header class:list={['section-heading', `section-heading--${align}`]}>
-  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  {eyebrow && <p class="eyebrow eyebrow--wave">{eyebrow}</p>}
   <Heading id={id} class:list={{ 'sr-only': hideTitle }}>
-    {title}
+    {parts.map((part, i) => (i % 2 === 1 ? <em>{part}</em> : part))}
   </Heading>
   {Astro.slots.has('default') && (
     <div class="lead">
@@ -33,6 +35,12 @@ const Heading = `h${level}` as const;
     display: grid;
     gap: var(--space-4);
     margin-bottom: var(--space-7);
+  }
+  .section-heading :global(h2 em) {
+    color: var(--color-accent);
+  }
+  :global(.section--inverse) .section-heading :global(h2 em) {
+    color: var(--sea-200);
   }
   .section-heading--center {
     justify-items: center;

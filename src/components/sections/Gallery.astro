@@ -1,9 +1,16 @@
 ---
-/** Galeria de fotos reais, com modo ampliado acessível (GalleryGrid). */
+/**
+ * Fotos reais do apartamento.
+ * - Com `rooms` no conteúdo: tour editorial por ambiente (RoomTour).
+ * - Sem cômodos definidos (ou fotos ainda não vinculadas): grade
+ *   editorial clássica (GalleryGrid). Ambos com modo ampliado acessível.
+ */
 import type { PropertyContent } from '../../data/property.schema';
-import type { GalleryPhoto } from '../../lib/media/gallery';
+import { orderGallery, type GalleryPhoto } from '../../lib/media/gallery';
+import { prepareLightboxItems } from '../../lib/media/prepare';
 import Section from '../layout/Section.astro';
 import GalleryGrid from '../media/GalleryGrid.astro';
+import RoomTour, { type TourRoom } from '../media/RoomTour.astro';
 
 interface Props {
   content: PropertyContent;
@@ -12,8 +19,40 @@ interface Props {
 }
 
 const { content, photos = content.media.gallery } = Astro.props;
+
+// Cômodos com ao menos uma foto existente na galeria.
+const bySrc = new Map(
+  photos.filter((p) => typeof p.src === 'string').map((p) => [p.src as string, p]),
+);
+const roomPhotos = content.rooms
+  .map((room) => ({
+    ...room,
+    list: [...new Set(room.photos)].flatMap((src) => bySrc.get(src) ?? []),
+  }))
+  .filter((room) => room.list.length > 0);
+
+let rooms: TourRoom[] = [];
+let items: Awaited<ReturnType<typeof prepareLightboxItems>> = [];
+if (roomPhotos.length > 0) {
+  // Ordem do modo ampliado = ordem do tour; depois, o restante da galeria.
+  const inTour = [...new Set(roomPhotos.flatMap((r) => r.list))];
+  const rest = orderGallery(photos).filter((p) => !inTour.includes(p));
+  const sequence = [...inTour, ...rest];
+  items = await prepareLightboxItems(sequence);
+  rooms = roomPhotos.map((room) => ({
+    title: room.title,
+    text: room.text,
+    items: room.list.map((p) => items[sequence.indexOf(p)]),
+  }));
+}
 ---
 
-<Section id="galeria" eyebrow="Galeria" title="Por dentro do residencial" surface="sand">
-  <GalleryGrid photos={photos} />
+<Section
+  id="galeria"
+  eyebrow="Tour pelo apartamento"
+  title="Azul de mar em *cada canto*"
+  lead="As paredes azuis, a luz natural e as almofadas cor de coral deixam o apartamento com cara de verão o ano todo. Escolha um ambiente e passeie por ele."
+  surface="sand"
+>
+  {rooms.length > 0 ? <RoomTour rooms={rooms} items={items} /> : <GalleryGrid photos={photos} />}
 </Section>

@@ -1,52 +1,158 @@
 ---
-/** Diferenciais confirmados. Título/texto de cada item vêm do conteúdo. */
+/**
+ * Diferenciais confirmados. O primeiro item com `stat` (ex.: "250 m") vira
+ * o destaque tipográfico; os demais formam uma grade limpa com ícone fino,
+ * título e texto curto — sem cartões repetidos.
+ */
 import type { PropertyContent } from '../../data/property.schema';
 import Section from '../layout/Section.astro';
 import Icon from '../ui/Icon.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 
 interface Props {
   content: PropertyContent;
 }
 
 const { content } = Astro.props;
+const featuredIndex = content.highlights.findIndex((h) => h.stat);
+const featured = featuredIndex >= 0 ? content.highlights[featuredIndex] : undefined;
+const others = content.highlights.filter((_, i) => i !== featuredIndex);
 ---
 
-<Section id="diferenciais" eyebrow="Diferenciais" title="O mar por perto">
-  <ul class="highlights" role="list">
-    {content.highlights.map((item) => (
-      <li class="highlight reveal">
-        <Icon name="waves" size={28} class="highlight__icon" />
-        <h3>{item.title}</h3>
-        {item.text && <p>{item.text}</p>}
-      </li>
-    ))}
-  </ul>
+<Section id="diferenciais" title="Diferenciais" customHeading>
+  <div class:list={['highlights', { 'highlights--featured': featured }]}>
+    <div class="highlights__intro">
+      <SectionHeading
+        id="diferenciais-titulo"
+        eyebrow="Diferenciais"
+        title="O que faz *diferença* na sua estadia"
+      />
+      {featured && (
+        <div class="feature reveal">
+          <p class="feature__stat numeral">{featured.stat}</p>
+          <h3 class="feature__title">{featured.title}</h3>
+          {featured.text && <p class="feature__text">{featured.text}</p>}
+          <svg class="feature__waves" viewBox="0 0 200 40" aria-hidden="true" focusable="false">
+            <path d="M0 10c25-12 25 12 50 0s25-12 50 0 25 12 50 0 25-12 50 0" />
+            <path d="M0 22c25-12 25 12 50 0s25-12 50 0 25 12 50 0 25-12 50 0" />
+            <path d="M0 34c25-12 25 12 50 0s25-12 50 0 25 12 50 0 25-12 50 0" />
+          </svg>
+        </div>
+      )}
+    </div>
+
+    <ul class="highlights__list" role="list">
+      {others.map((item) => (
+        <li class="highlight reveal">
+          <span class="highlight__icon">
+            <Icon name={item.icon ?? 'waves'} size={22} />
+          </span>
+          <div>
+            <h3 class="highlight__title">{item.title}</h3>
+            {item.text && <p class="highlight__text">{item.text}</p>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
 </Section>
 
 <style>
   .highlights {
     display: grid;
-    gap: var(--space-6) var(--grid-gap);
+    gap: var(--space-7);
+  }
+  @media (min-width: 1024px) {
+    .highlights--featured {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-9);
+      align-items: start;
+    }
+    .highlights__intro {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+  .highlights__intro :global(.section-heading) {
+    margin-bottom: var(--space-6);
+  }
+
+  /* Destaque tipográfico: mar profundo, numeral grande, ondas finas */
+  .feature {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(120% 90% at 100% 0%, var(--sea-700) 0%, transparent 65%), var(--sea-900);
+    color: var(--color-inverse-text);
+  }
+  @media (min-width: 768px) {
+    .feature {
+      padding: var(--space-7);
+    }
+  }
+  .feature__stat {
+    font-size: clamp(3.75rem, 2.5rem + 5vw, 6.5rem);
+    color: var(--sand-50);
+  }
+  .feature__title {
+    font-size: var(--text-xl);
+    color: var(--sand-50);
+  }
+  .feature__text {
+    max-inline-size: 34ch;
+    color: var(--sea-100);
+  }
+  .feature__waves {
+    position: absolute;
+    inset-inline-end: -8%;
+    inset-block-start: var(--space-6);
+    inline-size: 42%;
+    fill: none;
+    stroke: var(--terra-300);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    opacity: 0.45;
+  }
+
+  .highlights__list {
+    display: grid;
+    gap: 0 var(--space-7);
     padding: 0;
     list-style: none;
   }
-  @media (min-width: 768px) {
-    .highlights {
-      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  @media (min-width: 640px) {
+    .highlights__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   .highlight {
     display: grid;
-    gap: var(--space-3);
-    align-content: start;
-    padding-top: var(--space-5);
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+    padding-block: var(--space-5);
     border-top: var(--border-width) solid var(--color-border);
   }
-  .highlight :global(.highlight__icon) {
+  .highlight__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    border-radius: 50%;
+    background: var(--color-surface);
     color: var(--color-eyebrow);
   }
-  .highlight p {
+  .highlight__title {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+  .highlight__text {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
     color: var(--color-text-muted);
-    max-width: 42ch;
   }
 </style>

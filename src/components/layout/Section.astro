@@ -3,6 +3,8 @@
  * Casca de seção da página pública: âncora, landmark rotulado, cabeçalho
  * e superfície (clara, areia ou invertida). Quem decide SE a seção existe
  * é src/lib/content/sections.ts — este componente só a apresenta.
+ *
+ * `title` aceita `*trecho*` para ênfase em itálico (ver SectionHeading).
  */
 import SectionHeading from '../ui/SectionHeading.astro';
 
@@ -13,9 +15,24 @@ interface Props {
   lead?: string;
   surface?: 'default' | 'sand' | 'inverse';
   align?: 'start' | 'center';
+  /** Menos respiro no topo (seção logo após a faixa do hero). */
+  tightTop?: boolean;
+  /** Cabeçalho próprio no slot "heading" (layouts editoriais). */
+  customHeading?: boolean;
+  class?: string;
 }
 
-const { id, title, eyebrow, lead, surface = 'default', align = 'start' } = Astro.props;
+const {
+  id,
+  title,
+  eyebrow,
+  lead,
+  surface = 'default',
+  align = 'start',
+  tightTop = false,
+  customHeading = false,
+  class: className,
+} = Astro.props;
 const headingId = `${id}-titulo`;
 ---
 
@@ -24,11 +41,18 @@ const headingId = `${id}-titulo`;
   aria-labelledby={headingId}
   class:list={[
     'section',
-    { 'section--surface': surface === 'sand', 'section--inverse': surface === 'inverse' },
+    {
+      'section--surface': surface === 'sand',
+      'section--inverse': surface === 'inverse',
+      'section--tight-top': tightTop,
+    },
+    className,
   ]}
 >
   <div class="container">
-    {lead ? (
+    {customHeading ? (
+      <slot name="heading" />
+    ) : lead ? (
       <SectionHeading id={headingId} title={title} eyebrow={eyebrow} align={align}>
         {lead}
       </SectionHeading>

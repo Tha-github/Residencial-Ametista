@@ -3,8 +3,11 @@
  * Cabeçalho fixo. `overlay`: transparente sobre o hero e sólido após rolar
  * (sem JS, permanece legível: o hero tem véu escuro no topo).
  * Navegação curta por âncoras — somente seções publicadas (sections.ts).
- * No mobile, o menu de âncoras some e fica apenas o CTA de reserva.
+ * No mobile: CTA "Reservar" sempre visível + menu compacto (<details>,
+ * funciona sem JavaScript; com JS fecha ao escolher um item ou com Esc).
  */
+import Icon from '../ui/Icon.astro';
+
 interface Props {
   name: string;
   overlay?: boolean;
@@ -40,6 +43,20 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
             Reservar
           </a>
         )}
+        {nav.length > 0 && (
+          <details class="site-header__menu" data-menu>
+            <summary aria-label="Abrir menu de seções">
+              <Icon name="menu" size={22} />
+            </summary>
+            <ul class="site-header__panel" role="list">
+              {nav.map((item) => (
+                <li>
+                  <a href={item.href}>{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
       </nav>
     )}
   </div>
@@ -54,6 +71,22 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
       header.toggleAttribute('data-scrolled', !entry.isIntersecting);
     }).observe(sentinel);
   }
+
+  const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
+  if (menu) {
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) menu.open = false;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (menu.open && !menu.contains(e.target as Node)) menu.open = false;
+    });
+  }
 </script>
 
 <style>
@@ -62,7 +95,7 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
     top: 0;
     z-index: var(--z-header);
     background: rgb(250 247 242 / 0.92);
-    backdrop-filter: saturate(1.4) blur(10px);
+    backdrop-filter: saturate(1.4) blur(12px);
     border-bottom: var(--border-width) solid var(--color-border);
     color: var(--color-heading);
     transition:
@@ -80,7 +113,7 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
   }
   .site-header[data-overlay][data-scrolled] {
     background: rgb(250 247 242 / 0.94);
-    backdrop-filter: saturate(1.4) blur(10px);
+    backdrop-filter: saturate(1.4) blur(12px);
     border-bottom-color: var(--color-border);
     color: var(--color-heading);
   }
@@ -103,8 +136,8 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
     align-items: center;
     min-block-size: var(--tap-min);
     font-family: var(--font-display);
-    /* Até ~400px o nome divide espaço com o botão "Reservar": reduz e não quebra */
-    font-size: clamp(1.125rem, 0.7rem + 2vw, var(--text-xl));
+    /* Até ~400px o nome divide espaço com "Reservar" e o menu: reduz e não quebra */
+    font-size: clamp(1.0625rem, 0.6rem + 2vw, var(--text-xl));
     font-weight: var(--font-weight-display);
     letter-spacing: var(--tracking-display);
     white-space: nowrap;
@@ -113,7 +146,12 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
   .site-header__nav {
     display: flex;
     align-items: center;
-    gap: var(--space-5);
+    gap: var(--space-2);
+  }
+  @media (min-width: 1024px) {
+    .site-header__nav {
+      gap: var(--space-6);
+    }
   }
   .site-header__links {
     display: none;
@@ -121,7 +159,7 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
     padding: 0;
     list-style: none;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .site-header__links {
       display: flex;
     }
@@ -140,7 +178,76 @@ const homeHref = import.meta.env.BASE_URL.endsWith('/')
     background-size: 100% 1px;
   }
   .site-header__cta {
-    min-block-size: 40px;
+    min-block-size: 44px;
     padding-block: var(--space-2);
+    padding-inline: var(--space-5);
+  }
+  /* Telas estreitas: a reserva fica no hero e na barra inferior fixa */
+  @media (max-width: 479px) {
+    .site-header__cta {
+      display: none;
+    }
+  }
+  /* Sobre a foto, o CTA é claro; depois de rolar, volta ao azul */
+  .site-header[data-overlay]:not([data-scrolled]) .site-header__cta {
+    --btn-bg: var(--sand-50);
+    --btn-fg: var(--sea-950);
+    --btn-bg-hover: var(--white);
+    --btn-fg-hover: var(--sea-950);
+  }
+  .site-header[data-overlay]:not([data-scrolled]) .site-header__cta:focus-visible {
+    outline-color: var(--white);
+  }
+
+  /* ---------- Menu compacto (< 1024px) ---------- */
+  .site-header__menu {
+    position: relative;
+  }
+  @media (min-width: 1024px) {
+    .site-header__menu {
+      display: none;
+    }
+  }
+  .site-header__menu summary {
+    display: grid;
+    place-items: center;
+    inline-size: var(--tap-min);
+    block-size: var(--tap-min);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    list-style: none;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .site-header__menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .site-header__menu summary:hover,
+  .site-header__menu[open] summary {
+    background: rgb(127 127 127 / 0.14);
+  }
+  .site-header__panel {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: calc(100% + var(--space-2));
+    display: grid;
+    min-inline-size: 13rem;
+    padding: var(--space-2);
+    list-style: none;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    color: var(--color-heading);
+  }
+  .site-header__panel a {
+    display: flex;
+    align-items: center;
+    min-block-size: 48px;
+    padding-inline: var(--space-4);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-strong);
+    text-decoration: none;
+  }
+  .site-header__panel a:hover {
+    background: var(--color-surface);
   }
 </style>

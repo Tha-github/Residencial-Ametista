@@ -4,15 +4,21 @@ import type { PropertyContent } from '../../data/property.schema';
  * Fonte única da estrutura da página: ordem das seções, quando cada uma
  * pode ser publicada (somente com dados confirmados) e o que entra na
  * navegação. Header, footer, página e testes usam este mesmo mapa.
+ *
+ * Ordem pensada como uma visita: impacto e apresentação → fotos →
+ * diferenciais → experiência → estrutura → região → dúvidas práticas →
+ * reserva → perguntas frequentes → contato.
  */
 export type SectionId =
   | 'apresentacao'
   | 'galeria'
   | 'diferenciais'
+  | 'experiencia'
   | 'comodidades'
-  | 'informacoes'
   | 'localizacao'
+  | 'informacoes'
   | 'reservas'
+  | 'duvidas'
   | 'contato';
 
 export interface SectionState {
@@ -38,20 +44,25 @@ export function sectionStates(c: PropertyContent): SectionState[] {
     {
       id: 'apresentacao',
       title: 'Apresentação',
-      navLabel: 'O residencial',
       ready: c.description.length > 0,
     },
-    { id: 'galeria', title: 'Galeria', navLabel: 'Fotos', ready: c.media.gallery.length > 0 },
+    {
+      id: 'galeria',
+      title: 'Galeria',
+      navLabel: 'O apartamento',
+      ready: c.media.gallery.length > 0,
+    },
     { id: 'diferenciais', title: 'Diferenciais', ready: c.highlights.length > 0 },
+    {
+      id: 'experiencia',
+      title: 'Experiência',
+      navLabel: 'Experiência',
+      ready: c.experience.moments.length > 0,
+    },
     {
       id: 'comodidades',
       title: 'Comodidades e capacidade',
       ready: c.amenities.length > 0 || hasFacts(c),
-    },
-    {
-      id: 'informacoes',
-      title: 'Informações práticas',
-      ready: Boolean(p.checkIn || p.checkOut || p.houseRules.length > 0),
     },
     {
       id: 'localizacao',
@@ -59,7 +70,14 @@ export function sectionStates(c: PropertyContent): SectionState[] {
       navLabel: 'Localização',
       ready: Boolean(c.location.mapsUrl),
     },
+    {
+      id: 'informacoes',
+      title: 'Informações práticas',
+      navLabel: 'Informações',
+      ready: Boolean(p.checkIn || p.checkOut || p.houseRules.length > 0 || c.essentials.length > 0),
+    },
     { id: 'reservas', title: 'Reservas', ready: hasBookingLinks(c) },
+    { id: 'duvidas', title: 'Dúvidas frequentes', navLabel: 'Dúvidas', ready: c.faq.length > 0 },
     { id: 'contato', title: 'Contato', navLabel: 'Contato', ready: hasContact(c) },
   ];
 }

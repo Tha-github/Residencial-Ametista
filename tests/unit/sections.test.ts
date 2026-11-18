@@ -22,10 +22,12 @@ describe('estrutura de seções', () => {
       apresentacao: true,
       galeria: true,
       diferenciais: true,
+      experiencia: true,
       comodidades: true,
       informacoes: true,
       localizacao: true,
       reservas: true,
+      duvidas: true,
       contato: false,
     });
   });

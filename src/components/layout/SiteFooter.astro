@@ -6,6 +6,7 @@
  */
 import type { PropertyContent } from '../../data/property.schema';
 import { bookingLinks, formatPlace, instagramHandle } from '../../lib/content/format';
+import Icon from '../ui/Icon.astro';
 
 interface Props {
   content: PropertyContent;
@@ -17,21 +18,60 @@ const place = formatPlace(content.location);
 const links = bookingLinks(content);
 const { instagram, whatsapp, email } = content.contact;
 const hasContact = Boolean(instagram || whatsapp || email);
+const { streetAddress, neighborhood, city, stateCode, postalCode, mapsUrl } = content.location;
+const checkIn = content.practicalInfo.checkIn;
 const year = new Date().getFullYear();
+const cols =
+  1 + [streetAddress, nav.length > 0, links.length > 0, hasContact].filter(Boolean).length;
 ---
 
 <footer class="site-footer section--inverse">
   <div class="container">
-    <div class="site-footer__grid">
+    <div class="site-footer__grid" data-cols={cols}>
       <div class="site-footer__about">
         <p class="site-footer__brand">{content.name}</p>
-        <p class="site-footer__place">{place}</p>
+        {content.tagline ? (
+          <p class="site-footer__place">{content.tagline}</p>
+        ) : (
+          <p class="site-footer__place">{place}</p>
+        )}
         {links.length > 0 && (
           <p class="site-footer__note">
             Reservas concluídas nas plataformas externas indicadas neste site.
           </p>
         )}
       </div>
+
+      {streetAddress && (
+        <div>
+          <p class="site-footer__heading">Endereço</p>
+          <address class="site-footer__address">
+            {streetAddress}
+            {neighborhood && (
+              <>
+                <br />
+                {neighborhood}
+              </>
+            )}
+            <br />
+            {city} · {stateCode}
+            {postalCode && <> · {postalCode}</>}
+          </address>
+          {mapsUrl && (
+            <a
+              class="link site-footer__map"
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon name="map-pin" size={16} />
+              Como chegar
+              <span class="sr-only">(abre em nova aba)</span>
+            </a>
+          )}
+          {checkIn && <p class="site-footer__checkin">Check-in: {checkIn.toLowerCase()}</p>}
+        </div>
+      )}
 
       {nav.length > 0 && (
         <nav aria-label="Rodapé">
@@ -115,13 +155,36 @@ const year = new Date().getFullYear();
   .site-footer__about {
     grid-column: 1 / -1;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .site-footer__about {
       grid-column: auto;
     }
     .site-footer__grid {
-      grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+      grid-template-columns: 1.6fr repeat(3, minmax(0, 1fr));
     }
+    .site-footer__grid[data-cols='2'] {
+      grid-template-columns: 1.6fr minmax(0, 1fr);
+    }
+    .site-footer__grid[data-cols='3'] {
+      grid-template-columns: 1.6fr repeat(2, minmax(0, 1fr));
+    }
+    .site-footer__grid[data-cols='5'] {
+      grid-template-columns: 1.6fr repeat(4, minmax(0, 1fr));
+    }
+  }
+  .site-footer__address {
+    font-style: normal;
+    line-height: var(--leading-normal);
+    color: var(--color-inverse-muted);
+  }
+  .site-footer__map {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--tap-min);
+  }
+  .site-footer__checkin {
+    color: var(--color-inverse-muted);
   }
   .site-footer__brand {
     font-family: var(--font-display);

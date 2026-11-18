@@ -21,6 +21,8 @@ export function listPending(c: PropertyContent): PendingItem[] {
   if (c.description.length === 0) add('apresentacao', 'description', 'Descrição do residencial');
   if (c.media.gallery.length === 0) add('galeria', 'media.gallery', 'Fotos reais do imóvel');
   if (c.highlights.length === 0) add('diferenciais', 'highlights', 'Diferenciais confirmados');
+  if (c.experience.moments.length === 0)
+    add('experiencia', 'experience.moments', 'Momentos da experiência (com fotos reais)');
 
   const f = c.facts;
   if (f.maxGuests === undefined) add('comodidades', 'facts.maxGuests', 'Capacidade máxima');
@@ -39,6 +41,8 @@ export function listPending(c: PropertyContent): PendingItem[] {
   if (!c.booking.booking) add('reservas', 'booking.booking', 'URL do anúncio no Booking.com');
   if (!c.booking.airbnb) add('reservas', 'booking.airbnb', 'URL do anúncio no Airbnb');
   if (!c.booking.decolar) add('reservas', 'booking.decolar', 'URL do anúncio na Decolar');
+
+  if (c.faq.length === 0) add('duvidas', 'faq', 'Perguntas frequentes com respostas confirmadas');
 
   const ct = c.contact;
   if (!ct.instagram && !ct.whatsapp && !ct.email)

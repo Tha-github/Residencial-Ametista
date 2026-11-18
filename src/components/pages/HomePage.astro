@@ -8,13 +8,17 @@ import About from '../sections/About.astro';
 import Amenities from '../sections/Amenities.astro';
 import Booking from '../sections/Booking.astro';
 import Contact from '../sections/Contact.astro';
+import Experience from '../sections/Experience.astro';
+import Faq from '../sections/Faq.astro';
 import Gallery from '../sections/Gallery.astro';
 import Hero from '../sections/Hero.astro';
 import Highlights from '../sections/Highlights.astro';
 import Location from '../sections/Location.astro';
 import PracticalInfo from '../sections/PracticalInfo.astro';
+import QuickFacts from '../sections/QuickFacts.astro';
 import PendingNotice from '../states/PendingNotice.astro';
 import PublicationStatus from '../states/PublicationStatus.astro';
+import { bookingLinks } from '../../lib/content/format';
 import { listPending, pendingFor } from '../../lib/content/pending';
 import { hasBookingLinks, navItems, sectionStates } from '../../lib/content/sections';
 import { showDevNotices } from '../../lib/env';
@@ -28,7 +32,8 @@ const states = sectionStates(content);
 const nav = navItems(states);
 const pending = listPending(content);
 const hasBooking = hasBookingLinks(content);
-const seoDescription = `Conheça o ${content.name} na ${content.location.beach ?? 'Praia dos Ingleses'}, em ${content.location.city}, ${content.location.state}. Consulte informações sobre a hospedagem perto do mar.`;
+const hasStrip = content.quickFacts.length > 0;
+const seoDescription = `Conheça o ${content.name} na ${content.location.beach ?? 'Praia dos Ingleses'}, em ${content.location.city}, ${content.location.state}. Apartamento completo com terraço gourmet perto do mar.`;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const siteUrl = Astro.site ? new URL(`${basePath}/`, Astro.site).toString() : undefined;
 const structuredData = siteUrl
@@ -45,10 +50,12 @@ const components = {
   apresentacao: About,
   galeria: Gallery,
   diferenciais: Highlights,
+  experiencia: Experience,
   comodidades: Amenities,
-  informacoes: PracticalInfo,
   localizacao: Location,
+  informacoes: PracticalInfo,
   reservas: Booking,
+  duvidas: Faq,
   contato: Contact,
 } as const;
 ---
@@ -66,13 +73,21 @@ const components = {
     bookingCta={hasBooking}
   />
 
-  <Hero content={content} />
+  <Hero content={content} withStrip={hasStrip} />
+  <QuickFacts content={content} />
 
   {!hasBooking && <PublicationStatus />}
 
-  {states.map((s) => {
+  {states.map((s, i) => {
     const Component = components[s.id];
-    if (s.ready) return <Component content={content} />;
+    if (s.ready) {
+      // A primeira seção encosta na faixa do hero: menos respiro no topo.
+      return i === 0 && s.id === 'apresentacao' ? (
+        <About content={content} tightTop={hasStrip} />
+      ) : (
+        <Component content={content} />
+      );
+    }
     return (
       showDevNotices && (
         <div class="container pending" id={s.id}>
@@ -83,7 +98,13 @@ const components = {
   })}
 
   <SiteFooter slot="footer" content={content} nav={nav} />
-  {hasBooking && <MobileBookingBar slot="footer" />}
+  {hasBooking && (
+    <MobileBookingBar
+      slot="footer"
+      name={content.name}
+      platforms={bookingLinks(content).map((l) => l.name)}
+    />
+  )}
 </BaseLayout>
 
 <style>

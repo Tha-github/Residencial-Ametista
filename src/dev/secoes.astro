@@ -13,7 +13,10 @@ import About from '../components/sections/About.astro';
 import Amenities from '../components/sections/Amenities.astro';
 import Booking from '../components/sections/Booking.astro';
 import Contact from '../components/sections/Contact.astro';
+import Experience from '../components/sections/Experience.astro';
+import Faq from '../components/sections/Faq.astro';
 import Gallery from '../components/sections/Gallery.astro';
+import QuickFacts from '../components/sections/QuickFacts.astro';
 import Hero from '../components/sections/Hero.astro';
 import Highlights from '../components/sections/Highlights.astro';
 import Location from '../components/sections/Location.astro';
@@ -54,6 +57,7 @@ const content = parseContent(
     ...real,
     media: {
       hero: { src: 'fixture', alt: '[AMOSTRA] imagem de teste do hero', focus: '62% 40%' },
+      intro: real.media.intro,
     },
     description: [
       '[AMOSTRA] Parágrafo de abertura da apresentação, em destaque, com duas ou três linhas.',
@@ -85,15 +89,22 @@ const nav = navItems(sectionStates(content));
 
 <BaseLayout title="[AMOSTRA] Seções · desenvolvimento" noindex>
   <SiteHeader slot="header" name={content.name} overlay nav={nav} bookingCta />
-  <Hero content={content} heroImage={heroImage} />
-  <About content={content} />
+  <Hero content={content} heroImage={heroImage} withStrip />
+  <QuickFacts content={content} />
+  <About content={content} tightTop />
   <Gallery content={content} photos={photos} />
   <Highlights content={content} />
+  <Experience content={content} />
   <Amenities content={content} />
-  <PracticalInfo content={content} />
   <Location content={content} />
+  <PracticalInfo content={content} />
   <Booking content={content} />
+  <Faq content={content} />
   <Contact content={content} />
   <SiteFooter slot="footer" content={content} nav={nav} />
-  <MobileBookingBar slot="footer" />
+  <MobileBookingBar
+    slot="footer"
+    name={content.name}
+    platforms={['Booking.com', 'Airbnb', 'Decolar']}
+  />
 </BaseLayout>

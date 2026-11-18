@@ -2,16 +2,55 @@
 /**
  * Barra fixa de reserva no mobile (< 768px). Só é renderizada quando há
  * links de plataforma; leva à seção de reservas, não a um checkout.
+ * Compacta (uma linha) e escondida enquanto o hero — que já tem o CTA —
+ * está na tela e enquanto a própria seção de reservas está visível.
+ * Sem JavaScript, fica sempre visível.
  */
 import Icon from '../ui/Icon.astro';
+
+interface Props {
+  name: string;
+  /** Nomes das plataformas com link (ex.: ["Booking.com", "Airbnb"]). */
+  platforms?: string[];
+}
+
+const { name, platforms = [] } = Astro.props;
 ---
 
-<div class="booking-bar">
-  <a class="btn btn--lg booking-bar__cta" href="#reservas">
-    Ver opções de reserva
+<div class="booking-bar" data-booking-bar>
+  <p class="booking-bar__text">
+    <span class="booking-bar__title">{name}</span>
+    {platforms.length > 0 && (
+      <span class="booking-bar__sub">Reserve pelo {platforms.join(' ou ')}</span>
+    )}
+  </p>
+  <a class="btn booking-bar__cta" href="#reservas">
+    Reservar
     <Icon name="arrow-right" size={18} />
   </a>
 </div>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-booking-bar]');
+  const watched = [document.querySelector('.hero'), document.querySelector('#reservas')].filter(
+    (el): el is Element => Boolean(el),
+  );
+  if (bar && watched.length > 0 && 'IntersectionObserver' in window) {
+    const visible = new Set<Element>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.add(e.target);
+          else visible.delete(e.target);
+        }
+        bar.toggleAttribute('data-hidden', visible.size > 0);
+      },
+      { threshold: 0.15 },
+    );
+    bar.setAttribute('data-hidden', '');
+    for (const el of watched) io.observe(el);
+  }
+</script>
 
 <style>
   .booking-bar {
@@ -19,17 +58,50 @@ import Icon from '../ui/Icon.astro';
     inset-inline: 0;
     bottom: 0;
     z-index: var(--z-header);
-    padding: var(--space-3) var(--gutter) calc(var(--space-3) + env(safe-area-inset-bottom));
-    background: rgb(250 247 242 / 0.94);
-    backdrop-filter: saturate(1.4) blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--gutter) calc(var(--space-2) + env(safe-area-inset-bottom));
+    background: rgb(250 247 242 / 0.95);
+    backdrop-filter: saturate(1.4) blur(12px);
     border-top: var(--border-width) solid var(--color-border);
+    box-shadow: 0 -8px 24px -16px rgb(11 51 70 / 0.35);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      opacity var(--duration-base) var(--ease-out);
+  }
+  .booking-bar[data-hidden] {
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .booking-bar__text {
+    display: grid;
+    min-inline-size: 0;
+    line-height: 1.25;
+  }
+  .booking-bar__title {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    color: var(--color-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .booking-bar__sub {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .booking-bar__cta {
-    inline-size: 100%;
+    flex: none;
   }
   /* Reserva espaço para a barra não cobrir o fim da página */
   :global(body:has(.booking-bar)) {
-    padding-bottom: 5.5rem;
+    padding-bottom: 4.5rem;
   }
   @media (min-width: 768px) {
     .booking-bar {

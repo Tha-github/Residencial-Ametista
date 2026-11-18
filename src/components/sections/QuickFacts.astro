@@ -1,0 +1,132 @@
+---
+/**
+ * Faixa de informações rápidas, sobreposta à base do hero: o que o hóspede
+ * procura primeiro (praia, quartos, churrasqueira, vaga, pets...).
+ * Itens vêm de `quickFacts` no conteúdo; sem itens, nada é renderizado.
+ * Não é busca nem disponibilidade: a reserva segue nas plataformas externas.
+ */
+import type { PropertyContent } from '../../data/property.schema';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { quickFacts } = Astro.props.content;
+---
+
+{quickFacts.length > 0 && (
+  <section class="quickfacts" aria-label="Resumo da hospedagem">
+    <div class="container">
+      <ul class="quickfacts__list" role="list" data-count={quickFacts.length}>
+        {quickFacts.map((fact) => (
+          <li class="quickfacts__item">
+            <span class="quickfacts__icon">
+              <Icon name={fact.icon} size={22} />
+            </span>
+            <span class="quickfacts__label">{fact.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .quickfacts {
+    position: relative;
+    z-index: 1;
+    margin-top: calc(-1 * var(--strip-overlap));
+  }
+  .quickfacts__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: var(--space-2);
+    list-style: none;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+  @media (min-width: 768px) {
+    .quickfacts__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      padding: var(--space-3);
+    }
+  }
+  @media (min-width: 1200px) {
+    .quickfacts__list {
+      grid-template-columns: repeat(var(--cols, 6), minmax(0, 1fr));
+      padding: var(--space-4) var(--space-3);
+    }
+    .quickfacts__list[data-count='4'] {
+      --cols: 4;
+    }
+    .quickfacts__list[data-count='5'] {
+      --cols: 5;
+    }
+  }
+
+  .quickfacts__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-block-size: 4rem;
+    padding: var(--space-3) var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-strong);
+    line-height: var(--leading-snug);
+    color: var(--color-heading);
+  }
+  /* Divisórias sutis entre os itens (linhas no mobile, colunas no desktop) */
+  @media (max-width: 767px) {
+    .quickfacts__item:nth-child(n + 3) {
+      border-top: var(--border-width) solid var(--color-border);
+    }
+    .quickfacts__item:nth-child(even) {
+      border-left: var(--border-width) solid var(--color-border);
+    }
+  }
+  @media (min-width: 768px) and (max-width: 1199px) {
+    .quickfacts__item:nth-child(n + 4) {
+      border-top: var(--border-width) solid var(--color-border);
+    }
+    .quickfacts__item:not(:nth-child(3n + 1)) {
+      border-left: var(--border-width) solid var(--color-border);
+    }
+  }
+  @media (min-width: 1200px) {
+    .quickfacts__item {
+      justify-content: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+    }
+    .quickfacts__label {
+      max-inline-size: 9.5rem;
+    }
+    .quickfacts__item + .quickfacts__item {
+      border-left: var(--border-width) solid var(--color-border);
+    }
+  }
+
+  .quickfacts__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: 50%;
+    background: var(--sea-100);
+    color: var(--color-accent);
+  }
+  @media (max-width: 379px) {
+    .quickfacts__icon {
+      inline-size: 34px;
+      block-size: 34px;
+    }
+    .quickfacts__item {
+      gap: var(--space-2);
+      padding-inline: var(--space-2);
+      font-size: var(--text-xs);
+    }
+  }
+</style>

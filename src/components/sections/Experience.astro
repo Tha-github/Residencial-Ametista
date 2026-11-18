@@ -1,0 +1,192 @@
+---
+/**
+ * A experiência de estar hospedado: momentos do dia com fotos reais do
+ * imóvel e texto curto, seguidos de "para quem" (família, amigos...).
+ * Superfície mar profundo para quebrar o ritmo da página.
+ * Mobile: momentos em carrossel com rolagem nativa (scroll-snap, sem JS).
+ */
+import type { PropertyContent } from '../../data/property.schema';
+import Section from '../layout/Section.astro';
+import Photo from '../media/Photo.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  content: PropertyContent;
+}
+
+const { moments, audiences } = Astro.props.content.experience;
+---
+
+<Section
+  id="experiencia"
+  eyebrow="A experiência"
+  title="Férias que começam *na porta de casa*"
+  lead="Sem trânsito até a praia, sem procurar vaga, sem carregar cadeira por quarteirões. Você desce, caminha quatro minutos e o mar está ali."
+  surface="inverse"
+  class="experience"
+>
+  <ol class="moments" aria-label="Um dia no residencial">
+    {moments.map((m) => (
+      <li class="moment">
+        <div class="moment__photo">
+          <Photo
+            src={m.photo.src}
+            alt={m.photo.alt}
+            focus={m.photo.focus}
+            aspect="4 / 5"
+            sizes="(min-width: 1024px) 24vw, (min-width: 640px) 45vw, 78vw"
+          />
+        </div>
+        <div class="moment__body">
+          {m.time && <p class="moment__time">{m.time}</p>}
+          <h3 class="moment__title">{m.title}</h3>
+          <p class="moment__text">{m.text}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  {audiences.length > 0 && (
+    <div class="audiences">
+      <h3 class="audiences__title">Feito para cada tipo de viagem</h3>
+      <ul class="audiences__list" role="list">
+        {audiences.map((a) => (
+          <li class="audience reveal">
+            <span class="audience__icon">
+              <Icon name={a.icon} size={22} />
+            </span>
+            <p class="audience__name">{a.title}</p>
+            <ul class="audience__items" role="list">
+              {a.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</Section>
+
+<style>
+  /* A classe chega pela casca <Section>: seletor global para o escopo valer */
+  :global(.section.experience) {
+    background:
+      radial-gradient(90% 60% at 100% 0%, rgb(26 100 136 / 0.35) 0%, transparent 70%),
+      var(--sea-900);
+  }
+
+  /* ---------- Momentos ---------- */
+  .moments {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(78%, 20rem);
+    gap: var(--space-4);
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 0 var(--gutter) var(--space-3);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: thin;
+    scrollbar-color: rgb(219 233 239 / 0.3) transparent;
+    list-style: none;
+  }
+  .moment {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    scroll-snap-align: start;
+  }
+  @media (min-width: 640px) {
+    .moments {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-columns: auto;
+      gap: var(--space-7) var(--grid-gap);
+      margin-inline: 0;
+      padding: 0;
+      overflow: visible;
+    }
+  }
+  @media (min-width: 1024px) {
+    .moments {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    /* Escalonado: ritmo editorial, como páginas de revista */
+    .moment:nth-child(even) {
+      margin-top: var(--space-8);
+    }
+  }
+  .moment__photo {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+  .moment__body {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .moment__time {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-style: italic;
+    line-height: 1;
+    color: var(--terra-300);
+  }
+  .moment__title {
+    font-size: var(--text-xl);
+  }
+  .moment__text {
+    color: var(--color-inverse-muted);
+  }
+
+  /* ---------- Para quem ---------- */
+  .audiences {
+    margin-top: var(--space-9);
+    padding-top: var(--space-7);
+    border-top: var(--border-width) solid var(--color-border);
+  }
+  .audiences__title {
+    margin-bottom: var(--space-6);
+    font-size: var(--text-2xl);
+  }
+  .audiences__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6) var(--grid-gap);
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 1024px) {
+    .audiences__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .audience {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+  }
+  .audience__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    border: var(--border-width) solid rgb(219 233 239 / 0.3);
+    border-radius: 50%;
+    color: var(--terra-300);
+  }
+  .audience__name {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    color: var(--sand-50);
+  }
+  .audience__items {
+    display: grid;
+    gap: var(--space-1);
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+    color: var(--color-inverse-muted);
+  }
+</style>

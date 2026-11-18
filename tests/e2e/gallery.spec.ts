@@ -133,8 +133,11 @@ test('imagem ampliada carrega, tem alt e legenda só quando fornecida', async ({
   await thumbs(page).first().click();
   const img = page.locator('[data-lightbox-img]');
   await expect(img).toHaveAttribute('alt', '[AMOSTRA] teste 1');
+  // Em dev a variante ampliada é gerada sob demanda: a 1ª carga pode demorar.
   await expect
-    .poll(() => img.evaluate((el: HTMLImageElement) => (el.complete ? el.naturalWidth : 0)))
+    .poll(() => img.evaluate((el: HTMLImageElement) => (el.complete ? el.naturalWidth : 0)), {
+      timeout: 20_000,
+    })
     .toBeGreaterThan(0);
   await expect(page.locator('[data-lightbox-caption]')).toHaveText('[AMOSTRA] Legenda opcional');
 
@@ -165,6 +168,36 @@ test('controles do modo ampliado têm área de toque ≥ 44px', async ({ page })
     expect(box?.width).toBeGreaterThanOrEqual(44);
     expect(box?.height).toBeGreaterThanOrEqual(44);
   }
+});
+
+test.describe('tour por ambiente (página real)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#galeria').scrollIntoViewIfNeeded();
+  });
+
+  test('cada ambiente abre o modo ampliado na foto certa e navega por todas', async ({ page }) => {
+    const links = page.locator('.tour__link');
+    expect(await links.count()).toBeGreaterThan(4);
+    // Primeira foto do 2º ambiente
+    const second = page.locator('.room').nth(1).locator('.tour__link').first();
+    const index = Number(await second.getAttribute('data-gallery-item'));
+    await second.click();
+    await expect(lightbox(page)).toBeVisible();
+    const total = await page
+      .locator('[data-gallery] [data-gallery-item]')
+      .evaluateAll((els) => new Set(els.map((e) => (e as HTMLElement).dataset.galleryItem)).size);
+    await expect(counter(page)).toHaveText(`Foto ${index + 1} de ${total}`);
+    await page.keyboard.press('End');
+    await expect(counter(page)).toHaveText(`Foto ${total} de ${total}`);
+    await page.keyboard.press('Escape');
+    await expect(lightbox(page)).toBeHidden();
+  });
+
+  test('"ver todas" abre na primeira foto', async ({ page }) => {
+    await page.getByRole('link', { name: /Ver todas as \d+ fotos/ }).click();
+    await expect(counter(page)).toHaveText(/^Foto 1 de \d+$/);
+  });
 });
 
 test('imagem ampliada visível, grande e inteira na tela (sem cortes)', async ({ page }) => {

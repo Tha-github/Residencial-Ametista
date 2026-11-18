@@ -1,10 +1,10 @@
 {
-  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente em 2026-11-17. Fotos mantidas com a marca-d'água original. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Galeria completada com as 16 fotos da prévia em 2026-11-18. Contato (WhatsApp vazio na prévia) e check-out ainda pendentes.",
+  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente (restinga-previas.pages.dev/residencial-ametista) em 2026-11-17/18. Fotos do imóvel mantidas com a marca-d'água original; fotos da região da Wikimedia Commons com crédito. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato (WhatsApp vazio na prévia) e check-out ainda pendentes.",
   "name": "Residencial Ametista",
-  "tagline": "Apartamento com terraço gourmet a 250 m da Praia dos Ingleses, em Florianópolis.",
+  "tagline": "Apartamento completo com terraço gourmet a aproximadamente 250 metros do mar.",
   "description": [
-    "O Residencial Ametista oferece um apartamento inteiro de 90 m² na Praia dos Ingleses, com dois quartos, dois banheiros, cozinha completa e terraço gourmet privativo. A praia fica a aproximadamente 250 m, cerca de quatro minutos a pé, conforme a prévia enviada.",
-    "A rua é tranquila, com mercado, farmácia, restaurantes e lojas na região. As praias do Santinho e Brava ficam a poucos quilômetros, e o Aeroporto Internacional Hercílio Luz está a 38 km."
+    "Um apartamento inteiro de 90 m² na Praia dos Ingleses, com dois quartos, dois banheiros, cozinha completa e um terraço gourmet só seu. Da porta até a areia são cerca de quatro minutos a pé.",
+    "A rua é tranquila, com mercado, farmácia, restaurantes e lojas na região. Você estaciona na vaga gratuita do prédio, desce com as cadeiras e o guarda-sol do apartamento e passa o dia na praia. No fim da tarde, o terraço e a churrasqueira esperam a família."
   ],
   "location": {
     "beach": "Praia dos Ingleses",
@@ -14,24 +14,54 @@
     "stateCode": "SC",
     "streetAddress": "Rua Dante de Patta, 283",
     "postalCode": "88058-510",
-    "mapsUrl": "https://maps.app.goo.gl/qvsUVxg31GUaZbr36"
+    "mapsUrl": "https://maps.app.goo.gl/qvsUVxg31GUaZbr36",
+    "beachDistanceM": 250,
+    "beachWalkMinutes": 4
   },
+  "quickFacts": [
+    { "icon": "footprints", "label": "4 min a pé até a praia" },
+    { "icon": "bed", "label": "2 quartos · 4 camas" },
+    { "icon": "flame", "label": "Terraço com churrasqueira" },
+    { "icon": "parking", "label": "Vaga privativa grátis" },
+    { "icon": "paw", "label": "Aceita pets" },
+    { "icon": "snowflake", "label": "Ar-condicionado e Wi-Fi" }
+  ],
   "highlights": [
     {
-      "title": "Praia a cerca de 250 m",
-      "text": "A Praia dos Ingleses fica a aproximadamente quatro minutos a pé, segundo as informações da prévia enviada."
+      "icon": "waves",
+      "stat": "250 m",
+      "title": "Localização",
+      "text": "Aproximadamente 250 metros da Praia dos Ingleses, cerca de quatro minutos caminhando."
     },
     {
-      "title": "Terraço gourmet privativo",
-      "text": "O espaço tem mesa, guarda-sol e churrasqueira."
+      "icon": "flame",
+      "title": "Terraço gourmet",
+      "text": "Espaço privativo com churrasqueira, mesa e ambiente para aproveitar o fim de tarde."
     },
     {
-      "title": "Vaga privativa gratuita",
-      "text": "Estacione no prédio e vá à praia a pé durante toda a viagem."
+      "icon": "home",
+      "title": "Apartamento completo",
+      "text": "90 m², dois quartos, quatro camas e dois banheiros."
     },
     {
-      "title": "Pets bem-vindos",
-      "text": "Animais de estimação são aceitos mediante pedido, sem custo adicional."
+      "icon": "utensils",
+      "title": "Cozinha equipada",
+      "text": "Cooktop, forno, micro-ondas, geladeira, cafeteira e torradeira."
+    },
+    {
+      "icon": "snowflake",
+      "title": "Conforto",
+      "text": "Ar-condicionado, Wi-Fi, TV com streaming e máquina de lavar."
+    },
+    {
+      "icon": "parking",
+      "title": "Praticidade",
+      "text": "Vaga privativa gratuita, elevador e kit praia com cadeiras, guarda-sol e cooler."
+    },
+    {
+      "icon": "paw",
+      "title": "Pet friendly",
+      "text": "Animais de estimação aceitos mediante pedido, sem custo adicional."
     }
   ],
   "facts": {
@@ -55,6 +85,131 @@
     "Cadeirão e berço sujeitos à disponibilidade",
     "Pets aceitos mediante pedido, sem custo adicional"
   ],
+  "rooms": [
+    {
+      "title": "Sala e cozinha",
+      "text": "Sofá de couro, mesa para a família e cozinha equipada com balcão, tudo integrado e com luz natural.",
+      "photos": ["sala.jpg", "cozinha.jpg", "cozinha-bar.jpg", "cozinha-fogao.jpg"]
+    },
+    {
+      "title": "Quarto de casal",
+      "text": "Cama de casal, ar-condicionado, TV e porta para a varanda.",
+      "photos": ["quarto-varanda.jpg", "quarto-casal.jpg", "quarto-casal-tv.jpg"]
+    },
+    {
+      "title": "Quarto das camas de solteiro",
+      "text": "Camas de solteiro, ar-condicionado e luz natural: ideal para crianças ou amigos.",
+      "photos": ["quarto-solteiros.jpg", "quarto-azul.jpg", "quarto-tres-camas.jpg"]
+    },
+    {
+      "title": "Terraço gourmet e varanda",
+      "text": "Mesa de madeira, guarda-sol, churrasqueira e sofá na varanda, sem dividir com vizinhos.",
+      "photos": [
+        "terraco-guardasol.jpg",
+        "terraco-mesa.jpg",
+        "terraco-cadeiras.jpg",
+        "varanda-sofa.jpg"
+      ]
+    },
+    {
+      "title": "Banheiros e prédio",
+      "text": "Dois banheiros com box, elevador e vaga privativa na garagem.",
+      "photos": ["banheiro.jpg", "fachada.jpg"]
+    }
+  ],
+  "experience": {
+    "moments": [
+      {
+        "time": "9h",
+        "title": "Café ao ar livre",
+        "text": "Comece o dia com a brisa do mar no terraço, antes de descer para a areia.",
+        "photo": {
+          "src": "terraco-mesa.jpg",
+          "alt": "Mesa de madeira do terraço com almofadas floridas"
+        }
+      },
+      {
+        "time": "17h",
+        "title": "Volta da praia",
+        "text": "Quatro minutos de caminhada com as cadeiras, o guarda-sol e o cooler do apartamento. O carro fica na vaga a viagem inteira.",
+        "photo": {
+          "src": "terraco-cadeiras.jpg",
+          "alt": "Cadeiras de praia coloridas guardadas no terraço"
+        }
+      },
+      {
+        "time": "20h",
+        "title": "Jantar em família",
+        "text": "Churrasqueira acesa, mesa posta no terraço e a noite inteira pela frente.",
+        "photo": {
+          "src": "varanda-sofa.jpg",
+          "alt": "Varanda com sofá e mesa de vidro com taças"
+        }
+      },
+      {
+        "title": "Espaço para todo mundo",
+        "text": "Dois quartos, dois banheiros e sala integrada: cada um tem o seu canto, e todos se encontram à mesa.",
+        "photo": {
+          "src": "sala.jpg",
+          "alt": "Sala com parede azul, sofá de couro e mesa de jantar"
+        }
+      }
+    ],
+    "audiences": [
+      {
+        "icon": "baby",
+        "title": "Família",
+        "items": ["Quarto só para os pequenos", "Cadeirão e berço", "Rua calma e praia a pé"]
+      },
+      {
+        "icon": "users",
+        "title": "Amigos",
+        "items": ["2 quartos e 2 banheiros", "Churrasco no terraço", "Cozinha para dividir"]
+      },
+      {
+        "icon": "heart",
+        "title": "Casal",
+        "items": ["Espaço de sobra", "Jantar no terraço", "Praia a 4 minutos"]
+      },
+      {
+        "icon": "paw",
+        "title": "Com pet",
+        "items": ["Pets aceitos sem custo", "Varanda e terraço", "Avise ao reservar"]
+      }
+    ]
+  },
+  "essentials": [
+    {
+      "icon": "paw",
+      "label": "Pets",
+      "value": "Aceitos mediante pedido, sem custo adicional. Avise ao fazer a reserva.",
+      "featured": true
+    },
+    {
+      "icon": "baby",
+      "label": "Crianças",
+      "value": "Crianças de qualquer idade são bem-vindas. Cadeirão e berço sujeitos à disponibilidade.",
+      "featured": true
+    },
+    { "icon": "bed", "label": "Quartos e camas", "value": "2 quartos com 4 camas" },
+    { "icon": "bath", "label": "Banheiros", "value": "2 banheiros com box" },
+    { "icon": "area", "label": "Área", "value": "90 m² de apartamento inteiro" },
+    { "icon": "footprints", "label": "Praia", "value": "Cerca de 250 m, 4 minutos a pé" },
+    { "icon": "parking", "label": "Estacionamento", "value": "Vaga privativa gratuita no prédio" },
+    {
+      "icon": "utensils",
+      "label": "Cozinha",
+      "value": "Cooktop, forno, micro-ondas, geladeira, cafeteira e torradeira"
+    },
+    { "icon": "snowflake", "label": "Ar-condicionado", "value": "Nos quartos e na área social" },
+    { "icon": "wifi", "label": "Wi-Fi", "value": "Wi-Fi e TV com streaming" },
+    {
+      "icon": "shirt",
+      "label": "Roupa de cama e toalhas",
+      "value": "Incluídas, com secador de cabelo e produtos de banho"
+    },
+    { "icon": "umbrella", "label": "Kit praia", "value": "Cadeiras, guarda-sol e cooler" }
+  ],
   "practicalInfo": {
     "checkIn": "Das 14h às 23h30",
     "houseRules": []
@@ -63,10 +218,109 @@
     "booking": "https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html",
     "airbnb": "https://www.airbnb.com.br/rooms/13257454"
   },
+  "region": {
+    "places": [
+      {
+        "name": "Praia dos Ingleses",
+        "distance": "250 m",
+        "text": "Areia larga, mar aberto e estrutura completa de restaurantes, quiosques e comércio. O seu quintal durante a viagem.",
+        "photo": {
+          "src": "regiao/praia-ingleses-aerea.jpg",
+          "alt": "Vista aérea da Praia dos Ingleses, com a orla curva e o mar azul",
+          "credit": "Praia dos Ingleses: Jeferson Felix, CC BY 3.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Praia do Santinho",
+        "distance": "3,6 km",
+        "text": "Ondas para surfar e o costão com inscrições rupestres milenares.",
+        "photo": {
+          "src": "regiao/santinho.jpg",
+          "alt": "Praia do Santinho com ondas e uma ilha ao fundo",
+          "credit": "Costão do Santinho: Amanda Likes, CC BY-SA 4.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Praia Brava",
+        "distance": "4,5 km",
+        "text": "Água clara, costão de pedras e morros verdes em volta.",
+        "photo": {
+          "src": "regiao/praia-brava.jpg",
+          "alt": "Praia Brava entre pedras e mata, com guarda-sóis na areia",
+          "credit": "Praia Brava: Mario Roberto Durán Ortiz, CC BY-SA 4.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Dunas dos Ingleses",
+        "distance": "Perto",
+        "text": "Sandboard, trilhas e um pôr do sol que vale a caminhada.",
+        "photo": {
+          "src": "regiao/dunas-ingleses.jpg",
+          "alt": "Dunas e vegetação de restinga entre Ingleses e o Santinho",
+          "credit": "Dunas dos Ingleses: Yaroslav Blanter, CC BY-SA 3.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Comércio do bairro",
+        "distance": "Na região",
+        "text": "Mercado, farmácia, restaurantes e lojas no caminho para a praia."
+      }
+    ]
+  },
+  "faq": [
+    {
+      "question": "Como faço a reserva?",
+      "answer": "A reserva é feita pelo Booking.com ou pelo Airbnb. Escolha a plataforma de sua preferência, consulte datas e valores e conclua a reserva por lá."
+    },
+    {
+      "question": "Qual o horário de entrada?",
+      "answer": "A entrada é das 14h às 23h30. Avise o horário previsto de chegada com antecedência para que alguém receba você."
+    },
+    {
+      "question": "Posso levar meu pet?",
+      "answer": "Sim. Pets são aceitos mediante pedido, sem custo adicional. Avise ao fazer a reserva."
+    },
+    {
+      "question": "Tem estacionamento?",
+      "answer": "Sim, vaga privativa gratuita no prédio. Como a praia fica a cerca de quatro minutos a pé, o carro pode descansar a viagem inteira."
+    },
+    {
+      "question": "Quantas pessoas o apartamento acomoda?",
+      "answer": "São 2 quartos com 4 camas e 2 banheiros. Confira na plataforma de reserva a capacidade para o seu grupo."
+    },
+    {
+      "question": "É bom para viajar com crianças?",
+      "answer": "Muito. Crianças de qualquer idade são bem-vindas, há cadeirão e berço (sujeitos à disponibilidade) e a rua é calma."
+    },
+    {
+      "question": "O que preciso levar?",
+      "answer": "Só a mala de roupa. Roupa de cama, toalhas, cozinha equipada e até cadeiras, guarda-sol e cooler para a praia já estão no apartamento."
+    },
+    {
+      "question": "Fica longe do aeroporto?",
+      "answer": "São 38 km do Aeroporto Internacional Hercílio Luz até o residencial."
+    }
+  ],
   "media": {
     "hero": {
       "src": "terraco-guardasol.jpg",
-      "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores"
+      "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores",
+      "focus": "50% 60%"
+    },
+    "intro": [
+      {
+        "src": "sala.jpg",
+        "alt": "Sala com parede azul, sofá de couro e mesa de jantar"
+      },
+      {
+        "src": "quarto-varanda.jpg",
+        "alt": "Quarto de casal com parede azul e porta para a varanda"
+      }
+    ],
+    "booking": {
+      "src": "terraco-guardasol.jpg",
+      "alt": "Terraço gourmet com guarda-sol azul e vista verde",
+      "focus": "50% 60%"
     },
     "gallery": [
       {
@@ -82,12 +336,6 @@
         "caption": "Sala integrada"
       },
       {
-        "src": "cozinha-bar.jpg",
-        "alt": "Cozinha com balcão azul",
-        "group": "social",
-        "caption": "Cozinha"
-      },
-      {
         "src": "cozinha.jpg",
         "alt": "Cozinha em L com bancada de granito, cooktop, micro-ondas e geladeira, integrada à sala",
         "group": "social"
@@ -96,6 +344,12 @@
         "src": "cozinha-fogao.jpg",
         "alt": "Bancada da cozinha com pia, cooktop de cinco bocas, chaleira elétrica e micro-ondas",
         "group": "social"
+      },
+      {
+        "src": "cozinha-bar.jpg",
+        "alt": "Cozinha com balcão azul",
+        "group": "social",
+        "caption": "Cozinha"
       },
       {
         "src": "quarto-varanda.jpg",

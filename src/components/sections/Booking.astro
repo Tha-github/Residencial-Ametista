@@ -1,13 +1,15 @@
 ---
 /**
- * Reservas: um link externo por plataforma (somente URLs fornecidos).
- * Deixa explícito que datas, valores, pagamento e confirmação ficam na
- * plataforma escolhida. Nada de disponibilidade, preço ou calendário aqui.
+ * Reservas: um link externo por plataforma (somente URLs fornecidos), em
+ * painéis grandes e fáceis de tocar. Deixa explícito que datas, valores,
+ * pagamento e confirmação ficam na plataforma escolhida. Nada de
+ * disponibilidade, preço ou calendário aqui.
  */
 import type { PropertyContent } from '../../data/property.schema';
 import { bookingLinks } from '../../lib/content/format';
-import Section from '../layout/Section.astro';
-import Button from '../ui/Button.astro';
+import Photo from '../media/Photo.astro';
+import Icon from '../ui/Icon.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 
 interface Props {
   content: PropertyContent;
@@ -15,72 +17,234 @@ interface Props {
 
 const { content } = Astro.props;
 const links = bookingLinks(content);
+const photo = content.media.booking;
+const steps = [
+  {
+    title: 'Escolha a plataforma',
+    text: `${links.map((l) => l.name).join(' ou ')}, a que você preferir.`,
+  },
+  { title: 'Consulte datas e valores', text: 'A disponibilidade aparece na própria plataforma.' },
+  { title: 'Confirme e venha', text: 'Pagamento e confirmação acontecem por lá.' },
+].filter((_, i) => links.length > 1 || i !== 0);
 ---
 
-<Section
-  id="reservas"
-  eyebrow="Reservas"
-  title="Escolha onde reservar"
-  surface="inverse"
-  lead={`O ${content.name} está anunciado ${
-    links.length === 1 ? 'na plataforma abaixo' : 'nas plataformas abaixo'
-  }. Consulte datas, valores e condições e conclua a reserva no site de sua preferência.`}
->
-  <ul class="platforms" role="list">
-    {links.map((link) => (
-      <li class="platform reveal">
-        <p class="platform__name">{link.name}</p>
-        <Button href={link.url} external variant="inverse" data-platform={link.key}>
-          Reservar no {link.name}
-        </Button>
-      </li>
-    ))}
-  </ul>
-  <p class="booking__note">
-    A reserva, o pagamento e a confirmação acontecem na plataforma escolhida, de acordo com as
-    regras dela. Este site não processa reservas nem pagamentos.
-  </p>
-</Section>
+<section id="reservas" aria-labelledby="reservas-titulo" class="section section--inverse booking">
+  <div class="container">
+    <div class:list={['booking__grid', { 'booking__grid--photo': photo }]}>
+      <div class="booking__main">
+        <SectionHeading
+          id="reservas-titulo"
+          eyebrow="Reservas"
+          title="Escolha suas datas e *reserve*"
+        >
+          {`O ${content.name} está anunciado ${
+            links.length === 1 ? 'na plataforma abaixo' : 'nas plataformas abaixo'
+          }. Consulte datas, valores e condições e conclua a reserva no site de sua preferência.`}
+        </SectionHeading>
+
+        <ul class="platforms" role="list">
+          {links.map((link) => (
+            <li>
+              <a
+                class="platform"
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-platform={link.key}
+              >
+                <span class="platform__name">{link.name}</span>
+                <span class="platform__cta">
+                  Reservar no {link.name}
+                  <Icon name="arrow-up-right" size={20} />
+                </span>
+                <span class="sr-only">(abre em nova aba)</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <ol class="steps">
+          {steps.map((s, i) => (
+            <li class="step">
+              <span class="step__num" aria-hidden="true">
+                {i + 1}
+              </span>
+              <div>
+                <p class="step__title">{s.title}</p>
+                <p class="step__text">{s.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <p class="booking__note">
+          A reserva, o pagamento e a confirmação acontecem na plataforma escolhida, de acordo com as
+          regras dela. Este site não processa reservas nem pagamentos.
+        </p>
+      </div>
+
+      {photo && (
+        <div class="booking__photo">
+          <Photo
+            src={photo.src}
+            alt={photo.alt}
+            focus={photo.focus}
+            sizes="(min-width: 1024px) 38vw, 100vw"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+</section>
 
 <style>
+  .booking {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(70% 80% at 0% 100%, rgb(26 100 136 / 0.35) 0%, transparent 70%),
+      var(--sea-950);
+  }
+  .booking__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+  @media (min-width: 1024px) {
+    .booking__grid--photo {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: var(--space-9);
+      align-items: stretch;
+    }
+  }
+
+  /* ---------- Plataformas ---------- */
   .platforms {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
     padding: 0;
     list-style: none;
   }
-  /* Mobile: nome e botão na mesma linha (quebra se faltar espaço) */
-  .platform {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding: var(--space-5);
-    border: var(--border-width) solid rgb(219 233 239 / 0.22);
-    border-radius: var(--radius-lg);
-  }
-  /* Desktop: cards lado a lado, nome em cima e botão embaixo, alinhados à esquerda */
-  @media (min-width: 768px) {
+  @media (min-width: 640px) {
     .platforms {
       grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+      gap: var(--space-4);
     }
-    .platform {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-5);
-      padding: var(--space-6);
-    }
+  }
+  .platform {
+    display: grid;
+    gap: var(--space-4);
+    min-block-size: var(--tap-min);
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--sand-50);
+    color: var(--sea-950);
+    text-decoration: none;
+    box-shadow: var(--shadow-lg);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+  .platform:hover {
+    background: var(--white);
+    transform: translateY(-3px);
+  }
+  .platform:focus-visible {
+    outline-color: var(--white);
   }
   .platform__name {
     font-family: var(--font-display);
     font-size: var(--text-2xl);
-    color: var(--color-heading);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
   }
+  .platform__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: var(--border-width) solid var(--sand-200);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-strong);
+    color: var(--sea-700);
+  }
+  .platform__cta :global(svg) {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .platform:hover .platform__cta :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+  /* ---------- Passos ---------- */
+  .steps {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  /* Ao lado da foto, a coluna é estreita: passos empilhados leem melhor */
+  @media (min-width: 1024px) {
+    .booking__grid--photo .steps {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+  }
+  .step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+  }
+  .step__num {
+    display: grid;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 32px;
+    border: var(--border-width) solid rgb(227 162 124 / 0.6);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: 1;
+    color: var(--terra-300);
+  }
+  .step__title {
+    font-weight: var(--font-weight-strong);
+    color: var(--sand-50);
+  }
+  .step__text {
+    font-size: var(--text-sm);
+    color: var(--color-inverse-muted);
+  }
+
   .booking__note {
-    margin-top: var(--space-6);
+    margin-top: var(--space-7);
     max-width: var(--width-prose);
     font-size: var(--text-sm);
     color: var(--color-text-muted);
+  }
+
+  /* ---------- Foto ---------- */
+  .booking__photo {
+    display: none;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+  }
+  @media (min-width: 1024px) {
+    .booking__photo {
+      display: block;
+    }
+    .booking__photo :global(picture) {
+      display: block;
+      block-size: 100%;
+    }
+    .booking__photo :global(.photo) {
+      block-size: 100%;
+    }
   }
 </style>

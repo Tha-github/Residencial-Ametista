@@ -1,30 +1,162 @@
 ---
-/** Apresentação: somente a descrição fornecida/aprovada pelo cliente. */
+/**
+ * Apresentação: descrição aprovada + composição editorial de até duas fotos
+ * reais sobrepostas (media.intro). Sem fotos, o texto ocupa a largura.
+ */
 import type { PropertyContent } from '../../data/property.schema';
 import Section from '../layout/Section.astro';
+import Photo from '../media/Photo.astro';
+import Icon from '../ui/Icon.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 
 interface Props {
   content: PropertyContent;
+  tightTop?: boolean;
 }
 
-const { content } = Astro.props;
+const { content, tightTop = false } = Astro.props;
 const [first, ...rest] = content.description;
+const [main, detail] = content.media.intro;
+const hasTour = content.media.gallery.length > 0;
 ---
 
-<Section id="apresentacao" eyebrow="O residencial" title={`Conheça o ${content.name}`}>
-  <div class="about prose reveal">
-    <p class="about__opening">{first}</p>
-    {rest.map((paragraph) => (
-      <p>{paragraph}</p>
-    ))}
+<Section id="apresentacao" title={`Conheça o ${content.name}`} customHeading tightTop={tightTop}>
+  <div class:list={['about', { 'about--photos': main }]}>
+    <div class="about__text">
+      <SectionHeading
+        id="apresentacao-titulo"
+        eyebrow="O apartamento"
+        title={`Conheça o *${content.name}*`}
+      />
+      <div class="prose reveal">
+        <p class="about__opening">{first}</p>
+        {rest.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+      {hasTour && (
+        <a class="about__link reveal" href="#galeria">
+          Fazer o tour pelo apartamento
+          <Icon name="arrow-right" size={18} />
+        </a>
+      )}
+    </div>
+
+    {main && (
+      <div class="about__media reveal">
+        <div class="about__main">
+          <Photo
+            src={main.src}
+            alt={main.alt}
+            focus={main.focus ?? '40% 50%'}
+            aspect="4 / 5"
+            sizes="(min-width: 1024px) 42vw, 90vw"
+          />
+        </div>
+        {detail && (
+          <div class="about__detail">
+            <Photo
+              src={detail.src}
+              alt={detail.alt}
+              focus={detail.focus}
+              aspect="1 / 1"
+              sizes="(min-width: 1024px) 18vw, 45vw"
+            />
+          </div>
+        )}
+      </div>
+    )}
   </div>
 </Section>
 
 <style>
+  .about {
+    display: grid;
+    gap: var(--space-8);
+  }
+  @media (min-width: 1024px) {
+    .about--photos {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+      align-items: center;
+      gap: var(--space-9);
+    }
+  }
+  .about__text :global(.section-heading) {
+    margin-bottom: var(--space-6);
+  }
   .about__opening {
     font-family: var(--font-display);
     font-size: var(--text-xl);
     line-height: var(--leading-snug);
     color: var(--color-heading);
+  }
+  .prose p:not(.about__opening) {
+    color: var(--color-text-muted);
+  }
+  .about__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--tap-min);
+    margin-top: var(--space-5);
+    font-weight: var(--font-weight-strong);
+    color: var(--color-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
+  }
+  .about__link:hover {
+    color: var(--color-link-hover);
+  }
+  .about__link:hover :global(svg) {
+    transform: translateX(3px);
+  }
+  .about__link :global(svg) {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  /* Composição: foto principal vertical + detalhe quadrado sobreposto,
+     com um bloco areia deslocado atrás para dar profundidade. */
+  .about__media {
+    position: relative;
+    isolation: isolate;
+    padding-inline-end: 14%;
+    padding-block-end: 16%;
+  }
+  .about__media::before {
+    content: '';
+    position: absolute;
+    inset: 12% 0 0 22%;
+    z-index: -1;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+  .about__main {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+  .about__detail {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-end: 0;
+    inline-size: 46%;
+    overflow: hidden;
+    border: 6px solid var(--color-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+  @media (min-width: 1024px) {
+    .about__media {
+      padding-inline-end: 18%;
+    }
+    .about__detail {
+      inline-size: 42%;
+      border-width: 8px;
+    }
+  }
+  .about__main :global(.photo),
+  .about__detail :global(.photo) {
+    display: block;
   }
 </style>
