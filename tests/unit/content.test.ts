@@ -13,12 +13,15 @@ describe('conteúdo do residencial', () => {
     expect(() => parseContent(data, 'ametista.json')).not.toThrow();
   });
 
-  it('o arquivo versionado contém os dados informados na prévia e mantém canais ausentes vazios', () => {
+  it('o arquivo versionado contém os dados informados pelo cliente e mantém canais ausentes vazios', () => {
     const c = parseContent(data, 'ametista.json');
     expect(c.description[0]).toContain('90 m²');
     expect(c.amenities).toContain('Vaga privativa gratuita');
     expect(c.facts).toMatchObject({ areaM2: 90, bedrooms: 2, bathrooms: 2, beds: '4 camas' });
-    expect(c.booking).toEqual({});
+    expect(c.booking).toEqual({
+      booking: 'https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html',
+      airbnb: 'https://www.airbnb.com.br/rooms/13257454',
+    });
     expect(c.contact).toEqual({});
     expect(c.media.gallery).toHaveLength(9);
     expect(c.location.streetAddress).toBe('Rua Dante de Patta, 283');

@@ -1,5 +1,5 @@
 {
-  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente em 2026-11-17. Fotos mantidas com a marca-d'água original. Dados de reserva, contato e check-out ainda pendentes.",
+  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente em 2026-11-17. Fotos mantidas com a marca-d'água original. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato e check-out ainda pendentes.",
   "name": "Residencial Ametista",
   "tagline": "Apartamento com terraço gourmet a 250 m da Praia dos Ingleses, em Florianópolis.",
   "description": [
@@ -48,6 +48,10 @@
   "practicalInfo": {
     "checkIn": "Das 14h às 23h30",
     "houseRules": []
+  },
+  "booking": {
+    "booking": "https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html",
+    "airbnb": "https://www.airbnb.com.br/rooms/13257454"
   },
   "media": {
     "hero": {

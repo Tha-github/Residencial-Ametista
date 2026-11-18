@@ -17,7 +17,7 @@ const ready = (input: object) =>
   Object.fromEntries(sectionStates(parseContent(input, 't')).map((s) => [s.id, s.ready]));
 
 describe('estrutura de seções', () => {
-  it('publica seções preenchidas com conteúdo e mantém reservas e contato sem destino', () => {
+  it('publica seções preenchidas com conteúdo e mantém contato sem destino', () => {
     expect(ready(data)).toEqual({
       apresentacao: true,
       galeria: true,
@@ -25,7 +25,7 @@ describe('estrutura de seções', () => {
       comodidades: true,
       informacoes: true,
       localizacao: true,
-      reservas: false,
+      reservas: true,
       contato: false,
     });
   });

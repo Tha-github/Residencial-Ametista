@@ -65,14 +65,13 @@ describe('Reservas', () => {
 });
 
 describe('Hero', () => {
-  it('com o conteúdo atual: link para apresentação, sem CTA para reserva ainda sem destino', async () => {
+  it('com o conteúdo atual: CTA leva à seção de reservas', async () => {
     const html = await container.renderToString(Hero, {
       props: { content: parseContent(data, 'ametista.json') },
     });
     expect(html).toContain('Ametista');
     expect(html).toContain('Praia dos Ingleses');
-    expect(html).not.toContain('href="#reservas"');
-    expect(html).toContain('href="#apresentacao"');
+    expect(html).toContain('href="#reservas"');
   });
 
   it('com links de reserva: CTA leva à seção de reservas', async () => {
