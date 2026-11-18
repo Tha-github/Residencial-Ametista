@@ -47,7 +47,7 @@ test('alvos de toque principais com pelo menos 44px de altura', async ({ page })
   await page.goto('/estilo/secoes');
   const small = await page
     .locator(
-      'main a.btn, main button, .channel, .gallery__link, .site-header a, .booking-bar a, footer a',
+      'main a.btn, main button, .channel, .carousel__link, .site-header a, .booking-bar a, footer a',
     )
     .evaluateAll((els) =>
       els
@@ -61,15 +61,13 @@ test('alvos de toque principais com pelo menos 44px de altura', async ({ page })
   expect(small).toEqual([]);
 });
 
-test('header em uma linha só (nome não quebra)', async ({ page }) => {
+test('header compacto, sem o nome do residencial e com "Reservar" visível', async ({ page }) => {
   await page.goto('/estilo/secoes');
-  const brand = page.locator('.site-header__brand');
-  // Duas linhas teriam ≥ ~2,4× o tamanho da fonte; uma linha fica bem abaixo de 2×.
-  const fontSize = await brand.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-  const box = await brand.boundingBox();
-  expect(box!.height).toBeLessThanOrEqual(Math.max(44, fontSize * 2));
-  const header = await page.locator('.site-header').boundingBox();
-  expect(header!.height).toBeLessThanOrEqual(80);
+  const header = page.locator('.site-header');
+  await expect(header).not.toContainText('Residencial Ametista');
+  await expect(header.getByRole('link', { name: 'Reservar' })).toBeVisible();
+  const box = await header.boundingBox();
+  expect(box!.height).toBeLessThanOrEqual(80);
 });
 
 test('texto do hero legível sobre a foto: véu presente e CTA visível', async ({ page }) => {
@@ -94,7 +92,7 @@ test.describe('sem JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('miniatura é um link funcional para a imagem ampliada', async ({ page, request }) => {
     await page.goto('/estilo/secoes');
-    const href = await page.locator('.gallery__link').first().getAttribute('href');
+    const href = await page.locator('.carousel__link').first().getAttribute('href');
     expect(href).toBeTruthy();
     const res = await request.get(href!);
     expect(res.status()).toBe(200);

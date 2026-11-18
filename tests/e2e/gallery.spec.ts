@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * Galeria e modo ampliado na página de amostra (imagens sintéticas).
+ * Carrossel de fotos e modo ampliado na página de amostra (imagens sintéticas).
  * Ordem narrativa esperada (ver src/dev/secoes.astro):
  * fachada(1) → social(2, 3) → quartos(5) → terraço(4) → detalhes(6) → sem grupo(7, 8)
  */
@@ -19,33 +19,48 @@ const EXPECTED_ORDER = [
 
 const lightbox = (page: Page) => page.locator('[data-lightbox]');
 const counter = (page: Page) => page.locator('[data-lightbox-counter]');
-const thumbs = (page: Page) => page.locator('.gallery__grid .gallery__link');
+const thumbs = (page: Page) => page.locator('.carousel__link');
+const carouselCounter = (page: Page) => page.locator('[data-carousel-counter]');
 
 test.beforeEach(async ({ page }) => {
   await page.goto(SAMPLE);
   await page.locator('#galeria').scrollIntoViewIfNeeded();
 });
 
-test('grade mostra 6 fotos na ordem narrativa e oferece "ver todas"', async ({ page }) => {
-  await expect(thumbs(page)).toHaveCount(6);
-  const labels = await page
-    .locator('[data-gallery-item]')
-    .evaluateAll((els) =>
-      els
-        .sort(
-          (a, b) =>
-            Number((a as HTMLElement).dataset.galleryItem) -
-            Number((b as HTMLElement).dataset.galleryItem),
-        )
-        .map((el) => el.getAttribute('aria-label') ?? ''),
-    );
+test('carrossel reúne todas as 8 fotos na ordem narrativa, uma por vez', async ({ page }) => {
+  await expect(thumbs(page)).toHaveCount(8);
+  const labels = await thumbs(page).evaluateAll((els) =>
+    els.map((el) => el.getAttribute('aria-label') ?? ''),
+  );
   expect(labels.map((l) => l.replace(/^.*\[AMOSTRA\] /, ''))).toEqual(EXPECTED_ORDER);
-  await expect(page.getByRole('link', { name: 'Ver todas as 8 fotos' })).toBeVisible();
+  await expect(carouselCounter(page)).toHaveText('Foto 1 de 8');
+  // Só a foto atual ocupa o palco
+  const track = await page.locator('[data-carousel-track]').boundingBox();
+  const first = await page.locator('.carousel__slide').first().boundingBox();
+  expect(Math.abs(first!.width - track!.width)).toBeLessThanOrEqual(1);
 });
 
-test('cada foto preenche a sua célula da grade (sem vãos)', async ({ page }) => {
-  const gaps = await page.locator('.gallery__grid .gallery__item').evaluateAll((items) =>
-    items.map((li) => {
+test('setas avançam e voltam (com volta ao início); contador e indicador acompanham', async ({
+  page,
+}) => {
+  await page.locator('[data-carousel-next]').click();
+  await expect(carouselCounter(page)).toHaveText('Foto 2 de 8');
+  await expect(page.locator('.carousel__dot').nth(1)).toHaveClass(/is-active/);
+  await page.locator('[data-carousel-prev]').click();
+  await page.locator('[data-carousel-prev]').click();
+  await expect(carouselCounter(page)).toHaveText('Foto 8 de 8');
+});
+
+test('deslizar o trilho (toque/arraste) muda a foto atual', async ({ page }) => {
+  await page
+    .locator('[data-carousel-track]')
+    .evaluate((t) => t.scrollTo({ left: t.clientWidth * 3, behavior: 'instant' }));
+  await expect(carouselCounter(page)).toHaveText('Foto 4 de 8');
+});
+
+test('cada foto preenche o seu slide (sem vãos)', async ({ page }) => {
+  const gaps = await page.locator('.carousel__slide').evaluateAll((slides) =>
+    slides.map((li) => {
       const img = li.querySelector('img')!.getBoundingClientRect();
       const cell = li.getBoundingClientRect();
       return Math.abs(cell.height - img.height) + Math.abs(cell.width - img.width);
@@ -54,17 +69,15 @@ test('cada foto preenche a sua célula da grade (sem vãos)', async ({ page }) =
   for (const gap of gaps) expect(gap).toBeLessThanOrEqual(2);
 });
 
-test('miniaturas: dimensões declaradas (sem CLS), lazy-load e formatos modernos', async ({
-  page,
-}) => {
-  const imgs = page.locator('.gallery__grid img');
+test('fotos: dimensões declaradas (sem CLS), lazy-load e formatos modernos', async ({ page }) => {
+  const imgs = page.locator('[data-carousel-track] img');
   for (const img of await imgs.all()) {
     await expect(img).toHaveAttribute('width', /\d+/);
     await expect(img).toHaveAttribute('height', /\d+/);
     await expect(img).toHaveAttribute('loading', 'lazy');
   }
   const sources = await page
-    .locator('.gallery__grid picture source')
+    .locator('.carousel picture source')
     .evaluateAll((els) => els.map((el) => el.getAttribute('type')));
   expect(sources).toContain('image/avif');
   expect(sources).toContain('image/webp');
@@ -104,16 +117,6 @@ test('teclado: abre, navega com setas/Home/End, fecha com Esc e devolve o foco',
   await expect(lightbox(page)).toBeHidden();
   // Foco volta para a miniatura da foto que estava aberta
   await expect(thumbs(page).nth(3)).toBeFocused();
-});
-
-test('foto fora da grade: ao fechar, foco volta ao gatilho', async ({ page }) => {
-  const all = page.getByRole('link', { name: 'Ver todas as 8 fotos' });
-  await all.focus();
-  await page.keyboard.press('Enter');
-  await expect(counter(page)).toHaveText('Foto 1 de 8');
-  await page.keyboard.press('End');
-  await page.keyboard.press('Escape');
-  await expect(all).toBeFocused();
 });
 
 test('Tab permanece dentro do modo ampliado; fundo inerte', async ({ page }) => {
@@ -170,33 +173,33 @@ test('controles do modo ampliado têm área de toque ≥ 44px', async ({ page })
   }
 });
 
-test.describe('tour por ambiente (página real)', () => {
+test.describe('carrossel do tour (página real)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.locator('#galeria').scrollIntoViewIfNeeded();
   });
 
-  test('cada ambiente abre o modo ampliado na foto certa e navega por todas', async ({ page }) => {
-    const links = page.locator('.tour__link');
-    expect(await links.count()).toBeGreaterThan(4);
-    // Primeira foto do 2º ambiente
-    const second = page.locator('.room').nth(1).locator('.tour__link').first();
-    const index = Number(await second.getAttribute('data-gallery-item'));
-    await second.click();
+  test('botão de ambiente leva à primeira foto do ambiente e a foto abre ampliada', async ({
+    page,
+  }) => {
+    const total = await thumbs(page).count();
+    expect(total).toBeGreaterThan(4);
+    const room = page.locator('[data-carousel-go]').nth(1);
+    const start = Number(await room.getAttribute('data-carousel-go'));
+    await room.click();
+    await expect(carouselCounter(page)).toHaveText(`Foto ${start + 1} de ${total}`);
+    await expect(room).toHaveAttribute('aria-pressed', 'true');
+    await thumbs(page).nth(start).click();
     await expect(lightbox(page)).toBeVisible();
-    const total = await page
-      .locator('[data-gallery] [data-gallery-item]')
-      .evaluateAll((els) => new Set(els.map((e) => (e as HTMLElement).dataset.galleryItem)).size);
-    await expect(counter(page)).toHaveText(`Foto ${index + 1} de ${total}`);
-    await page.keyboard.press('End');
-    await expect(counter(page)).toHaveText(`Foto ${total} de ${total}`);
+    await expect(counter(page)).toHaveText(`Foto ${start + 1} de ${total}`);
     await page.keyboard.press('Escape');
     await expect(lightbox(page)).toBeHidden();
   });
 
-  test('"ver todas" abre na primeira foto', async ({ page }) => {
-    await page.getByRole('link', { name: /Ver todas as \d+ fotos/ }).click();
-    await expect(counter(page)).toHaveText(/^Foto 1 de \d+$/);
+  test('teclado: setas no carrossel trocam a foto', async ({ page }) => {
+    await thumbs(page).first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(carouselCounter(page)).toHaveText(/^Foto 2 de \d+$/);
   });
 });
 

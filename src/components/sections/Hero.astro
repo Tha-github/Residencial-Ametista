@@ -1,8 +1,8 @@
 ---
 /**
- * Hero fotográfico. Nome, local, frase de experiência, números que decidem
- * a escolha (praia, área, quartos, banheiros) e dois CTAs: reserva e tour.
- * A faixa de informações rápidas (QuickFacts) sobrepõe a base do hero.
+ * Hero fotográfico compacto: local, nome, frase de experiência e dois CTAs
+ * (reserva e tour). A faixa de informações rápidas (QuickFacts) sobrepõe a
+ * base do hero. No mobile, o conteúdo é centralizado.
  *
  * Sem foto real:
  *  - fora de produção → placeholder identificado;
@@ -25,7 +25,7 @@ interface Props {
 }
 
 const { content, heroImage, withStrip = false } = Astro.props;
-const { location, media, description, facts } = content;
+const { location, media, description } = content;
 
 const hero = media.hero;
 // CTAs só existem quando o destino existe (em qualquer ambiente):
@@ -40,26 +40,6 @@ const place = [location.beach, location.city].filter(Boolean).join(' · ');
 const words = content.name.trim().split(/\s+/);
 const nameLead = words.slice(0, -1).join(' ');
 const nameLast = words.at(-1);
-
-const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
-const stats = [
-  location.beachDistanceM !== undefined && {
-    value: `${location.beachDistanceM.toLocaleString('pt-BR')} m`,
-    label: 'da praia',
-  },
-  facts.areaM2 !== undefined && {
-    value: `${facts.areaM2.toLocaleString('pt-BR')} m²`,
-    label: 'privativos',
-  },
-  facts.bedrooms !== undefined && {
-    value: String(facts.bedrooms),
-    label: plural(facts.bedrooms, 'quarto', 'quartos'),
-  },
-  facts.bathrooms !== undefined && {
-    value: String(facts.bathrooms),
-    label: plural(facts.bathrooms, 'banheiro', 'banheiros'),
-  },
-].filter((s): s is { value: string; label: string } => Boolean(s));
 ---
 
 <section
@@ -110,22 +90,6 @@ const stats = [
         )}
       </div>
     )}
-
-    {stats.length > 0 && (
-      <dl class="hero__stats">
-        {stats.map((s) => (
-          <div class="hero__stat">
-            <dt class="sr-only">{s.label}</dt>
-            <dd>
-              <span class="hero__stat-value">{s.value}</span>
-              <span class="hero__stat-label" aria-hidden="true">
-                {s.label}
-              </span>
-            </dd>
-          </div>
-        ))}
-      </dl>
-    )}
   </div>
 </section>
 
@@ -134,23 +98,23 @@ const stats = [
     position: relative;
     display: grid;
     align-items: end;
-    min-block-size: min(100svh, 820px);
-    padding-block: calc(var(--space-9) + var(--space-2)) var(--space-8);
+    /* Compacto: a 1ª dobra deixa ver a faixa de informações e o início da
+       próxima seção. */
+    min-block-size: clamp(30rem, 74svh, 40rem);
+    padding-block: calc(var(--space-8) + var(--space-5)) var(--space-7);
     color: var(--color-on-photo);
     isolation: isolate;
     overflow: hidden;
   }
   /* Espaço para a faixa que sobrepõe a base do hero */
   .hero--with-strip {
-    padding-block-end: calc(var(--space-8) + var(--strip-overlap));
+    padding-block-end: calc(var(--space-6) + var(--strip-overlap));
   }
   @media (min-width: 1024px) {
     .hero {
-      min-block-size: min(100svh, 940px);
-      padding-block-end: var(--space-9);
-    }
-    .hero--with-strip {
-      padding-block-end: calc(var(--space-8) + var(--strip-overlap));
+      align-items: center;
+      min-block-size: clamp(32rem, 68svh, 42rem);
+      padding-block-start: calc(var(--space-8) + var(--space-4));
     }
   }
 
@@ -209,6 +173,20 @@ const stats = [
     gap: var(--space-5);
     justify-items: start;
   }
+  /* Mobile: tudo centralizado sobre a foto */
+  @media (max-width: 767px) {
+    .hero__content {
+      justify-items: center;
+      text-align: center;
+    }
+    .hero__title,
+    .hero__tagline {
+      margin-inline: auto;
+    }
+    .hero__actions {
+      justify-content: center;
+    }
+  }
 
   .hero__place {
     display: inline-flex;
@@ -226,9 +204,6 @@ const stats = [
     font-weight: var(--font-weight-regular);
     line-height: 0.96;
     color: var(--color-on-photo);
-  }
-  .hero__title em {
-    color: var(--sand-100);
   }
   /* Sombra só sobre foto (ajuda a legibilidade); no fundo liso criaria halo */
   .hero--photo .hero__title {
@@ -259,41 +234,6 @@ const stats = [
     }
   }
 
-  /* Números que decidem: linha fina separando, numerais em serifa */
-  .hero__stats {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    justify-content: start;
-    gap: var(--space-5);
-    margin-top: var(--space-3);
-    padding-top: var(--space-5);
-    border-top: var(--border-width) solid rgb(255 255 255 / 0.28);
-    inline-size: 100%;
-    max-inline-size: 34rem;
-  }
-  @media (max-width: 379px) {
-    .hero__stats {
-      gap: var(--space-4);
-    }
-  }
-  .hero__stat dd {
-    display: grid;
-    gap: 2px;
-    margin: 0;
-  }
-  .hero__stat-value {
-    font-family: var(--font-display);
-    font-size: var(--text-2xl);
-    line-height: 1;
-    letter-spacing: var(--tracking-display);
-    white-space: nowrap;
-  }
-  .hero__stat-label {
-    font-size: var(--text-xs);
-    letter-spacing: 0.04em;
-    color: var(--sea-100);
-  }
-
   /*
    * Entrada discreta dos elementos SECUNDÁRIOS (desligada com reduced-motion).
    * O título (elemento LCP) nunca começa invisível: se a animação atrasar ou
@@ -308,9 +248,6 @@ const stats = [
     }
     .hero__actions {
       animation-delay: 220ms;
-    }
-    .hero__stats {
-      animation-delay: 320ms;
     }
     .hero--photo :global(.hero__img) {
       animation: hero-zoom 1600ms var(--ease-out) both;

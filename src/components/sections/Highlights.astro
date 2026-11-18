@@ -1,157 +1,102 @@
 ---
 /**
- * Diferenciais confirmados. O primeiro item com `stat` (ex.: "250 m") vira
- * o destaque tipográfico; os demais formam uma grade limpa com ícone fino,
- * título e texto curto — sem cartões repetidos.
+ * Diferenciais confirmados em caixas individuais, com conteúdo centralizado:
+ * ícone fino, título e descrição curta. Grade 3 × 2 no desktop, 2 colunas
+ * no tablet e 1 no celular.
  */
 import type { PropertyContent } from '../../data/property.schema';
 import Section from '../layout/Section.astro';
 import Icon from '../ui/Icon.astro';
-import SectionHeading from '../ui/SectionHeading.astro';
 
 interface Props {
   content: PropertyContent;
 }
 
 const { content } = Astro.props;
-const featuredIndex = content.highlights.findIndex((h) => h.stat);
-const featured = featuredIndex >= 0 ? content.highlights[featuredIndex] : undefined;
-const others = content.highlights.filter((_, i) => i !== featuredIndex);
 ---
 
-<Section id="diferenciais" title="Diferenciais" customHeading>
-  <div class:list={['highlights', { 'highlights--featured': featured }]}>
-    <div class="highlights__intro">
-      <SectionHeading
-        id="diferenciais-titulo"
-        eyebrow="Diferenciais"
-        title="O que faz *diferença* na sua estadia"
-      />
-      {featured && (
-        <div class="feature reveal">
-          <p class="feature__stat numeral">{featured.stat}</p>
-          <h3 class="feature__title">{featured.title}</h3>
-          {featured.text && <p class="feature__text">{featured.text}</p>}
-          <svg class="feature__waves" viewBox="0 0 200 40" aria-hidden="true" focusable="false">
-            <path d="M0 10c25-12 25 12 50 0s25-12 50 0 25 12 50 0 25-12 50 0" />
-            <path d="M0 22c25-12 25 12 50 0s25-12 50 0 25 12 50 0 25-12 50 0" />
-            <path d="M0 34c25-12 25 12 50 0s25-12 50 0 25 12 50 0 25-12 50 0" />
-          </svg>
-        </div>
-      )}
-    </div>
-
-    <ul class="highlights__list" role="list">
-      {others.map((item) => (
-        <li class="highlight reveal">
-          <span class="highlight__icon">
-            <Icon name={item.icon ?? 'waves'} size={22} />
-          </span>
-          <div>
-            <h3 class="highlight__title">{item.title}</h3>
-            {item.text && <p class="highlight__text">{item.text}</p>}
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
+<Section
+  id="diferenciais"
+  eyebrow="Diferenciais"
+  title="O que faz *diferença* na sua estadia"
+  lead="Os detalhes que deixam a hospedagem mais prática, confortável e com cara de casa de praia."
+  align="center"
+>
+  <ul class="highlights" role="list">
+    {content.highlights.map((item) => (
+      <li class="highlight reveal">
+        <span class="highlight__icon">
+          <Icon name={item.icon ?? 'waves'} size={24} />
+        </span>
+        <h3 class="highlight__title">{item.title}</h3>
+        {item.text && <p class="highlight__text">{item.text}</p>}
+      </li>
+    ))}
+  </ul>
 </Section>
 
 <style>
   .highlights {
     display: grid;
-    gap: var(--space-7);
-  }
-  @media (min-width: 1024px) {
-    .highlights--featured {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      gap: var(--space-9);
-      align-items: start;
-    }
-    .highlights__intro {
-      position: sticky;
-      top: 6rem;
-    }
-  }
-  .highlights__intro :global(.section-heading) {
-    margin-bottom: var(--space-6);
-  }
-
-  /* Destaque tipográfico: mar profundo, numeral grande, ondas finas */
-  .feature {
-    position: relative;
-    display: grid;
-    gap: var(--space-3);
-    padding: var(--space-6);
-    overflow: hidden;
-    border-radius: var(--radius-lg);
-    background:
-      radial-gradient(120% 90% at 100% 0%, var(--sea-700) 0%, transparent 65%), var(--sea-900);
-    color: var(--color-inverse-text);
-  }
-  @media (min-width: 768px) {
-    .feature {
-      padding: var(--space-7);
-    }
-  }
-  .feature__stat {
-    font-size: clamp(3.75rem, 2.5rem + 5vw, 6.5rem);
-    color: var(--sand-50);
-  }
-  .feature__title {
-    font-size: var(--text-xl);
-    color: var(--sand-50);
-  }
-  .feature__text {
-    max-inline-size: 34ch;
-    color: var(--sea-100);
-  }
-  .feature__waves {
-    position: absolute;
-    inset-inline-end: -8%;
-    inset-block-start: var(--space-6);
-    inline-size: 42%;
-    fill: none;
-    stroke: var(--terra-300);
-    stroke-width: 1.4;
-    stroke-linecap: round;
-    opacity: 0.45;
-  }
-
-  .highlights__list {
-    display: grid;
-    gap: 0 var(--space-7);
+    gap: var(--space-4);
     padding: 0;
     list-style: none;
   }
   @media (min-width: 640px) {
-    .highlights__list {
+    .highlights {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-5);
     }
   }
+  @media (min-width: 1024px) {
+    .highlights {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
   .highlight {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-4);
-    align-items: start;
-    padding-block: var(--space-5);
-    border-top: var(--border-width) solid var(--color-border);
+    justify-items: center;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-7) var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    text-align: center;
+    /* `translate` (e não `transform`): não briga com a animação .reveal */
+    transition:
+      translate var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
+      background-color var(--duration-base) var(--ease-out);
+  }
+  @media (max-width: 639px) {
+    .highlight {
+      padding: var(--space-6) var(--space-5);
+    }
+  }
+  @media (hover: hover) {
+    .highlight:hover {
+      translate: 0 -3px;
+      background: var(--color-surface-raised);
+      box-shadow: var(--shadow-md);
+    }
   }
   .highlight__icon {
     display: grid;
     place-items: center;
-    inline-size: 44px;
-    block-size: 44px;
+    inline-size: 52px;
+    block-size: 52px;
+    margin-bottom: var(--space-1);
     border-radius: 50%;
-    background: var(--color-surface);
+    background: var(--color-bg);
     color: var(--color-eyebrow);
   }
   .highlight__title {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     line-height: var(--leading-snug);
   }
   .highlight__text {
-    margin-top: var(--space-1);
+    max-inline-size: 30ch;
     font-size: var(--text-sm);
     color: var(--color-text-muted);
   }

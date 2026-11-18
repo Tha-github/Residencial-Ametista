@@ -42,6 +42,8 @@ const pairs: Pair[] = [
   ['sea-950', 'sand-50', 4.5, 'títulos'],
   ['sea-700', 'sand-50', 4.5, 'links / botão secundário'],
   ['sea-700', 'sand-100', 4.5, 'links sobre superfície'],
+  ['sea-700', 'white', 4.5, 'títulos azuis em caixa elevada'],
+  ['sea-200', 'sea-950', 4.5, 'títulos azuis sobre mar profundo (reservas)'],
   ['sea-900', 'sea-100', 4.5, 'hover do botão discreto'],
   ['white', 'sea-700', 4.5, 'texto do botão primário'],
   ['white', 'sea-800', 4.5, 'texto do botão primário (hover)'],

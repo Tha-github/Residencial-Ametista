@@ -165,7 +165,9 @@ export const propertySchema = z.object({
       moments: z
         .array(
           z.object({
+            /** Momento do dia (ex.: "Manhã"). */
             time: plainText(20).optional(),
+            icon: icon.optional(),
             title: plainText(80),
             text: plainText(300),
             photo: imageRef,
@@ -173,12 +175,8 @@ export const propertySchema = z.object({
         )
         .max(6)
         .default([]),
-      audiences: z
-        .array(z.object({ icon, title: plainText(40), items: z.array(plainText(80)).max(4) }))
-        .max(6)
-        .default([]),
     })
-    .default({ moments: [], audiences: [] }),
+    .default({ moments: [] }),
 
   /** Respostas rápidas para quem está decidindo (quartos, pets, crianças...). */
   essentials: z

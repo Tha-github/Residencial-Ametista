@@ -65,7 +65,8 @@ h4 {
   font-weight: var(--font-weight-display);
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-display);
-  color: var(--color-heading);
+  /* Título inteiro em azul — o trecho em itálico usa a mesma cor */
+  color: var(--color-title);
   text-wrap: balance;
 }
 
@@ -81,9 +82,10 @@ h3 {
 }
 
 /* Ênfase editorial em títulos: itálico da serifa, sem trocar de cor */
-:is(h1, h2, h3) em {
+:is(h1, h2, h3, h4) em {
   font-style: italic;
   font-weight: var(--font-weight-regular);
+  color: inherit;
 }
 
 p {
@@ -326,6 +328,8 @@ a {
   background: var(--color-inverse-bg);
   color: var(--color-inverse-text);
   --color-heading: var(--color-inverse-text);
+  /* Azul claro: título azul legível sobre o mar profundo */
+  --color-title: var(--sea-200);
   --color-text-muted: var(--color-inverse-muted);
   --color-eyebrow: var(--color-inverse-eyebrow);
   --color-link: var(--sand-50);

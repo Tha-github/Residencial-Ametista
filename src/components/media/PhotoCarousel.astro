@@ -1,0 +1,398 @@
+---
+/**
+ * Carrossel de fotos: uma imagem principal por vez, todas as fotos reais.
+ *
+ * - Rolagem nativa com scroll-snap: arrastar/deslizar no toque e no trackpad
+ *   funciona sem JavaScript; com JS, setas, teclado (← →), indicadores e
+ *   botões de ambiente ("Sala e cozinha", "Quarto de casal"...).
+ * - Cada foto abre o modo ampliado compartilhado (Lightbox), na mesma ordem.
+ * - Fotos verticais aparecem inteiras (contain), sem corte.
+ * - Só a foto atual entra na ordem de tabulação (com JS).
+ */
+import type { LightboxItem } from '../../lib/media/prepare';
+import { lightboxData } from '../../lib/media/prepare';
+import Icon from '../ui/Icon.astro';
+import Lightbox from './Lightbox.astro';
+import Photo from './Photo.astro';
+
+export interface CarouselRoom {
+  title: string;
+  /** Índice da primeira foto do ambiente no carrossel. */
+  start: number;
+}
+
+interface Props {
+  /** Fotos na ordem do carrossel (e do modo ampliado). */
+  items: LightboxItem[];
+  /** Rótulo exibido sob cada foto (ex.: nome do ambiente), por índice. */
+  labels?: string[];
+  rooms?: CarouselRoom[];
+}
+
+const { items, labels = [], rooms = [] } = Astro.props;
+const total = items.length;
+---
+
+<div class="carousel" data-gallery data-carousel>
+  {rooms.length > 1 && (
+    <div class="carousel__rooms" role="group" aria-label="Ir para um ambiente">
+      {rooms.map((room, i) => (
+        <button
+          type="button"
+          class="carousel__room"
+          data-carousel-go={room.start}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+        >
+          {room.title}
+        </button>
+      ))}
+    </div>
+  )}
+
+  <div class="carousel__stage">
+    <ul class="carousel__track" role="list" aria-label="Fotos do apartamento" data-carousel-track>
+      {items.map((item, i) => (
+        <li
+          class:list={[
+            'carousel__slide',
+            { 'carousel__slide--portrait': item.height > item.width },
+          ]}
+          data-label={labels[i] ?? ''}
+          aria-roledescription="slide"
+          aria-label={`${i + 1} de ${total}`}
+        >
+          <a class="carousel__link" {...lightboxData(item)}>
+            <Photo
+              src={item.image}
+              alt=""
+              focus={item.photo.focus}
+              sizes="(min-width: 1024px) 960px, 100vw"
+            />
+            <span class="carousel__zoom" aria-hidden="true">
+              <Icon name="expand" size={16} />
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {total > 1 && (
+      <>
+        <button
+          type="button"
+          class="carousel__arrow carousel__arrow--prev"
+          data-carousel-prev
+          aria-label="Foto anterior"
+          hidden
+        >
+          <Icon name="chevron-left" size={24} />
+        </button>
+        <button
+          type="button"
+          class="carousel__arrow carousel__arrow--next"
+          data-carousel-next
+          aria-label="Próxima foto"
+          hidden
+        >
+          <Icon name="chevron-right" size={24} />
+        </button>
+      </>
+    )}
+  </div>
+
+  <div class="carousel__meta">
+    <p class="carousel__caption" data-carousel-caption>
+      {labels[0] ?? ''}
+    </p>
+    {total > 1 && (
+      <div class="carousel__dots" aria-hidden="true">
+        {items.map((_, i) => (
+          <span class:list={['carousel__dot', { 'is-active': i === 0 }]} />
+        ))}
+      </div>
+    )}
+    <p class="carousel__counter" aria-live="polite" data-carousel-counter>
+      Foto 1 de {total}
+    </p>
+  </div>
+
+  <Lightbox total={total} />
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+    const track = root.querySelector<HTMLElement>('[data-carousel-track]');
+    if (!track) continue;
+    const slides = [...track.children] as HTMLElement[];
+    const links = slides.map((s) => s.querySelector<HTMLAnchorElement>('a'));
+    const dots = [...root.querySelectorAll<HTMLElement>('.carousel__dot')];
+    const rooms = [...root.querySelectorAll<HTMLButtonElement>('[data-carousel-go]')];
+    const caption = root.querySelector<HTMLElement>('[data-carousel-caption]');
+    const counter = root.querySelector<HTMLElement>('[data-carousel-counter]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
+    const starts = rooms.map((b) => Number(b.dataset.carouselGo));
+    let index = -1;
+
+    const render = (i: number) => {
+      if (i === index) return;
+      index = i;
+      links.forEach((a, j) => a?.setAttribute('tabindex', j === i ? '0' : '-1'));
+      dots.forEach((d, j) => d.classList.toggle('is-active', j === i));
+      if (caption) caption.textContent = slides[i].dataset.label ?? '';
+      if (counter) counter.textContent = `Foto ${i + 1} de ${slides.length}`;
+      // Ambiente atual = último início de ambiente antes (ou igual) da foto.
+      let current = -1;
+      starts.forEach((s, r) => {
+        if (s <= i) current = r;
+      });
+      rooms.forEach((b, r) => b.setAttribute('aria-pressed', String(r === current)));
+    };
+
+    const nearest = () => Math.round(track.scrollLeft / Math.max(track.clientWidth, 1));
+    // Durante uma rolagem programática (setas/ambientes), o destino manda:
+    // posições intermediárias da animação não sobrescrevem a foto escolhida.
+    let pending: number | null = null;
+
+    const go = (i: number) => {
+      const target = (i + slides.length) % slides.length;
+      pending = target;
+      track.scrollTo({
+        left: slides[target].offsetLeft,
+        behavior: reduce.matches ? 'auto' : 'smooth',
+      });
+      render(target);
+    };
+
+    let frame = 0;
+    track.addEventListener('scroll', () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (pending !== null) {
+          if (Math.abs(track.scrollLeft - slides[pending].offsetLeft) < 2) pending = null;
+          return;
+        }
+        render(nearest());
+      });
+    });
+    // Fim de qualquer rolagem (inclusive interrompida pelo toque): sincroniza.
+    track.addEventListener('scrollend', () => {
+      pending = null;
+      render(nearest());
+    });
+
+    prev?.addEventListener('click', () => go(index - 1));
+    next?.addEventListener('click', () => go(index + 1));
+    if (prev) prev.hidden = false;
+    if (next) next.hidden = false;
+    rooms.forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.carouselGo))));
+
+    track.addEventListener('keydown', (e) => {
+      const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      go(index + step);
+      links[(index + slides.length) % slides.length]?.focus({ preventScroll: true });
+    });
+
+    // Foco programático numa foto (ex.: ao fechar o modo ampliado) sincroniza.
+    track.addEventListener('focusin', (e) => {
+      const i = slides.findIndex((s) => s.contains(e.target as Node));
+      if (i >= 0 && i !== index) go(i);
+    });
+
+    render(0);
+  }
+</script>
+
+<style>
+  .carousel {
+    display: grid;
+    gap: var(--space-5);
+    max-inline-size: 60rem;
+    margin-inline: auto;
+  }
+
+  /* ---------- Ambientes ---------- */
+  .carousel__rooms {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+  .carousel__room {
+    min-block-size: var(--tap-min);
+    padding: var(--space-2) var(--space-4);
+    border: var(--border-width) solid var(--sand-300);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-strong);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+  .carousel__room:hover {
+    border-color: var(--color-accent);
+  }
+  .carousel__room[aria-pressed='true'] {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+
+  /* ---------- Palco ---------- */
+  .carousel__stage {
+    position: relative;
+  }
+  .carousel__track {
+    position: relative;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    list-style: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+  .carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+  .carousel__slide {
+    flex: 0 0 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    background: var(--sand-200);
+  }
+  .carousel__link {
+    position: relative;
+    display: block;
+    block-size: 100%;
+    color: inherit;
+  }
+  .carousel__link :global(picture) {
+    display: block;
+    block-size: 100%;
+  }
+  .carousel__link :global(.photo) {
+    block-size: 100%;
+  }
+  /* Vertical: inteira, centralizada sobre areia — sem corte */
+  .carousel__slide--portrait .carousel__link :global(.photo) {
+    object-fit: contain;
+    background: transparent;
+  }
+  .carousel__link:focus-visible {
+    outline-offset: -4px;
+  }
+  .carousel__zoom {
+    position: absolute;
+    inset-block-start: var(--space-3);
+    inset-inline-end: var(--space-3);
+    display: grid;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: 50%;
+    background: rgb(8 38 54 / 0.55);
+    color: var(--white);
+    opacity: 0.85;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+  .carousel__link:hover .carousel__zoom {
+    opacity: 1;
+  }
+
+  .carousel__arrow {
+    position: absolute;
+    inset-block-start: 50%;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(250 247 242 / 0.88);
+    color: var(--sea-950);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+  .carousel__arrow[hidden] {
+    display: none;
+  }
+  .carousel__arrow:hover {
+    background: var(--white);
+  }
+  .carousel__arrow--prev {
+    inset-inline-start: var(--space-3);
+  }
+  .carousel__arrow--next {
+    inset-inline-end: var(--space-3);
+  }
+  @media (min-width: 768px) {
+    .carousel__arrow {
+      inline-size: 48px;
+      block-size: 48px;
+    }
+    .carousel__arrow--prev {
+      inset-inline-start: var(--space-4);
+    }
+    .carousel__arrow--next {
+      inset-inline-end: var(--space-4);
+    }
+  }
+
+  /* ---------- Legenda, indicadores e contador ---------- */
+  .carousel__meta {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    text-align: center;
+  }
+  .carousel__caption {
+    min-block-size: 1.4em;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    color: var(--color-title);
+  }
+  .carousel__dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .carousel__dot {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--sand-300);
+    transition:
+      inline-size var(--duration-base) var(--ease-out),
+      background-color var(--duration-base) var(--ease-out);
+  }
+  .carousel__dot.is-active {
+    inline-size: 20px;
+    background: var(--color-accent);
+  }
+  .carousel__counter {
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+  }
+</style>

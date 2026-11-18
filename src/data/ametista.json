@@ -1,5 +1,5 @@
 {
-  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente (restinga-previas.pages.dev/residencial-ametista) em 2026-11-17/18. Fotos do imóvel mantidas com a marca-d'água original; fotos da região da Wikimedia Commons com crédito. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato (WhatsApp vazio na prévia) e check-out ainda pendentes.",
+  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente (restinga-previas.pages.dev/residencial-ametista) em 2026-11-17/18. Fotos do imóvel substituídas em 2026-11-18 por versões sem marca-d'água (1536px) enviadas pelo usuário; fotos da região da Wikimedia Commons com crédito. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato (WhatsApp vazio na prévia) e check-out ainda pendentes.",
   "name": "Residencial Ametista",
   "tagline": "Apartamento completo com terraço gourmet a aproximadamente 250 metros do mar.",
   "description": [
@@ -19,20 +19,32 @@
     "beachWalkMinutes": 4
   },
   "quickFacts": [
-    { "icon": "footprints", "label": "4 min a pé até a praia" },
-    { "icon": "bed", "label": "2 quartos · 4 camas" },
-    { "icon": "flame", "label": "Terraço com churrasqueira" },
-    { "icon": "parking", "label": "Vaga privativa grátis" },
-    { "icon": "paw", "label": "Aceita pets" },
-    { "icon": "snowflake", "label": "Ar-condicionado e Wi-Fi" }
+    {
+      "icon": "footprints",
+      "label": "4 min a pé até a praia"
+    },
+    {
+      "icon": "bed",
+      "label": "2 quartos · 4 camas"
+    },
+    {
+      "icon": "flame",
+      "label": "Terraço com churrasqueira"
+    },
+    {
+      "icon": "parking",
+      "label": "Vaga privativa grátis"
+    },
+    {
+      "icon": "paw",
+      "label": "Aceita pets"
+    },
+    {
+      "icon": "snowflake",
+      "label": "Ar-condicionado e Wi-Fi"
+    }
   ],
   "highlights": [
-    {
-      "icon": "waves",
-      "stat": "250 m",
-      "title": "Localização",
-      "text": "Aproximadamente 250 metros da Praia dos Ingleses, cerca de quatro minutos caminhando."
-    },
     {
       "icon": "flame",
       "title": "Terraço gourmet",
@@ -89,92 +101,65 @@
     {
       "title": "Sala e cozinha",
       "text": "Sofá de couro, mesa para a família e cozinha equipada com balcão, tudo integrado e com luz natural.",
-      "photos": ["sala.jpg", "cozinha.jpg", "cozinha-bar.jpg", "cozinha-fogao.jpg"]
+      "photos": ["sala.png", "cozinha.png", "cozinha-bar.png", "cozinha-fogao.png"]
     },
     {
       "title": "Quarto de casal",
       "text": "Cama de casal, ar-condicionado, TV e porta para a varanda.",
-      "photos": ["quarto-varanda.jpg", "quarto-casal.jpg", "quarto-casal-tv.jpg"]
+      "photos": ["quarto-varanda.png"]
     },
     {
       "title": "Quarto das camas de solteiro",
       "text": "Camas de solteiro, ar-condicionado e luz natural: ideal para crianças ou amigos.",
-      "photos": ["quarto-solteiros.jpg", "quarto-azul.jpg", "quarto-tres-camas.jpg"]
+      "photos": ["quarto-tres-camas.png"]
     },
     {
       "title": "Terraço gourmet e varanda",
       "text": "Mesa de madeira, guarda-sol, churrasqueira e sofá na varanda, sem dividir com vizinhos.",
       "photos": [
-        "terraco-guardasol.jpg",
-        "terraco-mesa.jpg",
-        "terraco-cadeiras.jpg",
-        "varanda-sofa.jpg"
+        "terraco-guardasol.png",
+        "terraco-mesa.png",
+        "terraco-cadeiras.png",
+        "varanda-sofa.png"
       ]
     },
     {
       "title": "Banheiros e prédio",
       "text": "Dois banheiros com box, elevador e vaga privativa na garagem.",
-      "photos": ["banheiro.jpg", "fachada.jpg"]
+      "photos": ["banheiro.png", "fachada.png"]
     }
   ],
   "experience": {
     "moments": [
       {
-        "time": "9h",
-        "title": "Café ao ar livre",
-        "text": "Comece o dia com a brisa do mar no terraço, antes de descer para a areia.",
+        "time": "Manhã",
+        "icon": "coffee",
+        "title": "Comece sem pressa",
+        "text": "Aproveite o café da manhã no apartamento, prepare tudo com tranquilidade e caminhe até a Praia dos Ingleses para aproveitar o mar.",
         "photo": {
-          "src": "terraco-mesa.jpg",
-          "alt": "Mesa de madeira do terraço com almofadas floridas"
+          "src": "cozinha-fogao.png",
+          "alt": "Bancada da cozinha com cooktop, chaleira elétrica e cesta de frutas"
         }
       },
       {
-        "time": "17h",
-        "title": "Volta da praia",
-        "text": "Quatro minutos de caminhada com as cadeiras, o guarda-sol e o cooler do apartamento. O carro fica na vaga a viagem inteira.",
+        "time": "Tarde",
+        "icon": "sun",
+        "title": "Aproveite cada momento",
+        "text": "Depois da praia, volte para descansar no conforto do apartamento, aproveite a estrutura completa e relaxe antes de continuar o dia.",
         "photo": {
-          "src": "terraco-cadeiras.jpg",
-          "alt": "Cadeiras de praia coloridas guardadas no terraço"
-        }
-      },
-      {
-        "time": "20h",
-        "title": "Jantar em família",
-        "text": "Churrasqueira acesa, mesa posta no terraço e a noite inteira pela frente.",
-        "photo": {
-          "src": "varanda-sofa.jpg",
-          "alt": "Varanda com sofá e mesa de vidro com taças"
-        }
-      },
-      {
-        "title": "Espaço para todo mundo",
-        "text": "Dois quartos, dois banheiros e sala integrada: cada um tem o seu canto, e todos se encontram à mesa.",
-        "photo": {
-          "src": "sala.jpg",
+          "src": "sala.png",
           "alt": "Sala com parede azul, sofá de couro e mesa de jantar"
         }
-      }
-    ],
-    "audiences": [
-      {
-        "icon": "baby",
-        "title": "Família",
-        "items": ["Quarto só para os pequenos", "Cadeirão e berço", "Rua calma e praia a pé"]
       },
       {
-        "icon": "users",
-        "title": "Amigos",
-        "items": ["2 quartos e 2 banheiros", "Churrasco no terraço", "Cozinha para dividir"]
-      },
-      {
-        "icon": "heart",
-        "title": "Casal",
-        "items": ["Espaço de sobra", "Jantar no terraço", "Praia a 4 minutos"]
-      },
-      {
-        "icon": "paw",
-        "title": "Com pet",
-        "items": ["Pets aceitos sem custo", "Varanda e terraço", "Avise ao reservar"]
+        "time": "Noite",
+        "icon": "flame",
+        "title": "Um fim de dia especial",
+        "text": "Reúna a família ou os amigos no terraço gourmet, prepare um churrasco e aproveite a tranquilidade do ambiente.",
+        "photo": {
+          "src": "terraco-guardasol.png",
+          "alt": "Terraço gourmet com guarda-sol azul, mesa e vista para as árvores"
+        }
       }
     ]
   },
@@ -191,24 +176,56 @@
       "value": "Crianças de qualquer idade são bem-vindas. Cadeirão e berço sujeitos à disponibilidade.",
       "featured": true
     },
-    { "icon": "bed", "label": "Quartos e camas", "value": "2 quartos com 4 camas" },
-    { "icon": "bath", "label": "Banheiros", "value": "2 banheiros com box" },
-    { "icon": "area", "label": "Área", "value": "90 m² de apartamento inteiro" },
-    { "icon": "footprints", "label": "Praia", "value": "Cerca de 250 m, 4 minutos a pé" },
-    { "icon": "parking", "label": "Estacionamento", "value": "Vaga privativa gratuita no prédio" },
+    {
+      "icon": "bed",
+      "label": "Quartos e camas",
+      "value": "2 quartos com 4 camas"
+    },
+    {
+      "icon": "bath",
+      "label": "Banheiros",
+      "value": "2 banheiros com box"
+    },
+    {
+      "icon": "area",
+      "label": "Área",
+      "value": "90 m² de apartamento inteiro"
+    },
+    {
+      "icon": "footprints",
+      "label": "Praia",
+      "value": "Cerca de 250 m, 4 minutos a pé"
+    },
+    {
+      "icon": "parking",
+      "label": "Estacionamento",
+      "value": "Vaga privativa gratuita no prédio"
+    },
     {
       "icon": "utensils",
       "label": "Cozinha",
       "value": "Cooktop, forno, micro-ondas, geladeira, cafeteira e torradeira"
     },
-    { "icon": "snowflake", "label": "Ar-condicionado", "value": "Nos quartos e na área social" },
-    { "icon": "wifi", "label": "Wi-Fi", "value": "Wi-Fi e TV com streaming" },
+    {
+      "icon": "snowflake",
+      "label": "Ar-condicionado",
+      "value": "Nos quartos e na área social"
+    },
+    {
+      "icon": "wifi",
+      "label": "Wi-Fi",
+      "value": "Wi-Fi e TV com streaming"
+    },
     {
       "icon": "shirt",
       "label": "Roupa de cama e toalhas",
       "value": "Incluídas, com secador de cabelo e produtos de banho"
     },
-    { "icon": "umbrella", "label": "Kit praia", "value": "Cadeiras, guarda-sol e cooler" }
+    {
+      "icon": "umbrella",
+      "label": "Kit praia",
+      "value": "Cadeiras, guarda-sol e cooler"
+    }
   ],
   "practicalInfo": {
     "checkIn": "Das 14h às 23h30",
@@ -309,102 +326,82 @@
     },
     "intro": [
       {
-        "src": "sala.jpg",
+        "src": "sala.png",
         "alt": "Sala com parede azul, sofá de couro e mesa de jantar"
       },
       {
-        "src": "quarto-varanda.jpg",
+        "src": "quarto-varanda.png",
         "alt": "Quarto de casal com parede azul e porta para a varanda"
       }
     ],
     "booking": {
-      "src": "terraco-guardasol.jpg",
+      "src": "terraco-guardasol.png",
       "alt": "Terraço gourmet com guarda-sol azul e vista verde",
       "focus": "50% 60%"
     },
     "gallery": [
       {
-        "src": "terraco-guardasol.jpg",
+        "src": "terraco-guardasol.png",
         "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores",
         "group": "terraco",
         "caption": "Terraço gourmet"
       },
       {
-        "src": "sala.jpg",
+        "src": "sala.png",
         "alt": "Sala com parede azul, sofá de couro e mesa de jantar",
         "group": "social",
         "caption": "Sala integrada"
       },
       {
-        "src": "cozinha.jpg",
+        "src": "cozinha.png",
         "alt": "Cozinha em L com bancada de granito, cooktop, micro-ondas e geladeira, integrada à sala",
         "group": "social"
       },
       {
-        "src": "cozinha-fogao.jpg",
+        "src": "cozinha-fogao.png",
         "alt": "Bancada da cozinha com pia, cooktop de cinco bocas, chaleira elétrica e micro-ondas",
         "group": "social"
       },
       {
-        "src": "cozinha-bar.jpg",
+        "src": "cozinha-bar.png",
         "alt": "Cozinha com balcão azul",
         "group": "social",
         "caption": "Cozinha"
       },
       {
-        "src": "quarto-varanda.jpg",
+        "src": "quarto-varanda.png",
         "alt": "Quarto de casal com parede azul e porta para a varanda",
         "group": "quartos",
         "caption": "Quarto com varanda"
       },
       {
-        "src": "quarto-casal.jpg",
-        "alt": "Quarto de casal com parede azul e almofadas em tons de laranja",
-        "group": "quartos"
-      },
-      {
-        "src": "quarto-casal-tv.jpg",
-        "alt": "Quarto de casal com armário embutido de madeira e TV sobre aparador",
-        "group": "quartos"
-      },
-      {
-        "src": "quarto-tres-camas.jpg",
+        "src": "quarto-tres-camas.png",
         "alt": "Quarto com três camas",
         "group": "quartos"
       },
       {
-        "src": "quarto-solteiros.jpg",
-        "alt": "Quarto com três camas de solteiro, parede azul, ar-condicionado e janela para as árvores",
-        "group": "quartos"
-      },
-      {
-        "src": "quarto-azul.jpg",
-        "alt": "Quarto de solteiros com roupa de cama azul-turquesa e prancha decorativa na parede",
-        "group": "quartos"
-      },
-      {
-        "src": "terraco-mesa.jpg",
+        "src": "terraco-mesa.png",
         "alt": "Mesa de madeira do terraço com almofadas floridas",
         "group": "terraco"
       },
       {
-        "src": "terraco-cadeiras.jpg",
+        "src": "terraco-cadeiras.png",
         "alt": "Terraço com cadeiras de praia coloridas",
         "group": "terraco"
       },
       {
-        "src": "varanda-sofa.jpg",
+        "src": "varanda-sofa.png",
         "alt": "Varanda com sofá",
         "group": "terraco"
       },
       {
-        "src": "banheiro.jpg",
+        "src": "banheiro.png",
         "alt": "Banheiro com pastilhas azuis, espelho redondo e box de vidro",
         "group": "detalhes",
         "caption": "Banheiro"
       },
       {
-        "src": "fachada.jpg",
+        "src": "fachada.png",
         "alt": "Fachada do Condomínio Residencial Ametista, prédio de quatro andares com varandas arredondadas",
         "group": "fachada",
         "caption": "Fachada do residencial"

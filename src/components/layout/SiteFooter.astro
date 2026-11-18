@@ -227,4 +227,22 @@ const cols =
     color: var(--color-inverse-muted);
     font-size: var(--text-xs);
   }
+
+  /* Mobile: uma coluna, tudo centralizado */
+  @media (max-width: 767px) {
+    .site-footer__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      text-align: center;
+    }
+    .site-footer__note {
+      margin-inline: auto;
+    }
+    ul {
+      justify-items: center;
+    }
+    .site-footer__legal {
+      text-align: center;
+    }
+  }
 </style>

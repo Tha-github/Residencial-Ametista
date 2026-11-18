@@ -43,7 +43,8 @@
   --color-surface-raised: var(--white);
   --color-text: var(--graphite-900);
   --color-text-muted: var(--graphite-600);
-  --color-heading: var(--sea-950);
+  --color-heading: var(--sea-950); /* números e rótulos de destaque (não títulos) */
+  --color-title: var(--sea-700); /* títulos inteiros, inclusive o trecho em itálico */
   --color-border: var(--sand-200); /* divisórias decorativas */
   --color-border-strong: var(--graphite-400); /* limites de controles (≥ 3:1) */
   --color-link: var(--sea-700);

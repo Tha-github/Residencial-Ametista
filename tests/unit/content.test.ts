@@ -23,7 +23,7 @@ describe('conteúdo do residencial', () => {
       airbnb: 'https://www.airbnb.com.br/rooms/13257454',
     });
     expect(c.contact).toEqual({});
-    expect(c.media.gallery).toHaveLength(16);
+    expect(c.media.gallery).toHaveLength(12);
     expect(c.location.streetAddress).toBe('Rua Dante de Patta, 283');
     expect(c.location.mapsUrl).toBe('https://maps.app.goo.gl/qvsUVxg31GUaZbr36');
   });
