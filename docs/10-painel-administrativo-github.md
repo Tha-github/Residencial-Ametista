@@ -1,5 +1,7 @@
 # Painel administrativo (Top Site Admin) — Residencial Ametista
 
+O primeiro acesso e o cadastro da chave GitHub/senha pela interface estão descritos em [11-configuracao-login.md](11-configuracao-login.md). A seção abaixo também documenta o modo alternativo com secrets provisionados diretamente no Worker.
+
 Painel em `/admin` para o proprietário atualizar o conteúdo do site **só com uma senha**.
 Cada publicação vira um commit no repositório do Ametista, e o GitHub Pages publica
 sozinho a nova versão em cerca de 2 minutos.

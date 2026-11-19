@@ -21,6 +21,13 @@ export interface ContentResponse {
   photos: string[];
 }
 
+export interface SetupStatus {
+  ready: boolean;
+  token: boolean;
+  password: boolean;
+  setup: boolean;
+}
+
 export interface Upload {
   path: string;
   blob: string;
@@ -68,7 +75,7 @@ export class Api {
         },
       });
     } catch {
-      throw new ApiError(0, 'Sem conexão com o servidor do painel. Verifique a internet.');
+      throw new ApiError(0, 'Não foi possível acessar o servidor do painel. Tente novamente.');
     }
     if (res.status === 204) return undefined as T;
     const body = (await res.json().catch(() => ({}))) as {
@@ -77,9 +84,27 @@ export class Api {
     };
     if (!res.ok) {
       if (res.status === 401 && path !== '/api/login') this.token = null;
-      throw new ApiError(res.status, body.error ?? `Erro ${res.status}`, body.details);
+      const message =
+        body.error ??
+        (this.base === '/__admin-worker' && res.status >= 500
+          ? 'O Worker local está indisponível. Inicie-o com npm run admin:dev.'
+          : `Erro ${res.status}`);
+      throw new ApiError(res.status, message, body.details);
     }
     return body as T;
+  }
+
+  /** Estado da configuração (público, sem segredos). */
+  setupStatus() {
+    return this.call<SetupStatus>('/api/setup');
+  }
+
+  /** Configuração pela Top Site: chave do GitHub e/ou senha do proprietário. */
+  setup(token: string, password: string) {
+    return this.call<SetupStatus>('/api/setup', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    });
   }
 
   async login(password: string) {

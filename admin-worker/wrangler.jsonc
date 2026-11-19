@@ -1,4 +1,6 @@
 // Worker do painel administrativo (Top Site Admin) — Residencial Ametista.
+// O fluxo de configuração pela tela /admin exige o binding KV ADMIN_KV e os
+// secrets CONFIG_KEY e SESSION_SECRET. Ver docs/11-configuracao-login.md.
 // Variáveis públicas aqui; segredos SOMENTE via `wrangler secret put`:
 //   GITHUB_TOKEN         token fine-grained, só este repositório (Contents: RW, Actions: R)
 //   ADMIN_PASSWORD_HASH  gerado por `npm run admin:hash-password`

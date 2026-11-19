@@ -59,7 +59,11 @@ const csp = [
     <title>Painel · Residencial Ametista</title>
   </head>
   <body>
-    <div id="admin" data-api={apiOrigin ? apiUrl : ''} data-thumbs={JSON.stringify(thumbs)}>
+    <div
+      id="admin"
+      data-api={apiOrigin ? apiUrl : import.meta.env.DEV ? '/__admin-worker' : ''}
+      data-thumbs={JSON.stringify(thumbs)}
+    >
       <noscript>Ative o JavaScript para usar o painel.</noscript>
     </div>
     <script>

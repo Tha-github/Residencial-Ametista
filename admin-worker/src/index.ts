@@ -1,8 +1,8 @@
 /**
  * Worker do painel do Residencial Ametista.
- * Configuração: admin-worker/wrangler.jsonc (variáveis) + secrets
- * (GITHUB_TOKEN, ADMIN_PASSWORD_HASH, SESSION_SECRET). Ver
- * docs/10-painel-administrativo-github.md.
+ * Configuração: admin-worker/wrangler.jsonc + secrets (CONFIG_KEY,
+ * SESSION_SECRET; GITHUB_TOKEN/ADMIN_PASSWORD_HASH são alternativas). Ver
+ * docs/11-configuracao-login.md.
  */
 import { ametistaSpec } from '../../src/admin-sites/ametista';
 import { propertySchema } from '../../src/data/property.schema';

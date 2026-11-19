@@ -101,24 +101,71 @@ interface SessionPayload {
   site: string;
   iat: number;
   exp: number;
+  /** Versão da senha: trocar a senha invalida as sessões abertas. */
+  pv: string;
 }
 
-export async function createSession(secret: string, site: string, hours: number) {
+/** Impressão curta (não reversível) do hash da senha, para versionar sessões. */
+export async function passwordVersion(passwordHash: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', enc.encode(`pv.${passwordHash}`));
+  return b64url.encode(new Uint8Array(digest)).slice(0, 16);
+}
+
+export async function createSession(secret: string, site: string, hours: number, pv: string) {
   const now = Math.floor(Date.now() / 1000);
-  const payload: SessionPayload = { sub: 'owner', site, iat: now, exp: now + hours * 3600 };
+  const payload: SessionPayload = { sub: 'owner', site, iat: now, exp: now + hours * 3600, pv };
   const data = b64url.encode(enc.encode(JSON.stringify(payload)));
   return { token: `${data}.${await sign(secret, `session.${data}`)}`, expiresAt: payload.exp };
 }
 
-export async function verifySession(secret: string, site: string, token: string | null) {
+export async function verifySession(
+  secret: string,
+  site: string,
+  token: string | null,
+  pv: string,
+) {
   if (!token) return false;
   const [data, sig, extra] = token.split('.');
   if (!data || !sig || extra !== undefined) return false;
   if (!(await verifySignature(secret, `session.${data}`, sig))) return false;
   try {
     const p = JSON.parse(new TextDecoder().decode(b64url.decode(data))) as SessionPayload;
-    return p.sub === 'owner' && p.site === site && p.exp > Math.floor(Date.now() / 1000);
+    return (
+      p.sub === 'owner' && p.site === site && p.pv === pv && p.exp > Math.floor(Date.now() / 1000)
+    );
   } catch {
     return false;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Cifra da chave do GitHub guardada no KV (AES-GCM, chave CONFIG_KEY) */
+/* ------------------------------------------------------------------ */
+
+async function aesKey(secret: string) {
+  if (!secret || secret.length < 32) throw new Error('CONFIG_KEY ausente ou curto (mín. 32)');
+  const raw = await crypto.subtle.digest('SHA-256', enc.encode(`config.${secret}`));
+  return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']);
+}
+
+export async function encryptText(secret: string, text: string): Promise<string> {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await aesKey(secret), enc.encode(text));
+  return `v1.${b64.encode(iv)}.${b64.encode(new Uint8Array(data))}`;
+}
+
+export async function decryptText(secret: string, stored: string | null): Promise<string | undefined> {
+  if (!stored) return undefined;
+  const [v, iv, data] = stored.split('.');
+  if (v !== 'v1' || !iv || !data) return undefined;
+  try {
+    const plain = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: b64.decode(iv) },
+      await aesKey(secret),
+      b64.decode(data),
+    );
+    return new TextDecoder().decode(plain);
+  } catch {
+    return undefined;
   }
 }

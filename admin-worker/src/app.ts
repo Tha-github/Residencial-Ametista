@@ -11,6 +11,14 @@
  *   POST /api/upload     { name, data(base64) }        → { path, blob, receipt }
  *   POST /api/publish    { content, sha, uploads[] }   → { commit }
  *   GET  /api/status?commit=<sha>                      → { state, url? }
+ *   GET  /api/setup                                    → { ready, token, password, setup }
+ *   POST /api/setup      { token, password }           → cadastro inicial
+ *
+ * Configuração: a chave do GitHub e a senha podem vir de secrets do Worker
+ * (GITHUB_TOKEN / ADMIN_PASSWORD_HASH) ou ser definidas uma única vez pela
+ * tela do painel. O cadastro inicial exige uma chave GitHub com escrita neste
+ * repositório e uma senha, ambos enviados juntos. A chave fica cifrada no KV
+ * (AES-GCM com CONFIG_KEY) e a senha, só como hash PBKDF2.
  *
  * Regras de segurança:
  *   - CORS somente para as origens configuradas (ALLOWED_ORIGINS).
@@ -21,14 +29,37 @@
  *   - Publicação recusada se o conteúdo mudou desde que o painel o abriu.
  */
 import { applyEdits, EditError, imageSources, type SiteSpec } from '../../src/admin-kit/spec';
-import { b64, createSession, sign, verifyPassword, verifySession, verifySignature } from './auth';
+import {
+  b64,
+  createSession,
+  decryptText,
+  encryptText,
+  hashPassword,
+  passwordVersion,
+  sign,
+  verifyPassword,
+  verifySession,
+  verifySignature,
+} from './auth';
 import { GitHub, GitHubError, type TreeChange } from './github';
 import { checkImage } from './images';
 
+/** Subconjunto do KV do Cloudflare usado aqui. */
+export interface KV {
+  get(key: string): Promise<string | null>;
+  put(key: string, value: string): Promise<void>;
+}
+
 export interface Env {
-  GITHUB_TOKEN: string;
-  ADMIN_PASSWORD_HASH: string;
+  /** Opcional se a chave for definida pela tela de configuração (KV). */
+  GITHUB_TOKEN?: string;
+  /** Opcional se a senha for definida pela tela de configuração (KV). */
+  ADMIN_PASSWORD_HASH?: string;
   SESSION_SECRET: string;
+  /** KV da configuração feita pela tela (chave cifrada + hash da senha). */
+  ADMIN_KV?: KV;
+  /** Cifra a chave do GitHub no KV (≥ 32 caracteres aleatórios). */
+  CONFIG_KEY?: string;
   GITHUB_REPO: string;
   GITHUB_BRANCH: string;
   /** Origens permitidas, separadas por vírgula (ex.: https://usuario.github.io). */
@@ -131,29 +162,115 @@ export async function handle(
   }
 
   try {
-    const gh = () => new GitHub(env.GITHUB_TOKEN, env.GITHUB_REPO, env.GITHUB_BRANCH, fetcher);
     const route = `${request.method} ${url.pathname}`;
+    const limit = async (scope: string) => {
+      if (!env.LOGIN_LIMITER) return;
+      const ip = request.headers.get('CF-Connecting-IP') ?? 'anon';
+      const { success } = await env.LOGIN_LIMITER.limit({ key: `${scope}:${ip}` });
+      if (!success) throw new HttpError(429, 'Muitas tentativas. Aguarde um minuto.');
+    };
+    const slow = () => new Promise((r) => setTimeout(r, 700)); // desestimula tentativas em série
+
+    // Configuração efetiva: secrets do Worker têm prioridade sobre o KV.
+    const kv = env.ADMIN_KV;
+    const stored = await kv?.get('credentials');
+    const credentials = stored
+      ? (JSON.parse(stored) as { githubToken: string; passwordHash: string })
+      : undefined;
+    const githubToken =
+      env.GITHUB_TOKEN ||
+      (kv && env.CONFIG_KEY
+        ? await decryptText(
+            env.CONFIG_KEY,
+            credentials?.githubToken ?? (await kv.get('github_token')),
+          )
+        : undefined);
+    const passwordHash =
+      env.ADMIN_PASSWORD_HASH ||
+      credentials?.passwordHash ||
+      (await kv?.get('password_hash')) ||
+      '';
+    const setupEnabled = Boolean(
+      kv && env.CONFIG_KEY && env.SESSION_SECRET?.length >= 32 && !githubToken && !passwordHash,
+    );
+    const status = () => ({
+      ready: Boolean(githubToken && passwordHash),
+      token: Boolean(githubToken),
+      password: Boolean(passwordHash),
+      setup: setupEnabled,
+    });
+    const gh = () => {
+      if (!githubToken)
+        throw new HttpError(503, 'Painel ainda sem a chave do GitHub. Fale com a Top Site.');
+      return new GitHub(githubToken, env.GITHUB_REPO, env.GITHUB_BRANCH, fetcher);
+    };
+
+    // Estado público (sem segredos): o painel decide entre login e "aguardando configuração".
+    if (route === 'GET /api/setup') return json(status(), 200, cors);
+
+    if (route === 'POST /api/setup') {
+      await limit('setup');
+      if (githubToken || passwordHash) {
+        throw new HttpError(409, 'O cadastro inicial já foi feito. Entre com a senha do painel.');
+      }
+      if (!setupEnabled || !kv || !env.CONFIG_KEY)
+        throw new HttpError(404, 'Configuração pelo painel não habilitada.');
+      const body = await readJson(request, 8192);
+      const newToken = typeof body.token === 'string' ? body.token.trim() : '';
+      const newPassword = typeof body.password === 'string' ? body.password : '';
+      if (!newToken || !newPassword)
+        throw new HttpError(
+          400,
+          'Informe a chave do GitHub e a senha para concluir o cadastro inicial.',
+        );
+      if (newPassword.length < 10 || newPassword.length > 128)
+        throw new HttpError(422, 'A senha precisa ter entre 10 e 128 caracteres.');
+      if (!/^(github_pat_|ghp_|gho_)[A-Za-z0-9_]{20,}$/.test(newToken))
+        throw new HttpError(422, 'Essa não parece uma chave do GitHub (começa com "github_pat_").');
+      // A chave precisa enxergar ESTE repositório e poder gravar nele.
+      let repo: { permissions?: { push?: boolean } };
+      try {
+        repo = await new GitHub(newToken, env.GITHUB_REPO, env.GITHUB_BRANCH, fetcher).repoInfo();
+      } catch (e) {
+        if (e instanceof GitHubError && (e.status === 401 || e.status === 403 || e.status === 404))
+          throw new HttpError(422, `A chave não tem acesso ao repositório ${env.GITHUB_REPO}.`);
+        throw e;
+      }
+      if (!repo.permissions?.push)
+        throw new HttpError(
+          422,
+          'A chave não tem permissão de escrita (Contents: Read and write).',
+        );
+      await kv.put(
+        'credentials',
+        JSON.stringify({
+          githubToken: await encryptText(env.CONFIG_KEY, newToken),
+          passwordHash: await hashPassword(newPassword),
+        }),
+      );
+      return json({ token: true, password: true, ready: true, setup: false }, 200, cors);
+    }
 
     if (route === 'POST /api/login') {
-      if (env.LOGIN_LIMITER) {
-        const ip = request.headers.get('CF-Connecting-IP') ?? 'anon';
-        const { success } = await env.LOGIN_LIMITER.limit({ key: `login:${ip}` });
-        if (!success) throw new HttpError(429, 'Muitas tentativas. Aguarde um minuto.');
-      }
+      await limit('login');
+      if (!passwordHash)
+        throw new HttpError(503, 'Painel ainda não configurado. Fale com a Top Site.');
       const body = await readJson(request, 4096);
-      const ok = await verifyPassword(String(body.password ?? ''), env.ADMIN_PASSWORD_HASH);
+      const ok = await verifyPassword(String(body.password ?? ''), passwordHash);
       if (!ok) {
-        await new Promise((r) => setTimeout(r, 700)); // desestimula tentativas em série
+        await slow();
         throw new HttpError(401, 'Senha incorreta.');
       }
       const hours = Math.min(Math.max(Number(env.SESSION_HOURS ?? 8) || 8, 1), 24);
-      return json(await createSession(env.SESSION_SECRET, site.id, hours), 200, cors);
+      const pv = await passwordVersion(passwordHash);
+      return json(await createSession(env.SESSION_SECRET, site.id, hours, pv), 200, cors);
     }
 
-    // Demais rotas: sessão obrigatória.
+    // Demais rotas: sessão obrigatória (e da senha atual).
     const auth = request.headers.get('Authorization');
     const token = auth?.startsWith('Bearer ') ? auth.slice(7) : null;
-    if (!(await verifySession(env.SESSION_SECRET, site.id, token))) {
+    const pv = passwordHash ? await passwordVersion(passwordHash) : '';
+    if (!pv || !(await verifySession(env.SESSION_SECRET, site.id, token, pv))) {
       throw new HttpError(401, 'Sessão expirada. Entre novamente.');
     }
 

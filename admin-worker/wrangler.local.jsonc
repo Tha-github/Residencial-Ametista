@@ -1,0 +1,16 @@
+// Configuração somente para o Worker local. Não use para deploy.
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "ametista-admin-local",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-10",
+  "vars": {
+    "GITHUB_REPO": "Tha-github/Residencial-Ametista",
+    "GITHUB_BRANCH": "main",
+    "ALLOWED_ORIGINS": "http://127.0.0.1:4321,http://localhost:4321",
+    "SESSION_HOURS": "8",
+  },
+  "kv_namespaces": [
+    { "binding": "ADMIN_KV", "id": "ametista-local-admin-kv" },
+  ],
+}

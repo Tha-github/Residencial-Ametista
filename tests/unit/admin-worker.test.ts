@@ -14,6 +14,7 @@ import data from '../fixtures/ametista.sample.json';
 const ORIGIN = 'https://tha-github.github.io';
 const PASSWORD = 'senha-de-teste-123';
 const REPO = 'Tha-github/Residencial-Ametista';
+const SETUP_TOKEN = 'github_pat_teste12345678901234567890';
 
 const site: SiteAdapter = {
   id: 'residencial-ametista',
@@ -54,6 +55,8 @@ function fakeFetch(
   const p = url.pathname.slice(base.length);
   const ok = (body: unknown, status = 200) =>
     Promise.resolve(new Response(JSON.stringify(body), { status }));
+  if (method === 'GET' && url.pathname === base && auth === `Bearer ${SETUP_TOKEN}`)
+    return ok({ permissions: { push: true } });
   if (auth !== 'Bearer gh-token-secreto') return ok({ message: 'Bad credentials' }, 401);
 
   if (method === 'GET' && p.startsWith('/contents/')) {
@@ -122,7 +125,13 @@ function fakeFetch(
 
 // ---------- utilitários ----------
 let env: Env;
-const call = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
+const call = (
+  method: string,
+  path: string,
+  body?: unknown,
+  headers: Record<string, string> = {},
+  bindings = env,
+) =>
   handle(
     new Request(`https://admin.example.workers.dev${path}`, {
       method,
@@ -133,7 +142,7 @@ const call = (method: string, path: string, body?: unknown, headers: Record<stri
       },
       body: body === undefined ? undefined : JSON.stringify(body),
     }),
-    env,
+    bindings,
     site,
     fakeFetch as typeof fetch,
   );
@@ -182,6 +191,39 @@ beforeEach(() => {
 });
 
 describe('login e sessão', () => {
+  it('permite repetir o cadastro após senha inválida e habilita o login após salvar', async () => {
+    const kv = new Map<string, string>();
+    const setupEnv: Env = {
+      ...env,
+      GITHUB_TOKEN: undefined,
+      ADMIN_PASSWORD_HASH: undefined,
+      CONFIG_KEY: 'chave-de-cifragem-local-de-teste-12345',
+      ADMIN_KV: {
+        get: async (key) => kv.get(key) ?? null,
+        put: async (key, value) => {
+          kv.set(key, value);
+        },
+      },
+    };
+
+    const callSetup = (method: string, path: string, body?: unknown) =>
+      call(method, path, body, {}, setupEnv);
+    const setup = { token: SETUP_TOKEN, password: PASSWORD };
+    expect((await callSetup('POST', '/api/setup', { ...setup, password: 'curta' })).status).toBe(
+      422,
+    );
+    expect(kv.size).toBe(0);
+    expect((await callSetup('POST', '/api/setup', setup)).status).toBe(200);
+    expect(kv.size).toBe(1);
+    expect([...kv.values()][0]).not.toContain(SETUP_TOKEN);
+    expect([...kv.values()][0]).not.toContain(PASSWORD);
+    expect(await (await callSetup('GET', '/api/setup')).json()).toMatchObject({
+      ready: true,
+      setup: false,
+    });
+    expect((await callSetup('POST', '/api/login', { password: PASSWORD })).status).toBe(200);
+    expect((await callSetup('POST', '/api/setup', setup)).status).toBe(409);
+  });
   it('senha errada → 401; certa → token; token nunca é o do GitHub', async () => {
     expect((await call('POST', '/api/login', { password: 'errada' })).status).toBe(401);
     const r = await call('POST', '/api/login', { password: PASSWORD });

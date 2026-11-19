@@ -66,6 +66,11 @@ export class GitHub {
     return (await res.json()) as T;
   }
 
+  /** Dados do repositório (inclui as permissões da chave usada). */
+  repoInfo() {
+    return this.req<{ permissions?: { push?: boolean; admin?: boolean } }>('');
+  }
+
   /** Arquivo de texto da branch: conteúdo + sha do blob (controle de versão). */
   async getText(path: string): Promise<{ text: string; sha: string }> {
     const file = await this.req<{ content: string; sha: string; encoding: string }>(

@@ -55,6 +55,17 @@ export default defineConfig({
   srcDir: isGitHubPages ? './src-pages/' : './src/',
   trailingSlash: 'ignore',
 
+  vite: {
+    server: {
+      proxy: {
+        '^/__admin-worker/api/': {
+          target: 'http://127.0.0.1:8787',
+          rewrite: (path) => path.replace(/^\/__admin-worker/, ''),
+        },
+      },
+    },
+  },
+
   integrations: [devOnlyRoutes()],
 
   // A barra de ferramentas de dev interfere em medições dos testes E2E.

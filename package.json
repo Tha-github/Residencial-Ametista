@@ -23,7 +23,8 @@
     "generate-types": "wrangler types",
     "test:e2e": "playwright test",
     "admin:hash-password": "node scripts/hash-admin-password.mjs",
-    "admin:dev": "wrangler dev --config admin-worker/wrangler.jsonc",
+    "admin:setup-secrets": "node scripts/hash-admin-setup.mjs",
+    "admin:dev": "wrangler dev --config admin-worker/wrangler.local.jsonc --ip 127.0.0.1 --port 8787",
     "admin:deploy": "wrangler deploy --config admin-worker/wrangler.jsonc"
   },
   "dependencies": {

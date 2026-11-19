@@ -100,7 +100,7 @@ export function startAdmin(root: HTMLElement, opts: AdminOptions) {
         'div',
         { class: 'login__brand' },
         h('span', { class: 'login__logo' }, icon('lock', 22)),
-        h('span', {}, 'Top Site · Painel'),
+        h('span', {}, 'Área do proprietário'),
       ),
       h('h1', { class: 'login__title' }, spec.siteName),
       h(
@@ -133,8 +133,149 @@ export function startAdmin(root: HTMLElement, opts: AdminOptions) {
         button.textContent = 'Entrar';
       }
     });
+    const setupLink = h(
+      'button',
+      { type: 'button', class: 'login__setup' },
+      'Configurar chave secreta e senha',
+    );
+    setupLink.addEventListener('click', () => showSetup());
+    add(form, setupLink);
     root.replaceChildren(h('main', { class: 'login' }, form));
     input.focus();
+    // Sem chave ou senha configuradas: avisa e leva à configuração.
+    if (!reauth) {
+      api
+        .setupStatus()
+        .then((st) => {
+          if (st.ready) {
+            setupLink.hidden = true;
+            return;
+          }
+          input.disabled = true;
+          button.disabled = true;
+          error.textContent = st.setup
+            ? 'Painel aguardando configuração inicial.'
+            : 'O painel ainda não foi configurado. Entre em contato com o responsável pelo site.';
+          error.hidden = false;
+          if (!st.setup) setupLink.hidden = true;
+        })
+        .catch(() => {
+          /* servidor indisponível: o próprio login mostrará o erro */
+        });
+    }
+  }
+
+  /* ---------------- configuração inicial (Top Site) ---------------- */
+
+  function showSetup() {
+    const field = (id: string, label: string, attrs: Record<string, string>, help?: string) => {
+      const inputEl = h('input', { id, class: 'inp', ...attrs });
+      return {
+        input: inputEl,
+        el: h(
+          'div',
+          { class: 'fld' },
+          h('label', { class: 'fld__label', for: id }, label),
+          help ? h('p', { class: 'fld__help' }, help) : null,
+          inputEl,
+        ),
+      };
+    };
+    const token = field(
+      'setup-token',
+      'Chave do GitHub (token)',
+      { type: 'password', autocomplete: 'off', placeholder: 'github_pat_…' },
+      'Fine-grained token deste repositório, com Contents: Read and write. Ele será validado antes de ser salvo.',
+    );
+    const pass = field(
+      'setup-pass',
+      'Nova senha do proprietário',
+      { type: 'password', autocomplete: 'new-password', minlength: '10' },
+      'Use pelo menos 10 caracteres.',
+    );
+    const pass2 = field('setup-pass2', 'Repita a nova senha', {
+      type: 'password',
+      autocomplete: 'new-password',
+    });
+    const chips = h('ul', { class: 'setup__status', 'aria-live': 'polite' });
+    const renderChips = (st: { token: boolean; password: boolean }) =>
+      chips.replaceChildren(
+        h('li', { class: st.token ? 'is-ok' : '' }, icon(st.token ? 'check' : 'alert', 16), st.token ? 'Chave do GitHub configurada' : 'Chave do GitHub pendente'),
+        h('li', { class: st.password ? 'is-ok' : '' }, icon(st.password ? 'check' : 'alert', 16), st.password ? 'Senha configurada' : 'Senha pendente'),
+      );
+    renderChips({ token: false, password: false });
+    api.setupStatus().then(renderChips).catch(() => {});
+    const msg = h('p', { class: 'login__error', role: 'alert', hidden: true });
+    const ok = h('p', { class: 'alert alert--ok', role: 'status', hidden: true });
+    const save = h('button', { type: 'submit', class: 'btn btn--primary btn--block' }, 'Salvar configuração');
+    if (!opts.apiBase) {
+      save.disabled = true;
+      msg.textContent = 'A tela está em prévia. Conecte o Worker do painel para cadastrar a chave e a senha.';
+      msg.hidden = false;
+    }
+    const back = h('button', { type: 'button', class: 'login__setup' }, 'Voltar para o login');
+    back.addEventListener('click', () => showLogin());
+    const createLink = h(
+      'a',
+      { class: 'fld__test', href: 'https://github.com/settings/personal-access-tokens/new', target: '_blank', rel: 'noopener noreferrer' },
+      'Criar a chave no GitHub',
+      icon('external', 14),
+    );
+    const form = h(
+      'form',
+      { class: 'login__card login__card--wide' },
+      h('div', { class: 'login__brand' }, h('span', { class: 'login__logo' }, icon('lock', 22)), h('span', {}, 'Área do proprietário')),
+      h('h1', { class: 'login__title' }, spec.siteName),
+      h('p', { class: 'login__lead' }, 'Informe a chave GitHub deste repositório e crie a senha do painel. A chave é guardada cifrada no servidor e não fica salva no navegador.'),
+      chips,
+      token.el,
+      createLink,
+      pass.el,
+      pass2.el,
+      msg,
+      ok,
+      save,
+      back,
+    );
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.hidden = true;
+      ok.hidden = true;
+      if (pass.input.value !== pass2.input.value) {
+        msg.textContent = 'As senhas não conferem.';
+        msg.hidden = false;
+        return;
+      }
+      if (!token.input.value.trim() || !pass.input.value) {
+        msg.textContent = 'Preencha a chave do GitHub e a senha para continuar.';
+        msg.hidden = false;
+        return;
+      }
+      save.disabled = true;
+      save.textContent = 'Salvando…';
+      try {
+        const st = await api.setup(token.input.value, pass.input.value);
+        renderChips(st);
+        token.input.value = '';
+        pass.input.value = '';
+        pass2.input.value = '';
+        ok.textContent = st.ready
+          ? 'Configuração salva. O proprietário já pode entrar com a senha.'
+          : 'Salvo. Complete o que ainda está pendente.';
+        ok.hidden = false;
+        if (st.ready) {
+          api.logout(); // sessão antiga (se houver) não vale mais
+        }
+      } catch (err) {
+        msg.textContent = err instanceof ApiError ? err.message : ERR_GENERIC;
+        msg.hidden = false;
+      } finally {
+        save.disabled = false;
+        save.textContent = 'Salvar configuração';
+      }
+    });
+    root.replaceChildren(h('main', { class: 'login' }, form));
+    token.input.focus();
   }
 
   async function load() {
@@ -519,7 +660,7 @@ export function startAdmin(root: HTMLElement, opts: AdminOptions) {
           if (st === 'failed')
             return set(
               'error',
-              'As alterações foram salvas, mas a atualização do site falhou. Avise a Top Site.',
+              'As alterações foram salvas, mas a atualização do site falhou. Entre em contato com o responsável pelo site.',
               true,
             );
         } catch {
@@ -543,22 +684,7 @@ export function startAdmin(root: HTMLElement, opts: AdminOptions) {
   /* ------------------------------ início ------------------------------ */
 
   if (!opts.apiBase) {
-    root.replaceChildren(
-      h(
-        'main',
-        { class: 'login' },
-        h(
-          'div',
-          { class: 'login__card' },
-          h('h1', { class: 'login__title' }, spec.siteName),
-          h(
-            'p',
-            { class: 'login__lead' },
-            'O painel ainda não foi configurado. Fale com a Top Site.',
-          ),
-        ),
-      ),
-    );
+    showLogin('Prévia visual: conecte o Worker do painel para ativar o acesso e salvar alterações.');
     return;
   }
   void api.hasSession().then((ok) => (ok ? load() : showLogin()));

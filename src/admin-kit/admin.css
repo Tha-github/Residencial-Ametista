@@ -978,3 +978,44 @@ textarea.inp {
   padding: 18px;
   border-radius: 0 0 8px 8px;
 }
+
+/* ---------- Configuração (Top Site) ---------- */
+.login__card--wide {
+  width: min(100%, 480px);
+}
+.login__setup {
+  justify-self: center;
+  margin-top: 4px;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--a-muted);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.login__setup:hover {
+  color: var(--a-text);
+}
+.setup__status {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+.setup__status li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--a-warn-soft);
+  color: var(--a-warn);
+}
+.setup__status li.is-ok {
+  background: var(--a-ok-soft);
+  color: var(--a-ok);
+}
