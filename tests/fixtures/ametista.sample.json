@@ -1,0 +1,487 @@
+{
+  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente (restinga-previas.pages.dev/residencial-ametista) em 2026-11-17/18. Fotos do imóvel substituídas em 2026-11-18 por versões sem marca-d'água (1536px) enviadas pelo usuário; fotos da região da Wikimedia Commons com crédito. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato do proprietário para reserva direta (WhatsApp e e-mail) informado pelo usuário em 2026-11-18. Check-out ainda pendente.",
+  "name": "Residencial Ametista",
+  "tagline": "Apartamento completo com terraço gourmet a aproximadamente 250 metros do mar.",
+  "description": [
+    "Um apartamento inteiro de 90 m² na Praia dos Ingleses, com dois quartos, dois banheiros, cozinha completa e um terraço gourmet só seu. Da porta até a areia são cerca de quatro minutos a pé.",
+    "A rua é tranquila, com mercado, farmácia, restaurantes e lojas na região. Você estaciona na vaga gratuita do prédio, desce com as cadeiras e o guarda-sol do apartamento e passa o dia na praia. No fim da tarde, o terraço e a churrasqueira esperam a família."
+  ],
+  "hero": {
+    "primaryLabel": "Ver opções de reserva",
+    "primaryTarget": "reservas",
+    "secondaryLabel": "Conhecer o apartamento",
+    "secondaryTarget": "galeria"
+  },
+  "location": {
+    "beach": "Praia dos Ingleses",
+    "neighborhood": "Ingleses do Rio Vermelho",
+    "city": "Florianópolis",
+    "state": "Santa Catarina",
+    "stateCode": "SC",
+    "streetAddress": "Rua Dante de Patta, 283",
+    "postalCode": "88058-510",
+    "mapsUrl": "https://maps.app.goo.gl/qvsUVxg31GUaZbr36",
+    "beachDistanceM": 250,
+    "beachWalkMinutes": 4
+  },
+  "quickFacts": [
+    {
+      "icon": "footprints",
+      "label": "4 min a pé até a praia"
+    },
+    {
+      "icon": "bed",
+      "label": "2 quartos · 4 camas"
+    },
+    {
+      "icon": "flame",
+      "label": "Terraço com churrasqueira"
+    },
+    {
+      "icon": "parking",
+      "label": "Vaga privativa grátis"
+    },
+    {
+      "icon": "paw",
+      "label": "Aceita pets"
+    },
+    {
+      "icon": "snowflake",
+      "label": "Ar-condicionado e Wi-Fi"
+    }
+  ],
+  "highlights": [
+    {
+      "icon": "flame",
+      "title": "Terraço gourmet",
+      "text": "Espaço privativo com churrasqueira, mesa e ambiente para aproveitar o fim de tarde."
+    },
+    {
+      "icon": "home",
+      "title": "Apartamento completo",
+      "text": "90 m², dois quartos, quatro camas e dois banheiros."
+    },
+    {
+      "icon": "utensils",
+      "title": "Cozinha equipada",
+      "text": "Cooktop, forno, micro-ondas, geladeira, cafeteira e torradeira."
+    },
+    {
+      "icon": "snowflake",
+      "title": "Conforto",
+      "text": "Ar-condicionado, Wi-Fi, TV com streaming e máquina de lavar."
+    },
+    {
+      "icon": "parking",
+      "title": "Praticidade",
+      "text": "Vaga privativa gratuita, elevador e kit praia com cadeiras, guarda-sol e cooler."
+    },
+    {
+      "icon": "paw",
+      "title": "Pet friendly",
+      "text": "Animais de estimação aceitos mediante pedido, sem custo adicional."
+    }
+  ],
+  "facts": {
+    "areaM2": 90,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "beds": "4 camas"
+  },
+  "amenities": [
+    "Apartamento inteiro",
+    "Terraço gourmet com churrasqueira",
+    "Cozinha completa com cooktop, forno, micro-ondas e geladeira",
+    "Cafeteira e torradeira",
+    "Ar-condicionado",
+    "Wi-Fi e TV com streaming",
+    "Máquina de lavar",
+    "Vaga privativa gratuita",
+    "Elevador",
+    "Kit praia com cadeiras, guarda-sol e cooler",
+    "Enxoval, toalhas e secador de cabelo",
+    "Cadeirão e berço sujeitos à disponibilidade",
+    "Pets aceitos mediante pedido, sem custo adicional"
+  ],
+  "rooms": [
+    {
+      "id": "sala-cozinha",
+      "title": "Sala e cozinha",
+      "text": "Sofá de couro, mesa para a família e cozinha equipada com balcão, tudo integrado e com luz natural."
+    },
+    {
+      "id": "quarto-casal",
+      "title": "Quarto de casal",
+      "text": "Cama de casal, ar-condicionado, TV e porta para a varanda."
+    },
+    {
+      "id": "quarto-solteiros",
+      "title": "Quarto das camas de solteiro",
+      "text": "Camas de solteiro, ar-condicionado e luz natural: ideal para crianças ou amigos."
+    },
+    {
+      "id": "terraco-varanda",
+      "title": "Terraço gourmet e varanda",
+      "text": "Mesa de madeira, guarda-sol, churrasqueira e sofá na varanda, sem dividir com vizinhos."
+    },
+    {
+      "id": "banheiros-predio",
+      "title": "Banheiros e prédio",
+      "text": "Dois banheiros com box, elevador e vaga privativa na garagem."
+    }
+  ],
+  "experience": {
+    "moments": [
+      {
+        "time": "Manhã",
+        "icon": "coffee",
+        "title": "Comece sem pressa",
+        "text": "Aproveite o café da manhã no apartamento, prepare tudo com tranquilidade e caminhe até a Praia dos Ingleses para aproveitar o mar.",
+        "photo": {
+          "src": "cozinha-fogao.png",
+          "alt": "Bancada da cozinha com cooktop, chaleira elétrica e cesta de frutas"
+        }
+      },
+      {
+        "time": "Tarde",
+        "icon": "sun",
+        "title": "Aproveite cada momento",
+        "text": "Depois da praia, volte para descansar no conforto do apartamento, aproveite a estrutura completa e relaxe antes de continuar o dia.",
+        "photo": {
+          "src": "sala.png",
+          "alt": "Sala com parede azul, sofá de couro e mesa de jantar"
+        }
+      },
+      {
+        "time": "Noite",
+        "icon": "flame",
+        "title": "Um fim de dia especial",
+        "text": "Reúna a família ou os amigos no terraço gourmet, prepare um churrasco e aproveite a tranquilidade do ambiente.",
+        "photo": {
+          "src": "terraco-guardasol.png",
+          "alt": "Terraço gourmet com guarda-sol azul, mesa e vista para as árvores"
+        }
+      }
+    ]
+  },
+  "essentials": [
+    {
+      "icon": "paw",
+      "label": "Pets",
+      "value": "Aceitos mediante pedido, sem custo adicional. Avise ao fazer a reserva.",
+      "featured": true
+    },
+    {
+      "icon": "baby",
+      "label": "Crianças",
+      "value": "Crianças de qualquer idade são bem-vindas. Cadeirão e berço sujeitos à disponibilidade.",
+      "featured": true
+    },
+    {
+      "icon": "bed",
+      "label": "Quartos e camas",
+      "value": "2 quartos com 4 camas"
+    },
+    {
+      "icon": "bath",
+      "label": "Banheiros",
+      "value": "2 banheiros com box"
+    },
+    {
+      "icon": "area",
+      "label": "Área",
+      "value": "90 m² de apartamento inteiro"
+    },
+    {
+      "icon": "footprints",
+      "label": "Praia",
+      "value": "Cerca de 250 m, 4 minutos a pé"
+    },
+    {
+      "icon": "parking",
+      "label": "Estacionamento",
+      "value": "Vaga privativa gratuita no prédio"
+    },
+    {
+      "icon": "utensils",
+      "label": "Cozinha",
+      "value": "Cooktop, forno, micro-ondas, geladeira, cafeteira e torradeira"
+    },
+    {
+      "icon": "snowflake",
+      "label": "Ar-condicionado",
+      "value": "Nos quartos e na área social"
+    },
+    {
+      "icon": "wifi",
+      "label": "Wi-Fi",
+      "value": "Wi-Fi e TV com streaming"
+    },
+    {
+      "icon": "shirt",
+      "label": "Roupa de cama e toalhas",
+      "value": "Incluídas, com secador de cabelo e produtos de banho"
+    },
+    {
+      "icon": "umbrella",
+      "label": "Kit praia",
+      "value": "Cadeiras, guarda-sol e cooler"
+    }
+  ],
+  "practicalInfo": {
+    "checkIn": "Das 14h às 23h30",
+    "houseRules": []
+  },
+  "booking": {
+    "booking": "https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html",
+    "airbnb": "https://www.airbnb.com.br/rooms/13257454",
+    "buttonPrefix": "Reservar no"
+  },
+  "contact": {
+    "whatsapp": "https://wa.me/5548999471321?text=Ol%C3%A1!%20Vi%20o%20site%20do%20Residencial%20Ametista%20e%20gostaria%20de%20consultar%20disponibilidade%20para%20reserva.",
+    "email": "pereimamarcelo@gmail.com"
+  },
+  "region": {
+    "places": [
+      {
+        "name": "Praia dos Ingleses",
+        "distance": "250 m",
+        "text": "Areia larga, mar aberto e estrutura completa de restaurantes, quiosques e comércio. O seu quintal durante a viagem.",
+        "photo": {
+          "src": "regiao/praia-ingleses-aerea.jpg",
+          "alt": "Vista aérea da Praia dos Ingleses, com a orla curva e o mar azul",
+          "credit": "Praia dos Ingleses: Jeferson Felix, CC BY 3.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Praia do Santinho",
+        "distance": "3,6 km",
+        "text": "Ondas para surfar e o costão com inscrições rupestres milenares.",
+        "photo": {
+          "src": "regiao/santinho.jpg",
+          "alt": "Praia do Santinho com ondas e uma ilha ao fundo",
+          "credit": "Costão do Santinho: Amanda Likes, CC BY-SA 4.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Praia Brava",
+        "distance": "4,5 km",
+        "text": "Água clara, costão de pedras e morros verdes em volta.",
+        "photo": {
+          "src": "regiao/praia-brava.jpg",
+          "alt": "Praia Brava entre pedras e mata, com guarda-sóis na areia",
+          "credit": "Praia Brava: Mario Roberto Durán Ortiz, CC BY-SA 4.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Dunas dos Ingleses",
+        "distance": "Perto",
+        "text": "Sandboard, trilhas e um pôr do sol que vale a caminhada.",
+        "photo": {
+          "src": "regiao/dunas-ingleses.jpg",
+          "alt": "Dunas e vegetação de restinga entre Ingleses e o Santinho",
+          "credit": "Dunas dos Ingleses: Yaroslav Blanter, CC BY-SA 3.0, via Wikimedia Commons"
+        }
+      },
+      {
+        "name": "Comércio do bairro",
+        "distance": "Na região",
+        "text": "Mercado, farmácia, restaurantes e lojas no caminho para a praia."
+      }
+    ]
+  },
+  "faq": [
+    {
+      "question": "Como faço a reserva?",
+      "answer": "A reserva é feita pelo Booking.com ou pelo Airbnb. Escolha a plataforma de sua preferência, consulte datas e valores e conclua a reserva por lá."
+    },
+    {
+      "question": "Qual o horário de entrada?",
+      "answer": "A entrada é das 14h às 23h30. Avise o horário previsto de chegada com antecedência para que alguém receba você."
+    },
+    {
+      "question": "Posso levar meu pet?",
+      "answer": "Sim. Pets são aceitos mediante pedido, sem custo adicional. Avise ao fazer a reserva."
+    },
+    {
+      "question": "Tem estacionamento?",
+      "answer": "Sim, vaga privativa gratuita no prédio. Como a praia fica a cerca de quatro minutos a pé, o carro pode descansar a viagem inteira."
+    },
+    {
+      "question": "Quantas pessoas o apartamento acomoda?",
+      "answer": "São 2 quartos com 4 camas e 2 banheiros. Confira na plataforma de reserva a capacidade para o seu grupo."
+    },
+    {
+      "question": "É bom para viajar com crianças?",
+      "answer": "Muito. Crianças de qualquer idade são bem-vindas, há cadeirão e berço (sujeitos à disponibilidade) e a rua é calma."
+    },
+    {
+      "question": "O que preciso levar?",
+      "answer": "Só a mala de roupa. Roupa de cama, toalhas, cozinha equipada e até cadeiras, guarda-sol e cooler para a praia já estão no apartamento."
+    },
+    {
+      "question": "Fica longe do aeroporto?",
+      "answer": "São 38 km do Aeroporto Internacional Hercílio Luz até o residencial."
+    }
+  ],
+  "media": {
+    "hero": {
+      "src": "bannerresidencialametista.webp",
+      "alt": "Praia de mar azul-turquesa e areia clara, com morro coberto de mata ao fundo",
+      "focus": "62% 55%"
+    },
+    "intro": [
+      {
+        "src": "sala.png",
+        "alt": "Sala com parede azul, sofá de couro e mesa de jantar"
+      },
+      {
+        "src": "quarto-varanda.png",
+        "alt": "Quarto de casal com parede azul e porta para a varanda"
+      }
+    ],
+    "booking": {
+      "src": "terraco-guardasol.png",
+      "alt": "Terraço gourmet com guarda-sol azul e vista verde",
+      "focus": "50% 60%"
+    },
+    "gallery": [
+      {
+        "src": "sala.png",
+        "alt": "Sala com parede azul, sofá de couro e mesa de jantar",
+        "group": "social",
+        "caption": "Sala integrada",
+        "room": "sala-cozinha"
+      },
+      {
+        "src": "cozinha.png",
+        "alt": "Cozinha em L com bancada de granito, cooktop, micro-ondas e geladeira, integrada à sala",
+        "group": "social",
+        "room": "sala-cozinha"
+      },
+      {
+        "src": "cozinha-bar.png",
+        "alt": "Cozinha com balcão azul",
+        "group": "social",
+        "caption": "Cozinha",
+        "room": "sala-cozinha"
+      },
+      {
+        "src": "cozinha-fogao.png",
+        "alt": "Bancada da cozinha com pia, cooktop de cinco bocas, chaleira elétrica e micro-ondas",
+        "group": "social",
+        "room": "sala-cozinha"
+      },
+      {
+        "src": "quarto-varanda.png",
+        "alt": "Quarto de casal com parede azul e porta para a varanda",
+        "group": "quartos",
+        "caption": "Quarto com varanda",
+        "room": "quarto-casal"
+      },
+      {
+        "src": "quarto-tres-camas.png",
+        "alt": "Quarto com três camas",
+        "group": "quartos",
+        "room": "quarto-solteiros"
+      },
+      {
+        "src": "terraco-guardasol.png",
+        "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores",
+        "group": "terraco",
+        "caption": "Terraço gourmet",
+        "room": "terraco-varanda"
+      },
+      {
+        "src": "terraco-mesa.png",
+        "alt": "Mesa de madeira do terraço com almofadas floridas",
+        "group": "terraco",
+        "room": "terraco-varanda"
+      },
+      {
+        "src": "terraco-cadeiras.png",
+        "alt": "Terraço com cadeiras de praia coloridas",
+        "group": "terraco",
+        "room": "terraco-varanda"
+      },
+      {
+        "src": "varanda-sofa.png",
+        "alt": "Varanda com sofá",
+        "group": "terraco",
+        "room": "terraco-varanda"
+      },
+      {
+        "src": "banheiro.png",
+        "alt": "Banheiro com pastilhas azuis, espelho redondo e box de vidro",
+        "group": "detalhes",
+        "caption": "Banheiro",
+        "room": "banheiros-predio"
+      },
+      {
+        "src": "fachada.png",
+        "alt": "Fachada do Condomínio Residencial Ametista, prédio de quatro andares com varandas arredondadas",
+        "group": "fachada",
+        "caption": "Fachada do residencial",
+        "room": "banheiros-predio"
+      }
+    ]
+  },
+  "sections": {
+    "about": {
+      "eyebrow": "O apartamento",
+      "title": "Conheça o *Residencial Ametista*"
+    },
+    "tour": {
+      "eyebrow": "Tour pelo apartamento",
+      "title": "Azul de mar em *cada canto*",
+      "lead": "As paredes azuis, a luz natural e as almofadas de cor coral deixam o apartamento com cara de verão o ano todo. Escolha um ambiente e passeie por ele."
+    },
+    "highlights": {
+      "eyebrow": "Diferenciais",
+      "title": "O que faz *diferença* na sua estadia",
+      "lead": "Os detalhes que deixam a hospedagem mais prática, confortável e com cara de casa de praia."
+    },
+    "experience": {
+      "eyebrow": "Sugestão de roteiro",
+      "title": "Um dia de férias no *Residencial Ametista*",
+      "lead": "Uma ideia de como aproveitar cada momento da hospedagem, da manhã à noite."
+    },
+    "amenities": {
+      "eyebrow": "Estrutura e comodidades",
+      "title": "Traga só a *mala de roupa*",
+      "lead": "Roupa de cama e toalhas já estão lá esperando por você. E ainda tem cadeiras, guarda-sol e cooler para descer para a areia."
+    },
+    "location": {
+      "eyebrow": "Localização e região",
+      "title": "Perto de tudo, *longe do barulho*",
+      "lead": "Uma rua tranquila a poucos minutos da areia, no norte da Ilha de Santa Catarina. Ao redor, dunas, costões e algumas das praias mais bonitas de Florianópolis."
+    },
+    "info": {
+      "eyebrow": "Antes de reservar",
+      "title": "Tudo o que você *precisa saber*",
+      "lead": "As respostas que todo hóspede procura, num lugar só."
+    },
+    "booking": {
+      "eyebrow": "Reservas",
+      "title": "Escolha suas datas e *reserve*",
+      "lead": "O Residencial Ametista está anunciado nas plataformas abaixo. Consulte datas, valores e condições e conclua a reserva no site de sua preferência."
+    },
+    "faq": {
+      "eyebrow": "Dúvidas frequentes",
+      "title": "Antes de *reservar*",
+      "lead": "O essencial para planejar a viagem sem surpresas."
+    },
+    "contact": {
+      "eyebrow": "Reserva direta",
+      "title": "Fale direto com o *proprietário*",
+      "lead": "Prefere combinar tudo sem intermediários? Entre em contato para consultar datas, valores e tirar suas dúvidas."
+    }
+  },
+  "theme": {
+    "primary": "#0f4f6d",
+    "secondary": "#0b3346",
+    "accent": "#a24f28",
+    "background": "#faf7f2",
+    "text": "#1e2326"
+  }
+}

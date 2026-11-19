@@ -25,8 +25,8 @@ const hasTour = content.media.gallery.length > 0;
     <div class="about__text">
       <SectionHeading
         id="apresentacao-titulo"
-        eyebrow="O apartamento"
-        title={`Conheça o *${content.name}*`}
+        eyebrow={content.sections.about.eyebrow}
+        title={content.sections.about.title}
       />
       <div class="prose reveal">
         <p class="about__opening">{first}</p>

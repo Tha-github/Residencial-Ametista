@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { ContentValidationError, parseContent } from '../../src/lib/content/load';
 import { listPending } from '../../src/lib/content/pending';
-import data from '../../src/data/ametista.json';
+// Conteúdo publicado (editado pelo painel): só pode ser exigido que seja VÁLIDO.
+// Verificações de valores específicos usam uma cópia congelada (fixture), para
+// que uma edição legítima do proprietário nunca bloqueie a publicação.
+import live from '../../src/data/ametista.json';
+import data from '../fixtures/ametista.sample.json';
 
 const minimal = {
   name: 'Residencial Ametista',
@@ -10,10 +14,10 @@ const minimal = {
 
 describe('conteúdo do residencial', () => {
   it('o arquivo versionado é válido', () => {
-    expect(() => parseContent(data, 'ametista.json')).not.toThrow();
+    expect(() => parseContent(live, 'ametista.json')).not.toThrow();
   });
 
-  it('o arquivo versionado contém os dados informados pelo cliente e mantém canais ausentes vazios', () => {
+  it('a cópia de referência contém os dados informados pelo cliente', () => {
     const c = parseContent(data, 'ametista.json');
     expect(c.description[0]).toContain('90 m²');
     expect(c.amenities).toContain('Vaga privativa gratuita');
@@ -21,6 +25,7 @@ describe('conteúdo do residencial', () => {
     expect(c.booking).toEqual({
       booking: 'https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html',
       airbnb: 'https://www.airbnb.com.br/rooms/13257454',
+      buttonPrefix: 'Reservar no',
     });
     expect(c.contact.whatsapp).toMatch(/^https:\/\/wa\.me\/5548999471321\?text=/);
     expect(c.contact.email).toBe('pereimamarcelo@gmail.com');

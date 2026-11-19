@@ -7,7 +7,7 @@ import {
   whatsappNumber,
 } from '../../src/lib/content/format';
 import { navItems, sectionStates } from '../../src/lib/content/sections';
-import data from '../../src/data/ametista.json';
+import data from '../fixtures/ametista.sample.json';
 
 const base = {
   name: 'Residencial Ametista',

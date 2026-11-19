@@ -1,0 +1,87 @@
+---
+/**
+ * Painel administrativo (Top Site Admin) — página estática no GitHub Pages.
+ * Toda operação autenticada passa pelo Worker (PUBLIC_ADMIN_API_URL);
+ * esta página não contém nenhum segredo.
+ */
+import { getImage } from 'astro:assets';
+import '../../../src/admin-kit/admin.css';
+import { listPhotos, resolvePhoto } from '../../../src/lib/media/photos';
+
+// Miniaturas leves (gerada no build) das fotos já publicadas, para as prévias
+// do painel não baixarem os originais (2–3 MB cada) pela API do GitHub.
+const thumbs = Object.fromEntries(
+  await Promise.all(
+    listPhotos().map(async (path) => {
+      const img = await getImage({
+        src: resolvePhoto(path),
+        width: 640,
+        format: 'webp',
+        quality: 70,
+      });
+      return [path, img.src];
+    }),
+  ),
+);
+
+const apiUrl = (import.meta.env.PUBLIC_ADMIN_API_URL ?? '').replace(/\/$/, '');
+const originOf = (url: string) => {
+  try {
+    return url ? new URL(url).origin : '';
+  } catch {
+    return '';
+  }
+};
+const apiOrigin = originOf(apiUrl);
+// Política de segurança: só scripts do próprio site; rede só para o Worker.
+const csp = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' blob: data:",
+  `connect-src 'self'${apiOrigin ? ` ${apiOrigin}` : ''}`,
+  "font-src 'self'",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="data:," />
+    <title>Painel · Residencial Ametista</title>
+  </head>
+  <body>
+    <div id="admin" data-api={apiOrigin ? apiUrl : ''} data-thumbs={JSON.stringify(thumbs)}>
+      <noscript>Ative o JavaScript para usar o painel.</noscript>
+    </div>
+    <script>
+      import { startAdmin } from '../../../src/admin-kit/client/app';
+      import { ametistaPreview } from '../../../src/admin-sites/ametista-preview';
+      import { ametistaSpec } from '../../../src/admin-sites/ametista';
+      import { propertySchema } from '../../../src/data/property.schema';
+
+      const root = document.getElementById('admin')!;
+      startAdmin(root, {
+        spec: ametistaSpec,
+        apiBase: root.dataset.api ?? '',
+        thumbs: JSON.parse(root.dataset.thumbs ?? '{}'),
+        preview: ametistaPreview,
+        validate(content) {
+          const { $comment: _ignored, ...data } = content;
+          const result = propertySchema.safeParse(data);
+          return result.success
+            ? []
+            : result.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message }));
+        },
+      });
+    </script>
+  </body>
+</html>

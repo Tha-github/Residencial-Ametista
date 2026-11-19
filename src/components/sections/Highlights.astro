@@ -17,9 +17,9 @@ const { content } = Astro.props;
 
 <Section
   id="diferenciais"
-  eyebrow="Diferenciais"
-  title="O que faz *diferença* na sua estadia"
-  lead="Os detalhes que deixam a hospedagem mais prática, confortável e com cara de casa de praia."
+  eyebrow={content.sections.highlights.eyebrow}
+  title={content.sections.highlights.title}
+  lead={content.sections.highlights.lead}
   align="center"
 >
   <ul class="highlights" role="list">

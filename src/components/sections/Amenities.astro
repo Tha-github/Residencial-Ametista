@@ -42,11 +42,10 @@ const factRows = [
     <div class="amenities__intro">
       <SectionHeading
         id="comodidades-titulo"
-        eyebrow="Estrutura e comodidades"
-        title="Traga só a *mala de roupa*"
+        eyebrow={content.sections.amenities.eyebrow}
+        title={content.sections.amenities.title}
       >
-        Roupa de cama e toalhas já estão lá esperando por você. E ainda tem cadeiras, guarda-sol e
-        cooler para descer para a areia.
+        {content.sections.amenities.lead}
       </SectionHeading>
       {factRows.length > 0 && (
         <dl class="facts reveal">

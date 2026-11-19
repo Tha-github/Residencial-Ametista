@@ -37,12 +37,10 @@ const steps = [
       <div class="booking__main">
         <SectionHeading
           id="reservas-titulo"
-          eyebrow="Reservas"
-          title="Escolha suas datas e *reserve*"
+          eyebrow={content.sections.booking.eyebrow}
+          title={content.sections.booking.title}
         >
-          {`O ${content.name} está anunciado ${
-            links.length === 1 ? 'na plataforma abaixo' : 'nas plataformas abaixo'
-          }. Consulte datas, valores e condições e conclua a reserva no site de sua preferência.`}
+          {content.sections.booking.lead}
         </SectionHeading>
 
         <ul class="platforms" role="list">
@@ -57,7 +55,7 @@ const steps = [
               >
                 <span class="platform__name">{link.name}</span>
                 <span class="platform__cta">
-                  Reservar no {link.name}
+                  {content.booking.buttonPrefix} {link.name}
                   <Icon name="arrow-up-right" size={20} />
                 </span>
                 <span class="sr-only">(abre em nova aba)</span>

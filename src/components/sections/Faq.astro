@@ -21,8 +21,12 @@ const showBooking = hasBookingLinks(content);
 <Section id="duvidas" title="Dúvidas frequentes" surface="sand" customHeading>
   <div class="faq">
     <div class="faq__intro">
-      <SectionHeading id="duvidas-titulo" eyebrow="Dúvidas frequentes" title="Antes de *reservar*">
-        O essencial para planejar a viagem sem surpresas.
+      <SectionHeading
+        id="duvidas-titulo"
+        eyebrow={content.sections.faq.eyebrow}
+        title={content.sections.faq.title}
+      >
+        {content.sections.faq.lead}
       </SectionHeading>
       {showBooking && (
         <a class="btn btn--lg faq__cta" href="#reservas">

@@ -2,6 +2,7 @@
 import { Font } from 'astro:assets';
 import '../styles/global.css';
 import { isProduction } from '../lib/env';
+import { themeCss, themeTokens, type Theme } from '../lib/theme';
 
 interface Props {
   title: string;
@@ -9,9 +10,14 @@ interface Props {
   structuredData?: Record<string, unknown>;
   /** Força noindex (ex.: páginas de erro, painel). */
   noindex?: boolean;
+  /** Cores autorizadas pelo painel; só as alteradas geram CSS. */
+  theme?: Theme;
 }
 
-const { title, description, structuredData, noindex = false } = Astro.props;
+const { title, description, structuredData, noindex = false, theme } = Astro.props;
+// Somente hex validados (lib/theme.ts): seguro para embutir num <style>.
+const themeStyle = theme ? themeCss(theme) : '';
+const themeColor = theme ? themeTokens(theme)['--sea-900'] : '#0b3346';
 
 // Fora de produção nada é indexável — evita que prévias concorram com o site real.
 const robots = noindex || !isProduction ? 'noindex, nofollow' : 'index, follow';
@@ -59,7 +65,9 @@ const indexable = isProduction && !noindex;
     {indexable && shareImage && description && <meta name="twitter:image" content={shareImage} />}
     {/* eslint-disable-next-line astro/no-set-html-directive -- JSON.stringify output has every < escaped as a Unicode escape, so content cannot close the script element. */}
     {indexable && jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
-    <meta name="theme-color" content="#0b3346" />
+    <meta name="theme-color" content={themeColor} />
+    {/* eslint-disable-next-line astro/no-set-html-directive -- themeCss only emits regex-validated hex colors and fixed token names. */}
+    {themeStyle && <style is:inline set:html={themeStyle} />}
     <link rel="icon" href={`${assetBase}favicon.svg`} type="image/svg+xml" />
     <link rel="icon" href={`${assetBase}favicon-32.png`} sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href={`${assetBase}apple-touch-icon.png`} />

@@ -10,7 +10,7 @@
  */
 import type { ImageMetadata } from 'astro';
 import type { PropertyContent } from '../../data/property.schema';
-import { hasBookingLinks } from '../../lib/content/sections';
+import { sectionStates } from '../../lib/content/sections';
 import Photo from '../media/Photo.astro';
 import PhotoPlaceholder from '../media/PhotoPlaceholder.astro';
 import Button from '../ui/Button.astro';
@@ -25,14 +25,22 @@ interface Props {
 }
 
 const { content, heroImage, withStrip = false } = Astro.props;
-const { location, media, description } = content;
+const { location, media } = content;
 
 const hero = media.hero;
 // CTAs só existem quando o destino existe (em qualquer ambiente):
 // nunca um botão que leva a uma seção ausente.
-const showBookingCta = hasBookingLinks(content);
-const tourTarget =
-  media.gallery.length > 0 ? '#galeria' : description.length > 0 ? '#apresentacao' : undefined;
+const ready = new Set(
+  sectionStates(content)
+    .filter((s) => s.ready)
+    .map((s) => s.id as string),
+);
+const { primaryLabel, primaryTarget, secondaryLabel, secondaryTarget } = content.hero;
+const primary = ready.has(primaryTarget) ? `#${primaryTarget}` : undefined;
+const secondary =
+  ready.has(secondaryTarget) && secondaryTarget !== primaryTarget
+    ? `#${secondaryTarget}`
+    : undefined;
 
 const place = [location.beach, location.city].filter(Boolean).join(' · ');
 
@@ -76,16 +84,16 @@ const nameLast = words.at(-1);
     </h1>
     {content.tagline && <p class="hero__tagline">{content.tagline}</p>}
 
-    {(showBookingCta || tourTarget) && (
+    {(primary || secondary) && (
       <div class="hero__actions">
-        {showBookingCta && (
-          <Button href="#reservas" variant="inverse" size="lg" icon="arrow-right">
-            Ver opções de reserva
+        {primary && (
+          <Button href={primary} variant="inverse" size="lg" icon="arrow-right">
+            {primaryLabel}
           </Button>
         )}
-        {tourTarget && (
-          <Button href={tourTarget} variant="inverse-outline" size="lg">
-            Conhecer o apartamento
+        {secondary && (
+          <Button href={secondary} variant="inverse-outline" size="lg">
+            {secondaryLabel}
           </Button>
         )}
       </div>

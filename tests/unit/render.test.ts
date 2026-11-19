@@ -6,7 +6,7 @@ import Hero from '../../src/components/sections/Hero.astro';
 import Location from '../../src/components/sections/Location.astro';
 import PublicationStatus from '../../src/components/states/PublicationStatus.astro';
 import { parseContent } from '../../src/lib/content/load';
-import data from '../../src/data/ametista.json';
+import data from '../fixtures/ametista.sample.json';
 
 /**
  * Renderiza os componentes reais e verifica o HTML: links externos seguros,

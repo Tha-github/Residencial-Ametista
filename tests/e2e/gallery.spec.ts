@@ -2,16 +2,17 @@ import { expect, test, type Page } from '@playwright/test';
 
 /**
  * Carrossel de fotos e modo ampliado na página de amostra (imagens sintéticas).
- * Ordem narrativa esperada (ver src/dev/secoes.astro):
- * fachada(1) → social(2, 3) → quartos(5) → terraço(4) → detalhes(6) → sem grupo(7, 8)
+ * O carrossel mostra as fotos na ordem em que estão no conteúdo
+ * (ver src/dev/secoes.astro).
  */
 const SAMPLE = '/estilo/secoes';
+// O carrossel segue a ordem da galeria (editável no painel), sem reordenar.
 const EXPECTED_ORDER = [
-  'teste 1',
-  'teste 2',
-  'teste 3',
-  'teste 5',
   'teste 4',
+  'teste 2',
+  'teste 1',
+  'teste 5',
+  'teste 3',
   'teste 6',
   'teste 7',
   'teste 8',
@@ -27,7 +28,7 @@ test.beforeEach(async ({ page }) => {
   await page.locator('#galeria').scrollIntoViewIfNeeded();
 });
 
-test('carrossel reúne todas as 8 fotos na ordem narrativa, uma por vez', async ({ page }) => {
+test('carrossel reúne todas as 8 fotos na ordem do conteúdo, uma por vez', async ({ page }) => {
   await expect(thumbs(page)).toHaveCount(8);
   const labels = await thumbs(page).evaluateAll((els) =>
     els.map((el) => el.getAttribute('aria-label') ?? ''),
@@ -133,7 +134,8 @@ test('Tab permanece dentro do modo ampliado; fundo inerte', async ({ page }) => 
 });
 
 test('imagem ampliada carrega, tem alt e legenda só quando fornecida', async ({ page }) => {
-  await thumbs(page).first().click();
+  // "teste 1" é a única foto com legenda (3ª na ordem do conteúdo).
+  await thumbs(page).nth(EXPECTED_ORDER.indexOf('teste 1')).click();
   const img = page.locator('[data-lightbox-img]');
   await expect(img).toHaveAttribute('alt', '[AMOSTRA] teste 1');
   // Em dev a variante ampliada é gerada sob demanda: a 1ª carga pode demorar.

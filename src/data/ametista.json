@@ -6,6 +6,12 @@
     "Um apartamento inteiro de 90 m² na Praia dos Ingleses, com dois quartos, dois banheiros, cozinha completa e um terraço gourmet só seu. Da porta até a areia são cerca de quatro minutos a pé.",
     "A rua é tranquila, com mercado, farmácia, restaurantes e lojas na região. Você estaciona na vaga gratuita do prédio, desce com as cadeiras e o guarda-sol do apartamento e passa o dia na praia. No fim da tarde, o terraço e a churrasqueira esperam a família."
   ],
+  "hero": {
+    "primaryLabel": "Ver opções de reserva",
+    "primaryTarget": "reservas",
+    "secondaryLabel": "Conhecer o apartamento",
+    "secondaryTarget": "galeria"
+  },
   "location": {
     "beach": "Praia dos Ingleses",
     "neighborhood": "Ingleses do Rio Vermelho",
@@ -99,34 +105,29 @@
   ],
   "rooms": [
     {
+      "id": "sala-cozinha",
       "title": "Sala e cozinha",
-      "text": "Sofá de couro, mesa para a família e cozinha equipada com balcão, tudo integrado e com luz natural.",
-      "photos": ["sala.png", "cozinha.png", "cozinha-bar.png", "cozinha-fogao.png"]
+      "text": "Sofá de couro, mesa para a família e cozinha equipada com balcão, tudo integrado e com luz natural."
     },
     {
+      "id": "quarto-casal",
       "title": "Quarto de casal",
-      "text": "Cama de casal, ar-condicionado, TV e porta para a varanda.",
-      "photos": ["quarto-varanda.png"]
+      "text": "Cama de casal, ar-condicionado, TV e porta para a varanda."
     },
     {
+      "id": "quarto-solteiros",
       "title": "Quarto das camas de solteiro",
-      "text": "Camas de solteiro, ar-condicionado e luz natural: ideal para crianças ou amigos.",
-      "photos": ["quarto-tres-camas.png"]
+      "text": "Camas de solteiro, ar-condicionado e luz natural: ideal para crianças ou amigos."
     },
     {
+      "id": "terraco-varanda",
       "title": "Terraço gourmet e varanda",
-      "text": "Mesa de madeira, guarda-sol, churrasqueira e sofá na varanda, sem dividir com vizinhos.",
-      "photos": [
-        "terraco-guardasol.png",
-        "terraco-mesa.png",
-        "terraco-cadeiras.png",
-        "varanda-sofa.png"
-      ]
+      "text": "Mesa de madeira, guarda-sol, churrasqueira e sofá na varanda, sem dividir com vizinhos."
     },
     {
+      "id": "banheiros-predio",
       "title": "Banheiros e prédio",
-      "text": "Dois banheiros com box, elevador e vaga privativa na garagem.",
-      "photos": ["banheiro.png", "fachada.png"]
+      "text": "Dois banheiros com box, elevador e vaga privativa na garagem."
     }
   ],
   "experience": {
@@ -233,7 +234,8 @@
   },
   "booking": {
     "booking": "https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html",
-    "airbnb": "https://www.airbnb.com.br/rooms/13257454"
+    "airbnb": "https://www.airbnb.com.br/rooms/13257454",
+    "buttonPrefix": "Reservar no"
   },
   "contact": {
     "whatsapp": "https://wa.me/5548999471321?text=Ol%C3%A1!%20Vi%20o%20site%20do%20Residencial%20Ametista%20e%20gostaria%20de%20consultar%20disponibilidade%20para%20reserva.",
@@ -345,71 +347,141 @@
     },
     "gallery": [
       {
-        "src": "terraco-guardasol.png",
-        "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores",
-        "group": "terraco",
-        "caption": "Terraço gourmet"
-      },
-      {
         "src": "sala.png",
         "alt": "Sala com parede azul, sofá de couro e mesa de jantar",
         "group": "social",
-        "caption": "Sala integrada"
+        "caption": "Sala integrada",
+        "room": "sala-cozinha"
       },
       {
         "src": "cozinha.png",
         "alt": "Cozinha em L com bancada de granito, cooktop, micro-ondas e geladeira, integrada à sala",
-        "group": "social"
-      },
-      {
-        "src": "cozinha-fogao.png",
-        "alt": "Bancada da cozinha com pia, cooktop de cinco bocas, chaleira elétrica e micro-ondas",
-        "group": "social"
+        "group": "social",
+        "room": "sala-cozinha"
       },
       {
         "src": "cozinha-bar.png",
         "alt": "Cozinha com balcão azul",
         "group": "social",
-        "caption": "Cozinha"
+        "caption": "Cozinha",
+        "room": "sala-cozinha"
+      },
+      {
+        "src": "cozinha-fogao.png",
+        "alt": "Bancada da cozinha com pia, cooktop de cinco bocas, chaleira elétrica e micro-ondas",
+        "group": "social",
+        "room": "sala-cozinha"
       },
       {
         "src": "quarto-varanda.png",
         "alt": "Quarto de casal com parede azul e porta para a varanda",
         "group": "quartos",
-        "caption": "Quarto com varanda"
+        "caption": "Quarto com varanda",
+        "room": "quarto-casal"
       },
       {
         "src": "quarto-tres-camas.png",
         "alt": "Quarto com três camas",
-        "group": "quartos"
+        "group": "quartos",
+        "room": "quarto-solteiros"
+      },
+      {
+        "src": "terraco-guardasol.png",
+        "alt": "Terraço com guarda-sol azul, mesa e vista para as árvores",
+        "group": "terraco",
+        "caption": "Terraço gourmet",
+        "room": "terraco-varanda"
       },
       {
         "src": "terraco-mesa.png",
         "alt": "Mesa de madeira do terraço com almofadas floridas",
-        "group": "terraco"
+        "group": "terraco",
+        "room": "terraco-varanda"
       },
       {
         "src": "terraco-cadeiras.png",
         "alt": "Terraço com cadeiras de praia coloridas",
-        "group": "terraco"
+        "group": "terraco",
+        "room": "terraco-varanda"
       },
       {
         "src": "varanda-sofa.png",
         "alt": "Varanda com sofá",
-        "group": "terraco"
+        "group": "terraco",
+        "room": "terraco-varanda"
       },
       {
         "src": "banheiro.png",
         "alt": "Banheiro com pastilhas azuis, espelho redondo e box de vidro",
         "group": "detalhes",
-        "caption": "Banheiro"
+        "caption": "Banheiro",
+        "room": "banheiros-predio"
       },
       {
         "src": "fachada.png",
         "alt": "Fachada do Condomínio Residencial Ametista, prédio de quatro andares com varandas arredondadas",
         "group": "fachada",
-        "caption": "Fachada do residencial"
+        "caption": "Fachada do residencial",
+        "room": "banheiros-predio"
       }
     ]
+  },
+  "sections": {
+    "about": {
+      "eyebrow": "O apartamento",
+      "title": "Conheça o *Residencial Ametista*"
+    },
+    "tour": {
+      "eyebrow": "Tour pelo apartamento",
+      "title": "Azul de mar em *cada canto*",
+      "lead": "As paredes azuis, a luz natural e as almofadas de cor coral deixam o apartamento com cara de verão o ano todo. Escolha um ambiente e passeie por ele."
+    },
+    "highlights": {
+      "eyebrow": "Diferenciais",
+      "title": "O que faz *diferença* na sua estadia",
+      "lead": "Os detalhes que deixam a hospedagem mais prática, confortável e com cara de casa de praia."
+    },
+    "experience": {
+      "eyebrow": "Sugestão de roteiro",
+      "title": "Um dia de férias no *Residencial Ametista*",
+      "lead": "Uma ideia de como aproveitar cada momento da hospedagem, da manhã à noite."
+    },
+    "amenities": {
+      "eyebrow": "Estrutura e comodidades",
+      "title": "Traga só a *mala de roupa*",
+      "lead": "Roupa de cama e toalhas já estão lá esperando por você. E ainda tem cadeiras, guarda-sol e cooler para descer para a areia."
+    },
+    "location": {
+      "eyebrow": "Localização e região",
+      "title": "Perto de tudo, *longe do barulho*",
+      "lead": "Uma rua tranquila a poucos minutos da areia, no norte da Ilha de Santa Catarina. Ao redor, dunas, costões e algumas das praias mais bonitas de Florianópolis."
+    },
+    "info": {
+      "eyebrow": "Antes de reservar",
+      "title": "Tudo o que você *precisa saber*",
+      "lead": "As respostas que todo hóspede procura, num lugar só."
+    },
+    "booking": {
+      "eyebrow": "Reservas",
+      "title": "Escolha suas datas e *reserve*",
+      "lead": "O Residencial Ametista está anunciado nas plataformas abaixo. Consulte datas, valores e condições e conclua a reserva no site de sua preferência."
+    },
+    "faq": {
+      "eyebrow": "Dúvidas frequentes",
+      "title": "Antes de *reservar*",
+      "lead": "O essencial para planejar a viagem sem surpresas."
+    },
+    "contact": {
+      "eyebrow": "Reserva direta",
+      "title": "Fale direto com o *proprietário*",
+      "lead": "Prefere combinar tudo sem intermediários? Entre em contato para consultar datas, valores e tirar suas dúvidas."
+    }
+  },
+  "theme": {
+    "primary": "#0f4f6d",
+    "secondary": "#0b3346",
+    "accent": "#a24f28",
+    "background": "#faf7f2",
+    "text": "#1e2326"
   }
 }

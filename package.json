@@ -21,7 +21,10 @@
     "validate": "npm run typecheck \u0026\u0026 npm run lint \u0026\u0026 npm run format:check \u0026\u0026 npm run test \u0026\u0026 npm run build",
     "deploy:cloudflare": "npm run validate \u0026\u0026 wrangler deploy",
     "generate-types": "wrangler types",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "admin:hash-password": "node scripts/hash-admin-password.mjs",
+    "admin:dev": "wrangler dev --config admin-worker/wrangler.jsonc",
+    "admin:deploy": "wrangler deploy --config admin-worker/wrangler.jsonc"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.8",

@@ -11,6 +11,7 @@ export default defineConfig(
       'dist/',
       '.astro/',
       '.wrangler/',
+      '**/.wrangler/',
       'node_modules/',
       'test-results/',
       'playwright-report/',
@@ -27,7 +28,11 @@ export default defineConfig(
     },
     rules: {
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      // `_` no início = descartado de propósito (ex.: `{ $comment: _ignored, ...resto }`).
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
       'astro/no-set-html-directive': 'error',
       // role="list" em <ul> estilizada é intencional: o Safari/VoiceOver remove a
       // semântica de lista quando há `list-style: none`.

@@ -6,3 +6,6 @@ package-lock.json
 worker-configuration.d.ts
 10-Prompts-Residencial-Ametista.md
 CLAUDE.md
+# Conteúdo gravado pelo painel (JSON.stringify): não bloquear a publicação por formatação
+src/data/*.json
+**/.wrangler/

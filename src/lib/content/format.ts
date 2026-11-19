@@ -14,7 +14,7 @@ export function formatAddress(l: Location): string | undefined {
   return `${l.streetAddress}${bairro} — ${l.city}, ${l.stateCode}${cep}`;
 }
 
-export type PlatformKey = keyof PropertyContent['booking'];
+export type PlatformKey = Exclude<keyof PropertyContent['booking'], 'buttonPrefix'>;
 
 /** Plataformas de reserva, na ordem de exibição. Nomes em texto (sem logos). */
 export const platforms: { key: PlatformKey; name: string }[] = [
