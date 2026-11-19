@@ -10,7 +10,5 @@
     "ALLOWED_ORIGINS": "http://127.0.0.1:4321,http://localhost:4321",
     "SESSION_HOURS": "8",
   },
-  "kv_namespaces": [
-    { "binding": "ADMIN_KV", "id": "ametista-local-admin-kv" },
-  ],
+  "kv_namespaces": [{ "binding": "ADMIN_KV", "id": "ametista-local-admin-kv" }],
 }

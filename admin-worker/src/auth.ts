@@ -150,11 +150,18 @@ async function aesKey(secret: string) {
 
 export async function encryptText(secret: string, text: string): Promise<string> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await aesKey(secret), enc.encode(text));
+  const data = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    await aesKey(secret),
+    enc.encode(text),
+  );
   return `v1.${b64.encode(iv)}.${b64.encode(new Uint8Array(data))}`;
 }
 
-export async function decryptText(secret: string, stored: string | null): Promise<string | undefined> {
+export async function decryptText(
+  secret: string,
+  stored: string | null,
+): Promise<string | undefined> {
   if (!stored) return undefined;
   const [v, iv, data] = stored.split('.');
   if (v !== 'v1' || !iv || !data) return undefined;

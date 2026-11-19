@@ -200,33 +200,65 @@ export function startAdmin(root: HTMLElement, opts: AdminOptions) {
     const chips = h('ul', { class: 'setup__status', 'aria-live': 'polite' });
     const renderChips = (st: { token: boolean; password: boolean }) =>
       chips.replaceChildren(
-        h('li', { class: st.token ? 'is-ok' : '' }, icon(st.token ? 'check' : 'alert', 16), st.token ? 'Chave do GitHub configurada' : 'Chave do GitHub pendente'),
-        h('li', { class: st.password ? 'is-ok' : '' }, icon(st.password ? 'check' : 'alert', 16), st.password ? 'Senha configurada' : 'Senha pendente'),
+        h(
+          'li',
+          { class: st.token ? 'is-ok' : '' },
+          icon(st.token ? 'check' : 'alert', 16),
+          st.token ? 'Chave do GitHub configurada' : 'Chave do GitHub pendente',
+        ),
+        h(
+          'li',
+          { class: st.password ? 'is-ok' : '' },
+          icon(st.password ? 'check' : 'alert', 16),
+          st.password ? 'Senha configurada' : 'Senha pendente',
+        ),
       );
     renderChips({ token: false, password: false });
-    api.setupStatus().then(renderChips).catch(() => {});
+    api
+      .setupStatus()
+      .then(renderChips)
+      .catch(() => {});
     const msg = h('p', { class: 'login__error', role: 'alert', hidden: true });
     const ok = h('p', { class: 'alert alert--ok', role: 'status', hidden: true });
-    const save = h('button', { type: 'submit', class: 'btn btn--primary btn--block' }, 'Salvar configuração');
+    const save = h(
+      'button',
+      { type: 'submit', class: 'btn btn--primary btn--block' },
+      'Salvar configuração',
+    );
     if (!opts.apiBase) {
       save.disabled = true;
-      msg.textContent = 'A tela está em prévia. Conecte o Worker do painel para cadastrar a chave e a senha.';
+      msg.textContent =
+        'A tela está em prévia. Conecte o Worker do painel para cadastrar a chave e a senha.';
       msg.hidden = false;
     }
     const back = h('button', { type: 'button', class: 'login__setup' }, 'Voltar para o login');
     back.addEventListener('click', () => showLogin());
     const createLink = h(
       'a',
-      { class: 'fld__test', href: 'https://github.com/settings/personal-access-tokens/new', target: '_blank', rel: 'noopener noreferrer' },
+      {
+        class: 'fld__test',
+        href: 'https://github.com/settings/personal-access-tokens/new',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      },
       'Criar a chave no GitHub',
       icon('external', 14),
     );
     const form = h(
       'form',
       { class: 'login__card login__card--wide' },
-      h('div', { class: 'login__brand' }, h('span', { class: 'login__logo' }, icon('lock', 22)), h('span', {}, 'Área do proprietário')),
+      h(
+        'div',
+        { class: 'login__brand' },
+        h('span', { class: 'login__logo' }, icon('lock', 22)),
+        h('span', {}, 'Área do proprietário'),
+      ),
       h('h1', { class: 'login__title' }, spec.siteName),
-      h('p', { class: 'login__lead' }, 'Informe a chave GitHub deste repositório e crie a senha do painel. A chave é guardada cifrada no servidor e não fica salva no navegador.'),
+      h(
+        'p',
+        { class: 'login__lead' },
+        'Informe a chave GitHub deste repositório e crie a senha do painel. A chave é guardada cifrada no servidor e não fica salva no navegador.',
+      ),
       chips,
       token.el,
       createLink,
@@ -684,7 +716,9 @@ export function startAdmin(root: HTMLElement, opts: AdminOptions) {
   /* ------------------------------ início ------------------------------ */
 
   if (!opts.apiBase) {
-    showLogin('Prévia visual: conecte o Worker do painel para ativar o acesso e salvar alterações.');
+    showLogin(
+      'Prévia visual: conecte o Worker do painel para ativar o acesso e salvar alterações.',
+    );
     return;
   }
   void api.hasSession().then((ok) => (ok ? load() : showLogin()));

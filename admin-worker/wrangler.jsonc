@@ -10,6 +10,7 @@
   "name": "ametista-admin",
   "main": "src/index.ts",
   "compatibility_date": "2026-11-10",
+  "kv_namespaces": [{ "binding": "ADMIN_KV", "id": "e9e247034b3049b58fc260d7418da6aa" }],
   "vars": {
     "GITHUB_REPO": "Tha-github/Residencial-Ametista",
     "GITHUB_BRANCH": "main",
