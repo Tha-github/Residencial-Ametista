@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { parseContent } from '../../src/lib/content/load';
-import { bookingLinks, formatAddress, instagramHandle } from '../../src/lib/content/format';
+import {
+  bookingLinks,
+  formatAddress,
+  instagramHandle,
+  whatsappNumber,
+} from '../../src/lib/content/format';
 import { navItems, sectionStates } from '../../src/lib/content/sections';
 import data from '../../src/data/ametista.json';
 
@@ -17,7 +22,7 @@ const ready = (input: object) =>
   Object.fromEntries(sectionStates(parseContent(input, 't')).map((s) => [s.id, s.ready]));
 
 describe('estrutura de seções', () => {
-  it('publica seções preenchidas com conteúdo e mantém contato sem destino', () => {
+  it('publica todas as seções preenchidas com conteúdo', () => {
     expect(ready(data)).toEqual({
       apresentacao: true,
       galeria: true,
@@ -28,7 +33,7 @@ describe('estrutura de seções', () => {
       localizacao: true,
       reservas: true,
       duvidas: true,
-      contato: false,
+      contato: true,
     });
   });
 
@@ -84,6 +89,14 @@ describe('formatação', () => {
         ).location,
       ),
     ).toContain('Rua Exemplo, 1');
+  });
+
+  it('formata o número do WhatsApp a partir do link', () => {
+    expect(whatsappNumber('https://wa.me/5548999471321?text=Ol%C3%A1')).toBe('(48) 99947-1321');
+    expect(whatsappNumber('https://api.whatsapp.com/send?phone=554833334444')).toBe(
+      '(48) 3333-4444',
+    );
+    expect(whatsappNumber('https://wa.me/123')).toBeUndefined();
   });
 
   it('extrai o @ do Instagram', () => {

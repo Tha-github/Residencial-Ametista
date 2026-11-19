@@ -29,6 +29,19 @@ export const bookingLinks = (c: PropertyContent) =>
     return url ? [{ key, name, url }] : [];
   });
 
+/**
+ * Número legível a partir de um link do WhatsApp (wa.me/55DDDNÚMERO):
+ * "(48) 99947-1321". Formato desconhecido → undefined (o link continua).
+ */
+export function whatsappNumber(url: string): string | undefined {
+  const u = new URL(url);
+  const digits = (u.hostname.endsWith('wa.me') ? u.pathname : (u.searchParams.get('phone') ?? ''))
+    .replace(/\D/g, '')
+    .replace(/^55(?=\d{10,11}$)/, '');
+  const m = digits.match(/^(\d{2})(\d{4,5})(\d{4})$/);
+  return m ? `(${m[1]}) ${m[2]}-${m[3]}` : undefined;
+}
+
 /** "@perfil" a partir de uma URL do Instagram, para o texto do link. */
 export function instagramHandle(url: string): string {
   const handle = new URL(url).pathname.split('/').filter(Boolean)[0];

@@ -1,5 +1,5 @@
 {
-  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente (restinga-previas.pages.dev/residencial-ametista) em 2026-11-17/18. Fotos do imóvel substituídas em 2026-11-18 por versões sem marca-d'água (1536px) enviadas pelo usuário; fotos da região da Wikimedia Commons com crédito. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato (WhatsApp vazio na prévia) e check-out ainda pendentes.",
+  "$comment": "Conteúdo preenchido a partir da página de prévia indicada pelo cliente (restinga-previas.pages.dev/residencial-ametista) em 2026-11-17/18. Fotos do imóvel substituídas em 2026-11-18 por versões sem marca-d'água (1536px) enviadas pelo usuário; fotos da região da Wikimedia Commons com crédito. Links de reserva (Booking e Airbnb) informados pelo cliente em 2026-11-18. Contato do proprietário para reserva direta (WhatsApp e e-mail) informado pelo usuário em 2026-11-18. Check-out ainda pendente.",
   "name": "Residencial Ametista",
   "tagline": "Apartamento completo com terraço gourmet a aproximadamente 250 metros do mar.",
   "description": [
@@ -234,6 +234,10 @@
   "booking": {
     "booking": "https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html",
     "airbnb": "https://www.airbnb.com.br/rooms/13257454"
+  },
+  "contact": {
+    "whatsapp": "https://wa.me/5548999471321?text=Ol%C3%A1!%20Vi%20o%20site%20do%20Residencial%20Ametista%20e%20gostaria%20de%20consultar%20disponibilidade%20para%20reserva.",
+    "email": "pereimamarcelo@gmail.com"
   },
   "region": {
     "places": [

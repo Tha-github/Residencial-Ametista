@@ -22,7 +22,9 @@ describe('conteúdo do residencial', () => {
       booking: 'https://www.booking.com/hotel/br/condominio-residencial-ametista.pt-br.html',
       airbnb: 'https://www.airbnb.com.br/rooms/13257454',
     });
-    expect(c.contact).toEqual({});
+    expect(c.contact.whatsapp).toMatch(/^https:\/\/wa\.me\/5548999471321\?text=/);
+    expect(c.contact.email).toBe('pereimamarcelo@gmail.com');
+    expect(c.contact.instagram).toBeUndefined();
     expect(c.media.gallery).toHaveLength(12);
     expect(c.location.streetAddress).toBe('Rua Dante de Patta, 283');
     expect(c.location.mapsUrl).toBe('https://maps.app.goo.gl/qvsUVxg31GUaZbr36');

@@ -5,7 +5,12 @@
  * Colunas sem dados não aparecem.
  */
 import type { PropertyContent } from '../../data/property.schema';
-import { bookingLinks, formatPlace, instagramHandle } from '../../lib/content/format';
+import {
+  bookingLinks,
+  formatPlace,
+  instagramHandle,
+  whatsappNumber,
+} from '../../lib/content/format';
 import Icon from '../ui/Icon.astro';
 
 interface Props {
@@ -111,7 +116,7 @@ const cols =
             {whatsapp && (
               <li>
                 <a class="link" href={whatsapp} target="_blank" rel="noopener noreferrer">
-                  WhatsApp
+                  WhatsApp {whatsappNumber(whatsapp)}
                   <span class="sr-only">(abre em nova aba)</span>
                 </a>
               </li>

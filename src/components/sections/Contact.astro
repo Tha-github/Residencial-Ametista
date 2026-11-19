@@ -1,7 +1,12 @@
 ---
-/** Contato e Instagram — somente canais fornecidos pelo cliente. */
+/**
+ * Reserva direta / contato com o proprietário — somente canais fornecidos.
+ * WhatsApp abre a conversa com mensagem pronta; e-mail abre o cliente de
+ * e-mail. O site não confirma reservas: datas e valores são combinados
+ * diretamente com o proprietário.
+ */
 import type { PropertyContent } from '../../data/property.schema';
-import { instagramHandle } from '../../lib/content/format';
+import { instagramHandle, whatsappNumber } from '../../lib/content/format';
 import Section from '../layout/Section.astro';
 import Icon from '../ui/Icon.astro';
 
@@ -11,34 +16,32 @@ interface Props {
 
 const { content } = Astro.props;
 const { instagram, whatsapp, email } = content.contact;
+const phone = whatsapp ? whatsappNumber(whatsapp) : undefined;
 ---
 
 <Section
   id="contato"
-  eyebrow="Contato"
-  title="Ficou com alguma dúvida?"
-  lead="Fale com o residencial antes de reservar."
+  eyebrow="Reserva direta"
+  title="Fale direto com o *proprietário*"
+  lead="Prefere combinar tudo sem intermediários? Entre em contato para consultar datas, valores e tirar suas dúvidas."
+  align="center"
 >
   <ul class="channels" role="list">
     {whatsapp && (
       <li>
-        <a class="channel" href={whatsapp} target="_blank" rel="noopener noreferrer">
-          <Icon name="message" size={22} />
-          <span>
-            <span class="channel__label">WhatsApp</span>
-            <span class="channel__value">Enviar mensagem</span>
+        <a
+          class="channel channel--primary"
+          href={whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="channel__icon">
+            <Icon name="message" size={24} />
           </span>
-          <span class="sr-only">(abre em nova aba)</span>
-        </a>
-      </li>
-    )}
-    {instagram && (
-      <li>
-        <a class="channel" href={instagram} target="_blank" rel="noopener noreferrer">
-          <Icon name="camera" size={22} />
-          <span>
-            <span class="channel__label">Instagram</span>
-            <span class="channel__value">{instagramHandle(instagram)}</span>
+          <span class="channel__text">
+            <span class="channel__label">WhatsApp</span>
+            <span class="channel__value">{phone ?? 'Enviar mensagem'}</span>
+            <span class="channel__hint">Enviar mensagem</span>
           </span>
           <span class="sr-only">(abre em nova aba)</span>
         </a>
@@ -47,11 +50,32 @@ const { instagram, whatsapp, email } = content.contact;
     {email && (
       <li>
         <a class="channel" href={`mailto:${email}`}>
-          <Icon name="mail" size={22} />
-          <span>
-            <span class="channel__label">E-mail</span>
-            <span class="channel__value">{email}</span>
+          <span class="channel__icon">
+            <Icon name="mail" size={24} />
           </span>
+          <span class="channel__text">
+            <span class="channel__label">E-mail</span>
+            <span class="channel__value channel__value--email">
+              {email.split('@')[0]}@<wbr />
+              {email.split('@')[1]}
+            </span>
+            <span class="channel__hint">Escrever e-mail</span>
+          </span>
+        </a>
+      </li>
+    )}
+    {instagram && (
+      <li>
+        <a class="channel" href={instagram} target="_blank" rel="noopener noreferrer">
+          <span class="channel__icon">
+            <Icon name="camera" size={24} />
+          </span>
+          <span class="channel__text">
+            <span class="channel__label">Instagram</span>
+            <span class="channel__value">{instagramHandle(instagram)}</span>
+            <span class="channel__hint">Ver perfil</span>
+          </span>
+          <span class="sr-only">(abre em nova aba)</span>
         </a>
       </li>
     )}
@@ -61,39 +85,69 @@ const { instagram, whatsapp, email } = content.contact;
 <style>
   .channels {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-4);
+    max-inline-size: 48rem;
+    margin-inline: auto;
     padding: 0;
     list-style: none;
   }
   @media (min-width: 768px) {
     .channels {
-      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+      gap: var(--space-5);
     }
   }
   .channel {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    block-size: 100%;
     min-block-size: var(--tap-min);
-    padding: var(--space-5);
-    border: var(--border-width) solid var(--color-border);
+    padding: var(--space-7) var(--space-5);
     border-radius: var(--radius-lg);
+    background: var(--color-surface);
     color: var(--color-heading);
+    text-align: center;
     text-decoration: none;
     transition:
-      border-color var(--duration-fast) var(--ease-out),
+      translate var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
       background-color var(--duration-fast) var(--ease-out);
   }
   .channel:hover {
-    border-color: var(--color-accent);
-    background: var(--color-surface);
+    translate: 0 -3px;
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-md);
   }
-  .channel :global(svg) {
-    flex: none;
+  /* Canal principal (WhatsApp) em mar profundo */
+  .channel--primary {
+    background:
+      radial-gradient(120% 90% at 100% 0%, var(--sea-700) 0%, transparent 65%), var(--sea-900);
+    color: var(--sand-50);
+  }
+  .channel--primary:hover {
+    background:
+      radial-gradient(120% 90% at 100% 0%, var(--sea-600) 0%, transparent 65%), var(--sea-900);
+  }
+  .channel--primary:focus-visible {
+    outline-color: var(--sea-900);
+  }
+  .channel__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 52px;
+    block-size: 52px;
+    border-radius: 50%;
+    background: var(--color-bg);
     color: var(--color-eyebrow);
   }
-  .channel > span:not(.sr-only) {
+  .channel--primary .channel__icon {
+    background: rgb(255 255 255 / 0.1);
+    color: var(--terra-300);
+  }
+  .channel__text {
     display: grid;
+    gap: var(--space-1);
     min-inline-size: 0;
   }
   .channel__label {
@@ -103,7 +157,27 @@ const { instagram, whatsapp, email } = content.contact;
     text-transform: uppercase;
     color: var(--color-text-muted);
   }
+  .channel--primary .channel__label {
+    color: var(--sea-200);
+  }
   .channel__value {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
     overflow-wrap: anywhere;
+  }
+  /* E-mail é longo: um pouco menor e quebra só no "@" se faltar espaço */
+  .channel__value--email {
+    font-size: var(--text-lg);
+    overflow-wrap: normal;
+  }
+  .channel__hint {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-strong);
+    color: var(--color-accent);
+  }
+  .channel--primary .channel__hint {
+    color: var(--terra-300);
   }
 </style>

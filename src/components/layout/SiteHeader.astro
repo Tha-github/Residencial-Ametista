@@ -41,16 +41,29 @@ const { overlay = false, nav = [], bookingCta = false } = Astro.props;
           )}
           {nav.length > 0 && (
             <details class="site-header__menu" data-menu>
-              <summary aria-label="Abrir menu de seções">
-                <Icon name="menu" size={22} />
+              <summary aria-label="Menu de seções">
+                <span class="site-header__icon site-header__icon--open">
+                  <Icon name="menu" size={24} />
+                </span>
+                <span class="site-header__icon site-header__icon--close">
+                  <Icon name="close" size={24} />
+                </span>
               </summary>
-              <ul class="site-header__panel" role="list">
-                {nav.map((item) => (
-                  <li>
-                    <a href={item.href}>{item.label}</a>
-                  </li>
-                ))}
-              </ul>
+              <div class="site-header__panel">
+                <ul class="site-header__panel-links" role="list">
+                  {nav.map((item) => (
+                    <li>
+                      <a href={item.href}>{item.label}</a>
+                    </li>
+                  ))}
+                </ul>
+                {bookingCta && (
+                  <a class="btn btn--lg site-header__panel-cta" href="#reservas">
+                    Ver opções de reserva
+                    <Icon name="arrow-right" size={18} />
+                  </a>
+                )}
+              </div>
             </details>
           )}
         </div>
@@ -203,33 +216,88 @@ const { overlay = false, nav = [], bookingCta = false } = Astro.props;
   .site-header__menu summary::-webkit-details-marker {
     display: none;
   }
-  .site-header__menu summary:hover,
-  .site-header__menu[open] summary {
+  .site-header__menu summary:hover {
     background: rgb(127 127 127 / 0.14);
   }
-  .site-header__panel {
-    position: absolute;
-    inset-inline-end: 0;
-    inset-block-start: calc(100% + var(--space-2));
+  /* Botão acima do painel: vira "fechar" (X) quando o menu está aberto */
+  .site-header__menu summary {
+    position: relative;
+    z-index: 2;
+  }
+  .site-header__icon--close,
+  .site-header__menu[open] .site-header__icon--open {
+    display: none;
+  }
+  .site-header__menu[open] .site-header__icon--close {
     display: grid;
-    min-inline-size: 13rem;
-    padding: var(--space-2);
+  }
+  .site-header__menu[open] summary {
+    color: var(--sea-950);
+  }
+
+  /* ---------- Painel em tela cheia (mobile/tablet) ---------- */
+  .site-header__panel {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: var(--space-6);
+    padding: calc(4.25rem + var(--space-6)) var(--gutter)
+      calc(var(--space-7) + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    background:
+      radial-gradient(90% 50% at 100% 0%, var(--sea-100) 0%, transparent 70%), var(--sand-50);
+    color: var(--color-title);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .site-header__menu[open] .site-header__panel {
+      animation: menu-in var(--duration-base) var(--ease-out);
+    }
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+  .site-header__panel-links {
+    display: grid;
+    align-content: center;
+    gap: var(--space-2);
+    padding: 0;
     list-style: none;
-    background: var(--color-surface-raised);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    color: var(--color-heading);
+    text-align: center;
   }
-  .site-header__panel a {
-    display: flex;
+  .site-header__panel-links a {
+    display: inline-flex;
     align-items: center;
-    min-block-size: 48px;
-    padding-inline: var(--space-4);
-    border-radius: var(--radius-md);
-    font-weight: var(--font-weight-strong);
+    justify-content: center;
+    min-block-size: 56px;
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    line-height: 1.1;
     text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
   }
-  .site-header__panel a:hover {
-    background: var(--color-surface);
+  .site-header__panel-links a:hover {
+    color: var(--color-eyebrow);
+  }
+  .site-header__panel-cta {
+    inline-size: 100%;
+    max-inline-size: 24rem;
+    justify-self: center;
+  }
+  /* Menu aberto: o painel ocupa a tela; a página não rola por trás.
+     Sem backdrop-filter no header (ele prenderia o painel fixo ao header). */
+  .site-header:has(.site-header__menu[open]) {
+    backdrop-filter: none;
+  }
+  :global(html:has(.site-header__menu[open])) {
+    overflow: hidden;
+  }
+  /* A barra de reserva fixa não fica por cima do menu aberto */
+  :global(body:has(.site-header__menu[open]) .booking-bar) {
+    display: none;
   }
 </style>

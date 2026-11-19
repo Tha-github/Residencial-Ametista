@@ -18,6 +18,9 @@ interface Props {
 const { content } = Astro.props;
 const links = bookingLinks(content);
 const photo = content.media.booking;
+const { whatsapp, email } = content.contact;
+// Reserva direta só aparece com canal do proprietário publicado (#contato existe).
+const hasDirect = Boolean(whatsapp || email);
 const steps = [
   {
     title: 'Escolha a plataforma',
@@ -62,6 +65,32 @@ const steps = [
             </li>
           ))}
         </ul>
+
+        {hasDirect && (
+          <div class="direct">
+            <p class="direct__text">
+              <strong>Prefere reservar direto?</strong> Fale com o proprietário e combine datas e
+              valores sem intermediários.
+            </p>
+            <div class="direct__actions">
+              {whatsapp && (
+                <a
+                  class="btn btn--inverse-outline direct__btn"
+                  href={whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon name="message" size={18} />
+                  WhatsApp
+                  <span class="sr-only">(abre em nova aba)</span>
+                </a>
+              )}
+              <a class="btn btn--inverse-outline direct__btn" href="#contato">
+                Ver contatos
+              </a>
+            </div>
+          </div>
+        )}
 
         <ol class="steps">
           {steps.map((s, i) => (
@@ -173,6 +202,35 @@ const steps = [
   }
   .platform:hover .platform__cta :global(svg) {
     transform: translate(2px, -2px);
+  }
+
+  /* ---------- Reserva direta ---------- */
+  .direct {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+    padding: var(--space-5);
+    border: var(--border-width) solid rgb(219 233 239 / 0.22);
+    border-radius: var(--radius-lg);
+  }
+  .direct__text {
+    color: var(--color-inverse-muted);
+  }
+  .direct__text strong {
+    color: var(--sand-50);
+  }
+  .direct__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  @media (max-width: 767px) {
+    .direct {
+      text-align: center;
+    }
+    .direct__actions {
+      justify-content: center;
+    }
   }
 
   /* ---------- Passos ---------- */
